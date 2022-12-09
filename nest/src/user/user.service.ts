@@ -1,18 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from "@nestjs/common";
 
-import { SignUpDto } from "./dto/index";
+import { SignUpDto } from "./dtos/index";
 
 @Injectable()
 export class UserService {
-    getUser() {
-        
-    }
+    getUser() {}
 
     signUp({ email, password, gender }: SignUpDto) {
-        
+        return {
+            email,
+            password,
+            gender,
+        };
     }
 
-    signIn() {
-        
-    }
+    signIn() {}
 }

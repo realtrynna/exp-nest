@@ -49,3 +49,5 @@ https://docs.nestjs.com/cli/usages
 
 9. Controller ㅡ> Service ㅡ> Repository(TypeORM === Entity)
 <br>
+
+10. 
