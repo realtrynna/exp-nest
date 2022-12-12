@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Req, Body, Query, Param } from '@nestjs/common';
+import { Controller, Get, Post, Req, Body, Query, Param, UseInterceptors } from '@nestjs/common';
 
 import { UserService } from './user.service';
 import { SignUpDto } from "./dtos/index";
-import { UserDto } from "../common/index";
+import { UserDto, User, Token, ReqResInterceptor } from "../common/index";
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags("User")
@@ -11,6 +11,7 @@ export class UserController {
     // eslint-disable-next-line prettier/prettier
     constructor (private readonly userService: UserService) {}
 
+    @UseInterceptors(ReqResInterceptor)
     @ApiResponse({
         type: UserDto,
         status: 200,
@@ -20,9 +21,9 @@ export class UserController {
         summary: "사용자 조회",
     })
     @Get(":id")
-    gteUser(@Param() id) {
+    gteUser(@Param() id, @User() user, @Token() token) {
         const { id: userId } = id;
-
+        
         return; 
     }
 
