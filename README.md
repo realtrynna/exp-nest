@@ -51,3 +51,28 @@ https://docs.nestjs.com/cli/usages
 <br>
 
 10. 
+
+<br>
+
+### TypeORM
+1. Workspace와 Channel 모델은 1:N 일대다 <br>
+워크스페이스는 회사의 개념, 채널은 회사 내부 부서의 개념 <br>
+워크스페이스 1개는 여러개의 채널을 가질 수 있음 <br>
+
+> 워크스페이스 OneToMany <br>
+> 채널 ManyToOne <br>
+
+* @JoinColumn은 두 모델 중 하나의 모델에만 작성하면 됨 <br>
+> 외래키가 있는 모델에 붙이는 게 컨벤션 (: <br>
+
+<br>
+
+2. Member와 Workspace 모델은 N:M 다대다 <br>
+사용자는 여러 개의 워크스페이스에 속할 수 있음 <br>
+워크스페이스 안에는 여러 명의 사용자가 있음 <br>
+
+> 사용자 ManyToMany <br>
+> 워크스페이스 ManyToMany <br>
+
+* 다대다 관계는 중간 테이블(WorkspaceMember)이 생성됨 <br>
+* 다대다 관계는 @JoinTable에 중간 테이블(WorkspaceMember) 작성 <br>
