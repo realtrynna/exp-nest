@@ -54,7 +54,7 @@ https://docs.nestjs.com/cli/usages
 
 <br>
 
-### TypeORM
+## TypeORM
 1. Workspace와 Channel 모델은 1:N 일대다 <br>
 워크스페이스는 회사의 개념, 채널은 회사 내부 부서의 개념 <br>
 워크스페이스 1개는 여러개의 채널을 가질 수 있음 <br>
@@ -76,3 +76,15 @@ https://docs.nestjs.com/cli/usages
 
 * 다대다 관계는 중간 테이블(WorkspaceMember)이 생성됨 <br>
 * 다대다 관계는 @JoinTable에 중간 테이블(WorkspaceMember) 작성 <br>
+
+#### Seeding
+초기 더미 데이터 생성 <br>
+npm i typeorm-extension (v0.3) <br>
+
+> typeorm-seeding (v0.2 사용 불가) <br>
+> typeorm-model-generate (v0.2 사용 불가) <br>
+
+<br>
+
+### Migration
+기존 테이블 수정 기능
