@@ -87,4 +87,7 @@ npm i typeorm-extension (v0.3) <br>
 <br>
 
 ### Migration
-기존 테이블 수정 기능
+기존 테이블 수정 기능 <br>
+
+* 쿼리를 통해 바꾸면 Entity도 바꿔줘야 함 <br>
+* 
