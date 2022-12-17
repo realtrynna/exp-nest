@@ -77,6 +77,21 @@ https://docs.nestjs.com/cli/usages
 * 다대다 관계는 중간 테이블(WorkspaceMember)이 생성됨 <br>
 * 다대다 관계는 @JoinTable에 중간 테이블(WorkspaceMember) 작성 <br>
 
+```typescript
+// User
+@OneToMany(() => Post, (post) => post.User)
+Post: Post[];
+
+// Post
+@ManyToOne(() => User, (user) => user.Post, {
+    onDelete: "SET NULL",
+    onUpdate:  "CASCADE",
+})
+// 외래키
+@JoinColumn([{ name: "UserId", referencedColumnName: "id" } ])
+User: User;
+```
+
 #### Seeding
 초기 더미 데이터 생성 <br>
 npm i typeorm-extension (v0.3) <br>

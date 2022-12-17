@@ -1,23 +1,28 @@
 import {
-    PrimaryGeneratedColumn,
     Index,
     Entity,
     Column,
-    CreateDateColumn,
-    DeleteDateColumn,
-    UpdateDateColumn,
     JoinTable,
     ManyToMany,
     OneToMany,
+    OneToOne,
 } from "typeorm";
 
-// 
-@Index("email", ["email"], { unique: true })
-@Entity({ schema: "practice", name: "user"})
-export class User {
-    @PrimaryGeneratedColumn({ type: "int", name: "id" })
-    id: number;
+import { BaseEntity } from "./base.entity";
+import { Post } from "./Post"; 
+import { Profile } from "./Profile";
 
+// 사용자
+@Index("email", ["email"], { unique: true })
+@Entity({
+    schema: "practice",
+    name: "user",
+    orderBy: {
+        email: "ASC",
+        id: "DESC",
+    }
+})
+export class User extends BaseEntity {
     @Column("varchar", { name: "email", unique: true, length: 30 })
     email: string;
 
@@ -27,12 +32,9 @@ export class User {
     @Column("varchar", { name: "password", length: 255, select: false })
     password: string;
 
-    @CreateDateColumn()
-    createdAt: Date;
+    @OneToMany(() => Post, (post) => post.user)
+    posts: Post[];
 
-    @UpdateDateColumn()
-    updatedAt: Date;
-
-    @DeleteDateColumn()
-    deleteAt: Date;
+    @OneToOne(type => Profile, (profile) => profile.user)
+    profile: Profile;
 }
