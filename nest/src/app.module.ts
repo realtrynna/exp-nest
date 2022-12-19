@@ -11,6 +11,9 @@ import { DmModule } from "./dm/dm.module";
 import { MySqlConfigModule } from "./database/config.module";
 import { MySqlConfigService } from "./database/config.service";
 
+import { User } from "./entities/User";
+import { Profile } from "./entities/Profile";
+
 @Module({
     imports: [
         ConfigModule.forRoot({ isGlobal: true }), // isGlobal 전역 process.env

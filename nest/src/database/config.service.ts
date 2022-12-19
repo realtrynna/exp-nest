@@ -5,8 +5,6 @@ import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from "@nestjs/typeorm";
 import { User } from "../entities/User";
 import { Post } from "../entities/Post";
 import { Profile } from "../entities/Profile";
-import { Workspace } from "src/entities/Workspace";
-import { Channel } from "diagnostics_channel";
 
 @Injectable()
 export class MySqlConfigService implements TypeOrmOptionsFactory {
@@ -24,13 +22,11 @@ export class MySqlConfigService implements TypeOrmOptionsFactory {
                 User,
                 Post,
                 Profile,
-                Workspace,
-                Channel,
             ],
-            // migrations: [""],
+            migrations: ["src/migrations/*{.ts,.js}"],
             synchronize: true,
             logging: true,
-            charset: "utf8mb4",
+            charset: "utf8mb4_general_ci",
         }
     }
 }

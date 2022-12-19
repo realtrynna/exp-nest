@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, Body, Query, Param, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, Req, Body, Query, Param, UseInterceptors, HttpException } from '@nestjs/common';
 
 import { UserService } from './user.service';
 import { SignUpDto } from "./dtos/index";
@@ -22,9 +22,7 @@ export class UserController {
     })
     @Get(":id")
     gteUser(@Param() id, @User() user, @Token() token) {
-        const { id: userId } = id;
-        
-        return; 
+        throw new HttpException("컨트롤러 에러 발생", 404);
     }
 
     @ApiOperation({
