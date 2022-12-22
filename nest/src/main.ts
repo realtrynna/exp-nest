@@ -1,3 +1,4 @@
+import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { SwaggerModule } from "@nestjs/swagger";
 
@@ -11,6 +12,7 @@ declare const module: any;
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
+    app.use(new ValidationPipe());
     app.useGlobalFilters(new HttpExceptionFilter());
     
     const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);

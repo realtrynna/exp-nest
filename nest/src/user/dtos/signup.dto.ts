@@ -1,6 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { isEmail } from "class-validator";
 
 export class SignUpDto {
+    @isEmail("here", {
+        ignore_max_length: true,
+    })
     email: string;
 
     password: string;
