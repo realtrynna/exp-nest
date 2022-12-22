@@ -106,3 +106,63 @@ npm i typeorm-extension (v0.3) <br>
 
 * 쿼리를 통해 바꾸면 Entity도 바꿔줘야 함 <br>
 * 
+
+### Request Life Cycle
+1. Incoming Request <br>
+> 요청 <br>
+
+<br>
+
+2. Globally Bound Middleware
+3. Module Bound Middleware
+> 미들웨어 <br>
+
+<br>
+
+4. Global Guards
+5. Controller Guards
+6. Route Guards
+> 가드 <br>
+
+<br>
+
+7. Global Interceptors (Pre Controller)
+8. Controller Interceptors (PreController)
+9. Route Interceptors (Pre Controller)
+> 컨트롤러 실행 전 Interceptor
+
+<br>
+
+10. Global Pipes
+11. Controller Pipes
+12. Route Pipes
+13. Route Parameter pipes
+> 데이터 파이프
+
+<br>
+
+14. Controller (Method Handler)
+> 컨트롤러 로직 실행
+
+<br>
+
+15. Service (If Exists)
+> 서비스 로직 실행
+
+<br>
+
+16. Route Interceptor (Post Request)
+17. Controller Interceptor (Post Request)
+18. Global Interceptor (Post Request)
+> 컨트롤러 로직 응답 후 Interceptor??
+
+<br>
+
+19. Exception Filters (Router, Then Controller, Then Global)
+> 에러 핸들링
+
+<br>
+
+20. Server Response
+> 응답
+
