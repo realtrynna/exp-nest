@@ -1,5 +1,32 @@
-# Slack Clone
-https://docs.nestjs.com/
+# https://docs.nestjs.com/
+1. Guard <br>
+@Injectable()을 구현하는데 Decorator로 주석이 달린 클래스다. <br>
+Guard는 *__단일 책임__* 의 원칙이 있으며 런타임에 존재하는 특정 조건(Authenticate, Role, ACL)에 따라 지정된 요청이 *__경로 처리기(Controller)__* 가 처리 할지 말지를 결정한다.
+일반적으로 Express에서 *__권한 부여__* 는 Middleware에 의해 처리되었다.
+
+<br>
+
+하지만 Middleware는 *__next()__* 가 호출된 후 어떤 Handler가 호출되는지 알 수 없다.
+반면 **__Guards__** 는 ExecutionContext가 존재하므로 다음에 호출될 *__Handler__* 에 대해 정확히 알 수 있다. 
+
+* ACL
+Access Control List로 액세스 제어 목록을 의미한다. <br>
+액스세 권한이 부여된 *__사용자__* 또는 *__시스템 프로세스__* 들만 접근이 가능함
+
+<br>
+
+2. Provider <br>
+Provider는 NestJS 기본 개념으로 Service, Repository, Factory, Helper 등은 Provider로 취급될 수 있다. Provider의 주요 개념은 종속성으로 주입할 수 있다. 개체는 서로 다양한 관계를 맺을 수 있으며 개체를 연결하는 기능은 Nest 런타임에 위임된다.
+
+* 종속성이란
+응용 프로그램과 데이터 간의 상호 의존 관계를 의미한다.
+
+> 
+
+<br>
+
+2. Service <br>
+
 
 <br>
 
@@ -166,3 +193,49 @@ npm i typeorm-extension (v0.3) <br>
 20. Server Response
 > 응답
 
+<br>
+
+## Interceptor
+Interceptor는 Decorator가 달린 Class이며 NestInterceptor 인터페이스로 구현되있다.
+구현 시 NestInterceptor를 Implements하여 구현한다.
+
+* Controller 실핼 전, Response 후 실행될 수 있다.
+
+Interceptor는 AOP(Aspect Oriented Programing)에서 영감을 받아 만들어졌고 다음 기능을 수행한다.
+
+- 메서드(Controller Method) 실행 전/후 추가 로직 바인딩
+- Interceptor에서 Return된 결과 변환
+- Return된 예외(Exception Error?) 변환
+- 기본 기능 동작 확장
+- 특정 조건에 따라 함수 재정의(Cashing)
+
+<br>
+
+매개변수 context와 next
+
+1. context: ExecutionContext 
+ArgumentsHost를 상속 받는다. <br>
+
+```typescript
+import { ExecutionContext } from "@nestjs/common";
+```
+
+> getArgs(), switchToRpc(), switchToHttp(), switchToWs(), getType()...... <br>
+
+<br>
+
+2. next: CallHandler
+Interceptor 특정 지점에서 메서드를 호출 <br>
+
+```typescript
+import { CallHandler } from "@nestjs/common";
+```
+
+<br>
+
+```typescript
+@Injectable()
+export class ReqResInterceptor implements NestInterceptor {
+
+}
+```
