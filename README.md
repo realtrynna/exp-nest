@@ -239,3 +239,23 @@ export class ReqResInterceptor implements NestInterceptor {
 
 }
 ```
+
+
+### Nest 장점
+Nest는 프론트 Framework Angular의 영향을 받았음. Module과 Component 기반 방식으로 코드의 재사용성을 높임.
+또한 Express에서 경험해볼 수 없는 IOC(Inversion of Control), DI(Dependence Injection), AOP(Aspect Oriented Programing)와 같은 객체 지향 개념 도입 
+
+<br>
+
+* Web Framework가 제공해야할 필수 기능
+1. 최신 ECMA 문법 지원
+2. 타입스크립트 언어 지원
+3. CQRS(Command Query Responsibility Separation)
+4. HTTP Header Security(Express => helmet)
+
+
+<br>
+
+Express, Fastify Framework를 래핑하여 동작함.
+Express는 과도한 유연함으로 소프트웨어의 품질이 일정하지 않고 프로젝트에 적합한 라이브러리를 찾기 위해 많은 시간이 소요됨.
+이에 반해 Nest는 대부분의 기능(Database, ORM, Configuration)이 차제적으로 내장되어있고 피욜시 라이브러리를 설치하여 확장할 수 있음
