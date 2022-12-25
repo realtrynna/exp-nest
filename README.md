@@ -236,7 +236,7 @@ import { CallHandler } from "@nestjs/common";
 ```typescript
 @Injectable()
 export class ReqResInterceptor implements NestInterceptor {
-
+    
 }
 ```
 
@@ -252,10 +252,11 @@ Nest는 프론트 Framework Angular의 영향을 받았음. Module과 Component 
 2. 타입스크립트 언어 지원
 3. CQRS(Command Query Responsibility Separation)
 4. HTTP Header Security(Express => helmet)
+5. 간편한 설정
 
 
 <br>
 
 Express, Fastify Framework를 래핑하여 동작함.
 Express는 과도한 유연함으로 소프트웨어의 품질이 일정하지 않고 프로젝트에 적합한 라이브러리를 찾기 위해 많은 시간이 소요됨.
-이에 반해 Nest는 대부분의 기능(Database, ORM, Configuration)이 차제적으로 내장되어있고 피욜시 라이브러리를 설치하여 확장할 수 있음
+이에 반해 Nest는 대부분의 기능(Database, ORM, Configuration)이 차제적으로 내장되어있고 필요 시 라이브러리를 설치하여 확장할 수 있음
