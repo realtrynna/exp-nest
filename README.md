@@ -260,3 +260,95 @@ Nest는 프론트 Framework Angular의 영향을 받았음. Module과 Component 
 Express, Fastify Framework를 래핑하여 동작함.
 Express는 과도한 유연함으로 소프트웨어의 품질이 일정하지 않고 프로젝트에 적합한 라이브러리를 찾기 위해 많은 시간이 소요됨.
 이에 반해 Nest는 대부분의 기능(Database, ORM, Configuration)이 차제적으로 내장되어있고 필요 시 라이브러리를 설치하여 확장할 수 있음
+
+### Guards
+1. 인증 (Authentication) <br>
+요청자가 해당 서비스에 올바른 유저인지 검증하는 과정 <br>
+요청자가 누구인지 증명하는 과정을 의미함. <br>
+매 요청마다 Header에 Token을 포함시켜 보내 확인함. <br>
+
+2. 인가(Authorization) <br>
+인증을 통과한 유저가 요청한 리소스에 접근할 권한이 있는지를 검증하는 과정 <br>
+
+> Permission, Role, ACL 같은 개념 <br>
+> Nest에서 인가는 Guards로 구현함 <br>
+> 인증 실패 시 401 Unauthorized <br>
+> 인가 실패 시 403 Forbidden <br>
+
+* Middleware로 인가를 확인할 수 없는 이유
+Middleware는 실행 콘텍스트(ExecutionContext)에 접근할 수 없음 자신의 작업만 수행하고 next()를 호출 <br>
+다음 어떤 Handler가 실행될 지 알 수 없음 반면 Guards는 실행 콘텍스트에 접근 가능 <br>
+
+```typescript
+import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common"
+import { Observable }
+
+@Injectable()
+export class AuthGuard implements CanActivate {
+    canActivate(
+        context: ExecutionContext
+    ): boolean | Promise<boolean> | Observable<boolean> {
+        const request = context.switchToHttp().getRequest();
+        
+        // 
+        return this.validateRequest(request);
+    }
+
+    private validateRequest(request: any) {
+        return true;
+    }
+}
+```
+
+* 실행 콘텍스트
+canActivate는 실행 콘텍스트를 인수로 받고 ExecutionContext는 ArgumentsHost를 상속받는다. <br>
+context인수는 Request와 Response에 대한 정보가 들어있음. <br>
+
+> HTTP의 req, res 정보는 switchToHttp() <br>
+
+**__context__** 를 통해 얻은 정보를 validateRequest 함수에 넣어 Return 값으로 인가를 진행함 <br>
+
+* AuthGuard 적용
+ExceptionFilter 적용 방법과 동일 <br>
+__**@UseGuard()**__ 키워드로 적용 <br>
+
+<br>
+
+```typescript
+@UseGuards(AuthGuard)
+@Controller()
+export class AppController {
+    constructor(private readonly appService: AppService) {}
+    
+    @UseGuards(AuthGuard)
+    @Get()
+    here(): string {
+        return this.appService.here();
+    }
+}
+```
+
+* 전역 UseGuard
+```typescript
+async function bootstrap() {
+    app.useGlobalGuards(new AuthGuard());
+}
+```
+
+### Repository
+```typescript
+export class authService {
+    constructor(
+        @InjectRepository(Users) private readonly userRepository: Repository<Users>,
+    ) {}
+
+    async validateUser(email: string, password: string) {
+        const user = await this.userRepository.findOne({
+            where: { 
+                email
+            },
+        });
+    }
+}
+```
+
