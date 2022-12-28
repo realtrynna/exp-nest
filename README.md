@@ -25,8 +25,115 @@ Provider는 NestJS 기본 개념으로 Service, Repository, Factory, Helper 등�
 
 <br>
 
-2. Service <br>
+3. Middleware <br>
+Router Handler가 Request 처리 전 부가 기능을 수행하기 위한 Component를 의미 Express에 Middleware랑 동일함 <br>
 
+* Middleware 정의
+1. 어떤 형태의 Code라도 수행할 수 있음 <br>
+
+2. Request와 Response에 변형을 가할 수 있음 <br>
+
+3. Request와 Response에 주기를 끝낼 수 있음 <br>
+- Response를 보내거나 Error 처리를 의미함
+
+4. 여러 개의 Middleware를 사용한다면 끝에 next()를 호출하여 Call Stack상 다음 Middleware에게 제어권을 전달함 <br>
+- next()를 호출하지 않으면 다음 Middleware로 넘어갈 수 없음
+
+* Middleware 기능
+1. Cookie Parsing
+- Request의 Cookie를 Parsing하여 사용하기 쉬운 데이터 구조로 변경함
+
+2. Session 관리
+- Request의 Session Cookie를 찾고 해당 Cookie에 대한 상태를 조회해 요청에 Session 정보를 추가함
+- 이를 통해 다음 Handler가 Session Object를 이용할 수 있음
+
+3. 인증과 인가
+- 사용자가 리소스에 대한 접근 권한이 있는지 검증
+- Express에서 req.isAuthenticated()
+- Nest에서는 Guard를 권장
+
+4. 본문 Parsing
+- JSON뿐만 아니라 File Stream과 같은 유형도 해석(Multer)
+
+> Database Transaction이 필요한 Request가 있을 경우 CustomMiddleware로 만들 수 있음 <br>
+> Interceptor와 유사함 <br>
+
+* Logger Middleware
+NestMiddleware를 Implements하여 구현함. <br>
+
+* Middleware
+```typescript
+// logger.middleware.ts
+@Injectable()
+export class LoggerMiddleware implements NestMiddleware {
+    use(req: Request, res: Response, next: NextFunction) {
+        // Express Middleware와 동일함
+        console.log("Middleware 동작");
+        next();
+    },
+}
+```
+
+* Middleware를 Module에 포함시키기 위해서 NestModule Interface를 구현
+* AppModule Class에 NestModule을 Implements하여 Configure Method를 구현
+```typescript
+import { NestModule } from "@nest/common";
+
+// /users Request 시 "Middleware 동작"
+export class AppModule implements NestModule {
+    configure(consumer: MiddlewareConsumer): any {
+        consumer
+            .apply(LoggerMiddleware)
+            .forRoutes("/users")
+    }
+}
+```
+
+* MiddlewareConsumer
+Configure Method에 인수로 전달된 consumer에 타입인 MiddlewareConsumer
+
+* Middleware 2개 적용 시 apply 메서드에 인수로 나열하며 나열된 순서대로 실행됨
+```typescript
+consumer
+    .apply(LoggerMiddle, Logger2Middleware) 
+```
+
+* forRoutes
+문자열 형식의 경로를 주거나, Controller Class의 이름을 주거나, RouteInfo 객체를 넘길 수 있음 <br>
+보통은 Controller Class를 줌
+
+```typescript
+consumer
+    .apply(LoggerMiddleware)
+    .forRoutes(UsersController)
+```
+
+* exclude
+- /users 경로의 Request일 경우 LoggerMiddleware가 무시됨
+```typescript
+consumer
+    .apply(LoggerMiddleware)
+    .exclude({ path: "/users", method: RequestMethod.GET })
+    .forRoutes(UsersController)
+```
+
+* Global Middleware
+- AppModule Class에 Configure 메서드보다 먼저 실행됨
+- Express에 app.use()랑 동일함
+- Function Middleware는 DI를 사용할 수 없음
+```typescript
+// function Middleware
+export function logger(req: Request, res: Response, next: NextFunction) {
+    console.log("Global Middleware");
+}
+
+// main.ts
+async function bootstrap() {
+    const app = await NestFactory.create(AppModule)
+    
+    app.use(logger)
+}
+```
 
 <br>
 
@@ -352,3 +459,154 @@ export class authService {
 }
 ```
 
+> Service에서 Service 메서드를 호출하는 건 지양 <br>
+> 테스트 코드 작성 시 Mocking이 매우 불편 Mocking => Mocking => Mocking <br>
+> Controller => Service => Repository => Entity <br>
+
+### Passport
+npm i passport @nestjs/passport <br>
+Express에 Passport Strategy 방식이랑 동일함 <br>
+
+> Nest Community에서 Passport를 혐오함 왜 그런지 나중에 알아보자 <br>
+
+1. @UseGuards(LocalAuthGuard) Decorator를 사용
+- LocalAuthGuard를 직접 구현
+- Passport에 AuthGuard를 확장
+
+* auth => local.auth.guard.ts
+```typescript
+// Express => passport.authenticate("local")이랑 동일
+import { ExecutionContext, Injectable } from "@nestjs/common";
+import { AuthGuard } from "@nestjs/passport";
+
+@injectable()
+export class LocalAuthGuard extends AuthGuard("local") {
+    async canActivate(context: ExecutionContext): Promise<boolean> {
+        const can = await super.canActivate(context);
+
+        if (can) {
+            const request = context.switchToHttp().getRequest();
+
+            console.log(request)
+
+            await super.logIn(request);
+        }
+
+        return true;
+    }
+}   
+```
+
+* auth => local.strategy.ts
+```typescript
+// Express => LocalStrategy랑 동일
+import { Strategy } from "passport-local"
+import { PassportStrategy } from "@nestjs/passport";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
+
+import { AuthService } from "";
+
+@Injectable()
+export class LocalStrategy extendsPassportStrategy(Strategy) {
+    constructor(private readonly authService: AuthService) {
+        super({ usernameFiled: "email", passwordFiled: "password" });
+    }
+
+    async validate(email: string, password: string, done: CallableFunction) {
+        const user = await this.authService.validateUser(email, password);
+
+        if (!user) throw new UnauthorizedException(); // 401
+
+        return done(null, user); // => serializer
+    }
+}
+```
+
+* auth => local.serializer.ts
+```typescript
+import { Injectable } from "@nestjs/common";
+import { PassportSerializer } from "@nestjs/passport";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+
+import { Users } from "";
+import { AuthService } from "";
+
+@Injectable()
+export class LocalSerializer extends PassportSerializer {
+    constructor (
+        private readonly authService: AuthService,
+        @InjectRepository(Users) private usersRepository: Repository<Users>,
+    ) {
+        super();
+    }
+
+    serializeUser(user: Users, done: CallableFunction) {
+        done(null, user.id);
+    }
+
+    async deserializeUser(userId: string, done: CallableFunction) {
+        try {
+            const user = await this.userRepository.findOneOrFail({
+                where: { id: +userId },
+                select: ["id", "email", "nickname"],
+                relations: ["userMeta"],
+            });
+            
+            return done(null, user); // req.user 사용 가능
+        } catch (err) {
+            console.log(err);
+            done(err);
+        }
+        
+        await this.userRepository
+            .findOneOrFail({
+                where: { id: +userId },
+                select: ["id", "email", "nickname"],
+                relations: ["userMeta"],
+            });
+    } 
+}
+```
+
+* auth.module.ts <br>
+- @Injectable() => Providers
+- 라이브러리 => imports 
+```typescript
+@Module({
+    imports: [
+        PassportModule.register({ session: true }),
+        TypeOrmModule.forFeature([Users]),
+    ],
+    providers: [AuthService, LocalStrategy, LocalSerializer],
+});
+
+export class AuthModule {};
+```
+
+* main.ts
+- Express => app.use() 처리
+```typescript
+app.use(passport.initialize());
+app.use(passport.session());
+```
+
+## isAuthenticated
+Guard로 구현 
+
+* auth => logged.in.ts
+```typescript
+import { Injectable, CanActivate, ExecutionContext } from "@nestjs/common";
+import { Observable } from "rxjs";
+
+@Injectable()
+export class LoggedInGuard implements CanActivate {
+    canActivate(
+        context: ExecutionContext,
+    ): boolean | Promise<boolean> | Observable<boolean> {
+        const request = context.switchToHttp().getRequest();
+
+        return request.isAuthenticated();
+    }
+}
+```
