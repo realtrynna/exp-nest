@@ -26,7 +26,7 @@ Provider는 NestJS 기본 개념으로 Service, Repository, Factory, Helper 등�
 <br>
 
 3. Middleware <br>
-Router Handler가 Request 처리 전 부가 기능을 수행하기 위한 Component를 의미 Express에 Middleware랑 동일함 <br>
+Router Handler가 Request 처리 전 부가 기능을 수행하기 위한 Component를 의미 Express => Middleware랑 동일함 <br>
 
 * Middleware 정의
 1. 어떤 형태의 Code라도 수행할 수 있음 <br>
@@ -241,6 +241,174 @@ npm i typeorm-extension (v0.3) <br>
 * 쿼리를 통해 바꾸면 Entity도 바꿔줘야 함 <br>
 * 
 
+### TypeORM Query Pattern
+TypeOrm 사용 시 사람마다, 회사마다, Query 작성 방법이 다름 <br>
+조직 내부에 Convention에 맞추면 됨 <br> 
+
+1. Active Record Pattern <br>
+Class Model 내부에 Static Method를 정의함 <br>
+BaseEntity를 상속받아 Custom Method 작성 <br>
+Model 안에서 Database에 접근함을 의미 <br>
+규모가 작은 프로젝트에 적합하며 Query 연산이 복잡해질 경우 유지 보수와 테스트가 어려워짐 <br>
+
+> Active Record
+```typescript
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm";
+
+@Entity()
+export class User extends BaseEntity {
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @Column()
+    email: string;
+
+    @Column()
+    password: string;
+
+    static findUserByEmail(email: string) {
+        return this.createQueryBuilder("user")
+            .where("user.email", { email })
+            .getMany();
+    }
+}
+```
+
+```typescript
+const user = new User(); // Model 생성자
+
+user.email = email;
+user.password = password;
+
+await user.save();
+
+// 또는
+
+const user = await this.userRepository.save({
+    email,
+    password,
+});
+
+const user = await user.find({});
+const findUser = await User.findOne({ email }) // BaseEntity Method
+const findUserByEmail = await User.findUserByEmail(email); // Custom Method
+```
+
+<br>
+
+2. Data Mapper <br>
+Model의 Repository를 Service에 DI하여 사용 <br>
+Model과 Database의 의존성을 낮춤 <br>
+
+```typescript
+// user.module.ts
+// user.module에 TypeOrmModule.forFeature([User])를 넣어주면 @InjectRepository 사용 가능
+import { Module } from "@nestjs/common";
+import { TypeOrmModule } from "nestjs/typeorm";
+import { UserService } from "";
+import { UserController } from "";
+import { User } from "";
+
+@Module({
+    imports: [TypeOrmModule.forFeature([ User ])],
+    providers: [UserService],
+    controllers: [UserController],
+})
+export class UserModule {}
+
+// user.service.ts
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { User } from "";
+
+@Injectable()
+export class UserService {
+    constructor(
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>,
+    ) {}
+
+    async findUserList(): Promise<User[]> {
+        return this.userRepository.find();
+    }
+
+    async findUserByI(): promise<User> {
+        return this.userRepository.findOne({
+            where: { id },
+        });
+    }
+}
+```
+<br>
+
+### TypeOrm Transaction
+Query 작성과 마찬가지로 Transaction 방법도 다양함. <br>
+
+```typescript
+import { getConnection } from "typeorm";
+
+await getConnection().transaction(async transactionEntityManger => {
+    // Query Logic
+});
+
+// 또는
+
+import { getManger } from "typeorm";
+
+await getManger().transaction(async transactionEntityManger => {
+    await transactionEntityManger.save(user);
+});
+```
+<br>
+
+@Transaction Decorator 사용 시 typeorm-transactional-hooked 라이브러리 설치 <Br>
+```typescript
+@Transaction()
+save(@TransactionManger() manger: EntityManger, user: User) {
+    return manger.save(user);
+}
+
+// 또는
+
+@Transaction()
+save(user: User, @TransactionRepository(User) userRepository: Repository<User>) {
+    return userRepository.save(user);
+}
+```
+
+<br>
+
+Query Runner <br>
+```typescript
+import { getConnection } from "typeorm";
+
+const connection = getConnection();
+const queryRunner = connection.createQueryRunner(); // queryRunner 생성
+
+await queryRunner.connect(); // 생성된 queryRunner를 통해 Database 연결
+
+await queryRunner.query("SELECT * FROM user");
+
+await user = await queryRunner.manger.find(User);
+
+// transaction
+await queryRunner.startTransaction();
+
+try {
+    await queryRunner.manger.save(user);
+    await queryRunner.manger.save(post);
+
+    await queryRunner.commitTransaction(); // commit
+} catch (err) {
+    await queryRunner.rollbackTransaction(); // rollback
+} finally {
+    await queryRunner.release(); // 반납
+}
+```
+
+<br>
+
 ### Request Life Cycle
 1. Incoming Request <br>
 > 요청 <br>
@@ -372,7 +540,8 @@ Express는 과도한 유연함으로 소프트웨어의 품질이 일정하지 �
 1. 인증 (Authentication) <br>
 요청자가 해당 서비스에 올바른 유저인지 검증하는 과정 <br>
 요청자가 누구인지 증명하는 과정을 의미함. <br>
-매 요청마다 Header에 Token을 포함시켜 보내 확인함. <br>
+매 요청 시 Header에 Token을 포함시켜 요청<br>
+서버는 Token Decoded 과정을 통해 검증 <br>
 
 2. 인가(Authorization) <br>
 인증을 통과한 유저가 요청한 리소스에 접근할 권한이 있는지를 검증하는 과정 <br>
@@ -470,7 +639,7 @@ Express에 Passport Strategy 방식이랑 동일함 <br>
 > Nest Community에서 Passport를 혐오함 왜 그런지 나중에 알아보자 <br>
 
 1. @UseGuards(LocalAuthGuard) Decorator를 사용
-- LocalAuthGuard를 직접 구현
+- LocalAuthGuard를 직접 구현 (AuthGuard를 상속 받음)
 - Passport에 AuthGuard를 확장
 
 * auth => local.auth.guard.ts
@@ -571,7 +740,7 @@ export class LocalSerializer extends PassportSerializer {
 
 * auth.module.ts <br>
 - @Injectable() => Providers
-- 라이브러리 => imports 
+- 라이브러리 => imports
 ```typescript
 @Module({
     imports: [
@@ -610,3 +779,4 @@ export class LoggedInGuard implements CanActivate {
     }
 }
 ```
+
