@@ -780,3 +780,28 @@ export class LoggedInGuard implements CanActivate {
 }
 ```
 
+<br>
+
+### 회원 가입 로직
+1. 사용자로부터 회원 가입 정보를 받아 db에 저장 <br>
+1-1. 가입 준비 단계
+
+2. 입력받은 이메일로 회원가입 확인 이메일 발송 <br>
+
+3. 사용자는 이메일을 확인하고 회원 가입 인증 요청 <br>
+3-1. 이메일에는 가입 검증 링크가 포함되어있음
+3-2. 링크를 통해 요청을 보내면 가입 준비 단계에서 승인 완료 단계로 넘어감
+3-3. 승인 완료와 동시에 Access Token을 발급하여 로그인 상태로 바꿈 (가입 검증 완료 후 다시 로그인 과정을 거칠 필요 없도록)
+
+* 이 후 사용자 이메일과 패스워드로 검증 진행
+
+<br>
+
+* env
+* Request Validate
+* Authenticate
+* Logging
+* Health Check
+* CQRS
+* Clean Architecture
+* Unit Test
