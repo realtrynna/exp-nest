@@ -225,14 +225,6 @@ Post: Post[];
 @JoinColumn([{ name: "UserId", referencedColumnName: "id" } ])
 User: User;
 ```
-
-#### Seeding
-초기 더미 데이터 생성 <br>
-npm i typeorm-extension (v0.3) <br>
-
-> typeorm-seeding (v0.2 사용 불가) <br>
-> typeorm-model-generate (v0.2 사용 불가) <br>
-
 <br>
 
 ### Migration
