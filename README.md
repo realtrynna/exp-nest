@@ -1,73 +1,261 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+<img src="https://user-images.githubusercontent.com/119386740/210351976-44486a71-6753-46cf-8cf5-0b1dd1ddd21e.jpg" width="300">
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+<br>
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+# NestJS로 배우는 백엔드 프로그래밍
 
-## Description
+|Date|Content|Description|
+|------|---|------|
+|23.01.03|Chapter1, 2| Node와 Nest 특징, Decorator|
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+<br>
 
-## Installation
+## **_Chapter1_** Hello NestJS
+**_NestJS_** 는 NodeJS 기반의 Web Framework 로 **_Express_** 또는 **_Fastify_** Framework를 Rapping 하여 동작한다. <br>
+Express보다 Fastify가 성능적으로 **_2배 이상_** 빠르지만 범용적 측면과 Middleware 호환성을 고려해 기본적으로 **_Express_** 를 Rapping 한다. <br>
 
-```bash
-$ npm install
+Express는 빠른 시간 안에 효율적인 서버 구축이 가능하고 뛰어난 확장성을 가지고 있지만 과도한 유연함으로 **_소프트웨어의 품질_** 이 일정하지 않다. <br>
+높은 자유도는 양날의 칼이며 자유도가 높다 보니 프로젝트 규모가 커질 시 **_협업의 어려움_** 이 발생한다. <br>
+
+NestJS는 Typescript를 기본으로 채택하고 Angular의 영향을 받아 만들어졌다. <br>
+Module, Component 기반의 프로그래밍으로 코드의 **_재사용성_** 을 높인다. <br>
+또한 Express 사용 시 접할 수 없었던 **_IoC_**(Inversion Of Control), **_DI_**(Dependency Injection), **_AOP_**(Aspect Oriented Programing)과 같은 객체 지향 프로그래밍으로 작성된다. <br>
+
+<br>
+
+**Web Framework가 제공해야할 필수 기능은 다음과 같다.** <br>
+
+* 최신 ECMA 스크립트 지원
+* Typescript 지원
+* Command Query Responsibility Separation
+* HTTP Header Security (Express === Helmet)
+* 편리한 설정
+* Interceptor
+* Middleware
+* Scheduling
+* Logging
+* Testing
+* Swagger
+* ORM
+
+<br>
+
+### **세팅**
+
+**전역 명령어**
+```cmd
+npm i -g @nestjs/cli
 ```
 
-## Running the app
+<br>
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+**프로젝트 생성**
+```cmd
+nest new "프로젝트 이름"
 ```
 
-## Test
+<br>
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+**레이어 생성**
+```cmd
+nest g mo users  // Module
+nest g s users   // Service
+nest g co users  // Controller
 ```
 
-## Support
+<br>
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### **회원 가입 (UserService) 로직**
+1. 회원 가입 정보를 받아 유효성 검사 후 Database에 저장 (**_가입 준비 단계_**)
 
-## Stay in touch
+<br>
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+2. 회원 가입 정보 중 이메일로 가입 확인 이메일 전송 <br>
+2-1. 사용자는 이메일 확인 후 가입 인증 요청 <br>
+2-2. 인증 요청 완료 시 가입 준비 단계에서 **_승인 완료_** 상태로 변경 <br>
+2-3. 이메일 인증의 응답으로 **_Access Token_** 전달과 동시에 **_로그인 상태_** 로 변경
 
-## License
+<br>
 
-Nest is [MIT licensed](LICENSE).
+#### **회원 가입 로직 구현에 필요한 부가 기능**
+1. 환경 변수 <br>
+서버는 다음과 같은 환경에서 실행된다. <br>
+
+* 로컬 환경 (**_Local_**): 개발자의 로컬 서버
+* 스테이지 환경 (***_Stage_***): 배포 전 기능 테스트를 위한 서버
+* 프로덕션 환경 (**_Production_**): 실제 운영 서버
+
+<br>
+
+> 각 환경에서 **_동적_** 으로 변경되는 변수들을 다르게 구성할 수 있다. <br>
+
+<br>
+
+2. 요청 유효성 검사 <br>
+클라이언트에서 입력값에 대한 유효성을 검사한다고 해도 완벽할 수 없으며 유효성 검사는 최종적으로 **_서버_** 에서 실행한다. <br>
+
+<br>
+
+3. 인증 <br>
+서버의 리소스에 접근하기 위해 사용자는 로그인 과정을 거쳐야 한다. <br>
+한번 로그인을 한 유저는 매 요청마다 로그인을 할 필요가 없으며 다음 후속 동작을 수행한다. <br>
+
+<br>
+
+4. 로그 <br>
+실제 서비스 운영 시 로그를 잘 남겨놔야 한다. <br>
+특정 에러 발생 시 원인을 빠르게 **_식별_** 할 수 있다. <br>
+
+<br>
+
+5. 헬스 체크 <br>
+서버의 상태를 **_주기적_** 으로 체크해야 한다. <br>
+상태가 좋지 않을 경우 알람을 발생시켜 대처할 수 있다. <br>
+
+<br>
+
+6. Command Query Responsibility Separation <br>
+프로젝트 규모가 커질 시 소스 코드가 스파게티처럼 될 수 있다. <br>
+Database의 데이터를 변경하는 로직과 조회 로직을 분리함으로써 **_성능_**, **_확장성_**, **_보안_** 을 강화할 수 있다. 
+
+<br>
+
+7. 클린 아키텍처 <br>
+소프트웨어의 계층을 분리하고 **_저 수준_** 의 계층이 **_고 수준_** 의 계층에 의존하도록 한다. <br>
+의존 방향이 바뀌는 경우 **_DIP_**(Dependency Inversion Principle)을 활용해 안정적인 소프트웨어를 작성할 수 있어야한다.
+
+<br>
+
+8. 단위 테스트 <br>
+로직에 변경이 생긴다면 반드시 단위 테스트를 실시해야 한다. <br>
+단위 테스트는 개발자가 테스트 코드를 작성하여 수행하는 **_최소 단위_** 의 테스트 기법이다. <br>
+로직의 **_동작 조건_** 을 기술하고 주어진 입력에 대해 원하는 결과가 나오는지 검사한다.
+
+<br>
+
+## **_Chapter2_** 웹 개발 기초 지식
+Web Framework 선택 시 고려 사항
+
+<br>
+
+1. 개발 문서 <br>
+쉽게 이해할 수 있고 잘 쓰인 문서는 사용자의 **_생산성_** 을 높인다.
+
+<br>
+
+2. 사용자 수 <br>
+사용자 수가 많다는 건 **_안정적으로 운용_** 된다는 반증이다. <br>
+또한 질문을 통해 답변을 얻을 수 있는 확률이 매우 크다. 
+
+<br>
+
+3. 활성 커뮤니티 <br>
+특정 언어뿐만 아니라 Framework에 대한 커뮤니티도 매우 많다.
+
+<br>
+
+4. Github 이슈 대응 <br>
+대부분의 Framework는 오픈 소스로 개발하며 코드가 공개돼있다. <br>
+사용자들의 Report 하는 이슈를 얼마나 잘 대응하고 있는지도 중요한 요소이다. <br>
+마지막 업데이트가 오래됐거나 개발이 멈췄을 경우 관리가 되고 있지 않을 확률이 높다. 
+
+<br>
+
+### **단일 스레드에서 구동되는 논 블로킹 I/O 이벤트 기반 비동기 처리 방식**
+동시에 여러 Request가 들어올 경우 각 작업을 처리하기 위해 스레드를 생성하고 할당하는 방식을 멀티 스레딩이라고 한다. <br>
+멀티 스레딩은 동시에 여러 작업을 처리할 수 있는 장점이 있지만 자원을 공유하기 위한 **_비용이 크고_** 동기화에 논리적 오류가 발생하면 **_Lock_** 이 걸릴 수 있다. <br>
+스레드가 늘어날 경우 메모리를 사용하므로 메모리 관리도 중요하다.
+
+<br>
+
+NodeJS는 **_싱글 스레드_** 로 하나의 스레드가 모든 작업을 처리한다. <br>
+**_Application Level_** 에서는 싱글 스레드지만 **_BackGround_** 에서는 **_스레드 풀_** 로 처리된다. <br>
+스레드 풀은 **_libuv_** 라이브러리를 통해 동작하므로 개발자는 신경 쓸 필요 없다. <br>
+
+<br>
+
+NodeJS는 들어온 Request에 대한 완료 여부와 상관없이 다음 작업을 처리하는 **_비동기 방식_** 이다. <br>
+Request는 단일 스레드로 받지만 순서대로 처리하지 않고 먼저 처리되는 순서대로 이벤트를 반환한다.
+
+<br>
+
+> libuv는 NodeJS에서 사용하는 비동기 I/O 라이브러리로 **_Kernel_** 을 사용해 처리할 수 있는 비동기 작업을 발견하면 Kernel에게 **_작업을 위임_** 한다. <br>
+> 이후 이 작업들이 종료되어 Kernel로부터 **_System Call_** 을 받으면 **_Event Loop_** 에 **_CallBack_** 을 등록한다. <br>
+> Kernel이 처리할 수 없는 작업은 별도의 스레드에서 처리된다.
+
+<br>
+
+### **Decorator**
+Nest는 **_Decorator_** 를 적극 활용한다. Decorator를 잘 사용하면 **_횡단 관심사_**(Cross Cutting Concern)를 분리하여 관점 지향 프로그래밍을 적용한 코드를 작성할 수 있다. <br>
+
+클래스, 메서드, 접근자, 프로퍼티, 매개변수에 적용 가능하다. <br>
+각 요소의 선언부 앞에 **_@_** 키워드를 붙여 Decorator로 구현된 코드를 런타임 단계에서 **_같이 실행_** 한다. 
+
+<br>
+
+```json
+// tsconfig.json
+{
+    "compilerOptions": {
+        "experimentalDecorators": true,
+    }
+}
+```
+
+<br>
+
+#### **데코레이터**
+```typescript
+function decorator(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    console.log("Decorator");
+}
+
+class UserDto {
+    @decorator
+    test() {
+      console.log(this);
+    }
+}
+
+const user = new UserDto();
+user.test()
+// Decorator
+// UserDto
+```
+
+<br>
+
+#### **커스텀 데코레이터**
+Decorator에 인수를 넘겨 동작을 변경하고 싶다면 **_Decorator를 Return_**
+```typescript
+function decorator(value: string) {
+    console.log("Decorator");
+    return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+        console.log(value);
+    }
+}
+```
+
+<br>
+
+#### **타입스크립트 데코레이터**
+1. Class Decorator
+2. Method Decorator
+3. Accessor Decorator
+4. Property Decorator
+5. Parameter Decorator
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
