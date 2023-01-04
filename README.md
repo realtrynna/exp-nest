@@ -1,12 +1,16 @@
 <img src="https://user-images.githubusercontent.com/119386740/210351976-44486a71-6753-46cf-8cf5-0b1dd1ddd21e.jpg" width="300">
 
-<br>
-
 # NestJS로 배우는 백엔드 프로그래밍
 
 |Date|Content|Description|
 |------|---|------|
 |23.01.03|Chapter1, 2| Node와 Nest 특징, Decorator|
+|23.01.04|Chapter2 |Controller에서의 Routing, Wildcard, Body, Exception, Header, StatusCode 설정
+
+<br>
+
+# 오타
+53p, Cusom => Custom
 
 <br>
 
@@ -56,7 +60,7 @@ nest new "프로젝트 이름"
 
 <br>
 
-**레이어 생성**
+**레이어 생성** nest -h 명령어로 확인 가능
 ```cmd
 nest g mo users  // Module
 nest g s users   // Service
@@ -73,7 +77,7 @@ nest g co users  // Controller
 2. 회원 가입 정보 중 이메일로 가입 확인 이메일 전송 <br>
 2-1. 사용자는 이메일 확인 후 가입 인증 요청 <br>
 2-2. 인증 요청 완료 시 가입 준비 단계에서 **_승인 완료_** 상태로 변경 <br>
-2-3. 이메일 인증의 응답으로 **_Access Token_** 전달과 동시에 **_로그인 상태_** 로 변경
+2-3. 이메일 인증의 응답으로 **_Access Token_** 전달과 동시에 **_로그인 상태_** 로 변경 
 
 <br>
 
@@ -129,7 +133,7 @@ Database의 데이터를 변경하는 로직과 조회 로직을 분리함으로
 8. 단위 테스트 <br>
 로직에 변경이 생긴다면 반드시 단위 테스트를 실시해야 한다. <br>
 단위 테스트는 개발자가 테스트 코드를 작성하여 수행하는 **_최소 단위_** 의 테스트 기법이다. <br>
-로직의 **_동작 조건_** 을 기술하고 주어진 입력에 대해 원하는 결과가 나오는지 검사한다.
+로직의 **_동작 조건_** 을 기술하고 주어진 입력에 대해 원하는 결과가 나오는지 검사한다.      
 
 <br>
 
@@ -245,17 +249,136 @@ function decorator(value: string) {
 4. Property Decorator
 5. Parameter Decorator
 
+<br>
 
+## **_Chapter3_** 애플리케이션의 관문 인터페이스
+Nest의 Controller는 MVC Pattern의 **_Controller_** 를 의미한다. <br>
 
+Controller란 Request를 받고 그에 대한 Response를 반환하는 **_인터페이스 역할_** 을 수행한다. <br>
+Controller는 Endpoint Routing 메커니즘을 통해 각 Controller가 받을 수 있는 Request를 분류한다. <br>
+사용 목적에 따라 구분하여 **_구조적_** 이고 **_Module화_** 된 소프트웨어를 작성할 수 있다. 
 
+<br>
 
+**Controller 생성**
+* Controller가 생성되면 AppModule에서 **_Import_** 하여 controllers에 삽입된다.
+```cmd
+nest g co Users
+```
 
+<br>
 
+**AppController**
+* @Controller Decorator를 사용해 Controller의 역할을 명시한다.
+* @Get() Decorator의 인수로 **_Path_** 를 넣어준다.
+* @Controller() Decorator의 인수로 Routing Path의 **_Prefix_** 를 넣어줄 수 있다.
+```typescript
+import { Controller, Get } from "@nestjs/common";
+import { AppService } from "./app.service";
 
+@Controller("here")
+export class AppController {
+    constructor(private readonly appService: AppService) {}
 
+    // /here
+    @Get("/")
+    getHello(): string {
+        return this.appService.getHello();
+    }
 
+    // here/hello
+    @Get("/hello")
+    getEtc(): string {
+        return "etc";
+    }
+}
+```
 
+<br>
 
+**와일드 카드**
+* Express 와일드 카드와 개념 동일
+```typescript
+// here/*
+@Get(":userId/:postId")
+findUserById(@Param("userId") userId: number, @Param("postId") postId: number) {
+    userId;
+    postId;
+}
+```
 
+<br>
 
+**요청 본문**
+* @Req Decorator로 다룰 수 있지만 @Req 객체를 직접 다루는 건 **_지양_** 해야 한다. (Testing을 위해??)
+* **_@Query()_**, **_@Param_**(key?: string), **_@Body()_** Decorator를 이용해 조작한다.
+```typescript
+import { Request } from "express";
+import { Controller, Get, Req } from "@nestjs/common";
+import { AppService } from "@./app.service";
 
+@Controller()
+export class AppController {
+    constructor(private readonly appService: AppService) {}
+
+    @Get()
+    getHello(@Req() req: Request): string {
+        console.log(req);
+        return this.appService.getHello();
+    }
+}
+```
+
+<br>
+
+**상태 코드**
+* @HttpCode() Decorator를 통해 응답 **_상태 코드_** 지정 가능
+```typescript
+import { HttpCode, Get, Param } from "@nestjs/common";
+
+@HttpCode(200)
+@Get(":id")
+findUserById(@Param ("id") id: number): string {
+    console.log(+id);
+    return "user";
+}
+```
+
+<br>
+
+**예외 처리**
+* BadRequestException을 통해 예외 처리 가능
+* BadRequestException뿐만 아니라 다양한 Exception 내장
+```typescript
+import { BadRequestException } from '@nestjs/common/exceptions';
+
+@Get(":id")
+findUserById(@Param("id") id: number) {
+    const userId = +id;
+
+    if (userId <= 0) {
+        throw BadRequestException("사용자 아이디는 0보다 큰 값이어야 합니다.");
+    }
+    
+    return this.userService.findOne(userId);
+}
+```
+
+<br>
+
+**응답 헤더 설정**
+* @Header("key", "value") Decorator를 기반으로 응답 헤더 설정 가능
+* res.header()로도 설정 가능
+```typescript
+import { Header, Get, Param } from "@nestjs/common";
+
+@Header("Custom", "Custom Header Value");
+@Get(":id")
+findUserById(@Param("id") id: number) {
+    const userId = +id;
+
+    return this.userService.findOne(userId);
+}
+```
+
+<br>
