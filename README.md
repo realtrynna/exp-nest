@@ -1,11 +1,14 @@
 <img src="https://user-images.githubusercontent.com/119386740/210351976-44486a71-6753-46cf-8cf5-0b1dd1ddd21e.jpg" width="300">
 
+<br>
+
 # NestJS로 배우는 백엔드 프로그래밍
 
 |Date|Content|Description|
 |------|---|------|
 |23.01.03|Chapter1, 2| Node와 Nest 특징, Decorator|
-|23.01.04|Chapter2 |Controller에서의 Routing, Wildcard, Body, Exception, Header, StatusCode 설정
+|23.01.04|Chapter2 |Controller에서의 Routing, Wildcard, Body, Exception, Header, StatusCode 설정|
+|23.01.05|Chapter3 |Dto, Service Layer의 특징, AOP, 횡단 관심사 | 
 
 <br>
 
@@ -260,6 +263,10 @@ Controller는 Endpoint Routing 메커니즘을 통해 각 Controller가 받을 �
 
 <br>
 
+서버에서 제공하는 **_리소스_** 를 어떤 식으로 클라이언트와 주고받을지에 대한 인터페이스를 정의하고 **_데이터의 구조_** 를 기술한다. 
+
+<br>
+
 **Controller 생성**
 * Controller가 생성되면 AppModule에서 **_Import_** 하여 controllers에 삽입된다.
 ```cmd
@@ -268,7 +275,7 @@ nest g co Users
 
 <br>
 
-**AppController**
+**Controller**
 * @Controller Decorator를 사용해 Controller의 역할을 명시한다.
 * @Get() Decorator의 인수로 **_Path_** 를 넣어준다.
 * @Controller() Decorator의 인수로 Routing Path의 **_Prefix_** 를 넣어줄 수 있다.
@@ -382,3 +389,87 @@ findUserById(@Param("id") id: number) {
 ```
 
 <br>
+
+**데이터 전송 객체**
+* 계층 간 전송되는 데이터를 의미한다. (Data Transfer Object)
+```typescript
+export class CreateUserDto {
+    email: string;
+    nickname: string;
+    password: string;
+    gender: boolean;
+}
+
+@Post()
+createUser(@Body() createUserDto: CreateUserDto) {
+    const { email, nickname, password, gender } = createUserDto; 
+}
+```
+
+<br>
+
+* GET Request의 페이징 처리
+* GET /users?offset=0&limit=10
+* @Query() Dto로 처리
+```typescript
+export class GetUsersListDto {
+    offset: number;
+    limit: number;
+}
+```
+
+<br>
+
+### **Service**
+**API**
+| |Method | Url |Request|Response |
+|------|-------|---|------|--------|
+|회원 가입|POST| /users| email, name, password, gender | ""  |
+|이메일 인증|POST|/users/verify-email|verifyEmailToken | ""|
+| 로그인 | POST | /users/login | email, password | "" |
+| 회원 정보 조회 | GET | /users/:id | "" | "" |
+
+<br>
+
+**관점 지향 프로그래밍 (Aspect Oriented Programing)** <br>
+
+횡단 관심사의 **_분리를 허용_** 함으로써 Module 성의 증가를 지향하는 프로그래밍 패러다임이다. <br>
+
+서버(백엔드)가 갖춰야 할 요구 사항은 매우 많다. <br>
+
+비즈니스 로직을 구현하기 위한 사용자의 요구 사항뿐만 아니라 서버가 안정적으로 운영되기 위해 필요한 Validation, Logging, Security, Transaction과 같이 Application 전반에 걸쳐 제공해야 하는 **_공통 관심사_** 를 횡단 관심사(Cross Cutting Concern)라고 부른다. <br>
+소스 코드를 횡단 관심사로 분리하지 않을 경우 비즈니스 로직과 횡단 관심사의 코드가 **_뒤죽박죽_** 될 수 있다. <br> 
+이는 코드의 가독성을 해치고 서비스의 유지 보수를 어렵게 만든다. <br>
+
+Nest에서는 횡단 관심사와 비즈니스 로직의 분리가 용이하며 대표적인 Component로 **_Interceptor_** 가 있다. <br>
+Interceptor란 Request와 Response를 가로채 변형시킬 수 있다. 또한 **_ExceptionFilter_** 를 활용해 어떤 로직에서 발생하는 에러를 잡아 일괄적인 예외 처리 로직으로 동작시킬 수 있다. <br>
+
+Nest에서는 **_@Decorator_** 를 활용해 **_AOP_** 를 적용한다. <br>
+
+AppModule에 **_Global_** 로 적용할 수도 있고 특정 Component에만 적용할 수 있다. **_특정 Component_** 는 Decorator로 구현한다. 
+
+<br>
+
+## **_Chapter4_** 핵심 도메인 로직을 포함하는 프로바이더
+Controller는 Request와 Response를 적절히 가공하여 처리하는 역할을 담당한다. <br>
+
+서버의 핵심은 전달받은 데이터를 어떻게 **_비즈니스 로직_** 으로 구현하는 가에 있다. <br>
+Application이 제공하는 핵심 기능 즉 **_비즈니스 로직을 수행하는 역할_** 을 하는 게 Provider다. <br>
+
+Controller에서 비즈니스 로직을 처리할 수 있지만 이는 **_단일 책임 원칙_**(Single Responsibility Principle) SRP에 부적합하다. <br>
+
+Provider는 **_@Injectable() @Decorator_** 가 붙은 **_Service_**, **_Repository_**, **_Factory_**, **_Helper_** 등 여러 가지 형태로 구현 할 수 있다. <br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
