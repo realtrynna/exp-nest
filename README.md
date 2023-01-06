@@ -9,6 +9,7 @@
 |23.01.03|Chapter1, 2| Node와 Nest 특징, Decorator|
 |23.01.04|Chapter2 |Controller에서의 Routing, Wildcard, Body, Exception, Header, StatusCode 설정|
 |23.01.05|Chapter3 |Dto, Service Layer의 특징, AOP, 횡단 관심사 | 
+|23.01.06|Chapter4 |Provider, DI, Scope |
 
 <br>
 
@@ -307,7 +308,7 @@ export class AppController {
 * Express 와일드 카드와 개념 동일
 ```typescript
 // here/*
-@Get(":userId/:postId")
+@Get("/:userId/:postId")
 findUserById(@Param("userId") userId: number, @Param("postId") postId: number) {
     userId;
     postId;
@@ -460,8 +461,138 @@ Controller에서 비즈니스 로직을 처리할 수 있지만 이는 **_단일
 
 Provider는 **_@Injectable() @Decorator_** 가 붙은 **_Service_**, **_Repository_**, **_Factory_**, **_Helper_** 등 여러 가지 형태로 구현 할 수 있다. <br>
 
+Nest에서 제공하는 Provider의 핵심은 의존성을 주입할 수 있다는 점이다. <br>
 
+<br>
 
+* **Controller** <br>
+    Controller는 비즈니스 로직을 직접 실행하지 않는다. <br> 
+    Controller에 **_Constructor_**(생성자)에서 주입받아 UserService라는 **_멤버 변수_** 에 할당되어 userService를 호출해 로직을 처리한다. <br>
+```typescript
+@controller("users")
+export class UserController {
+    constructor(private readonly userService: UserService) {}
+
+    @Delete("/:id")
+    removeUser(@Param("userId") userId: number): Promise<boolean> {
+        return this.userService.removeUser(userId);
+    }
+}
+```
+
+<br>
+
+* **Service** <br> 
+    **_@Injectable() Decorator_** 를 선언함으로써 Nest의 어떤 Component에서도 주입할 수 있는 Provider가 된다. <br>
+    별도의 Scope를 지정하지 않으면 기본적으로 **_Singleton_** Instance가 생성된다. <br>
+```typescript
+@Injectable()
+export class UserService {
+    removeUser(userId: number) {
+        return true;
+    }
+}
+```
+
+<br>
+
+### **Provider 등록과 사용**
+1. Provider 등록 <br>
+Provider Instance 역시 **_Module_** 에서 사용할 수 있도록 등록 해줘야 한다. <br>
+
+user
+```typescript
+import { UserService } from "";
+
+@Module({
+    providers: [UserService]
+})
+export class UserModule {}
+```
+
+<br>
+
+2. 속성 기반 주입 <br>
+보통 Constructor(생성자)를 통해 Provider를 주입한다. <br>
+하지만 Provider를 직접 주입받아 사용하지 않고 상속 관계에 있는 **_자식 클래스_** 를 주입받아 사용할 수도 있다. <br>
+자식 클래스에서 부모 클래스가 제공하는 Method를 호출하기 위해서는 부모 클래스에서 필요한 Provider를 **_super()_** 를 통해 전달해야 한다. <br>
+
+<br>
+
+* base.service.ts
+```typescript
+export class BaseService {
+    constructor(private readonly serviceA: ServiceA) {}
+
+    baseServiceMethod() {
+        return "baseService Method입니다.";
+    }
+
+    doSomeServiceAMethod() {
+        return this.serviceA.serviceAMethod();
+    }
+}
+```
+
+* service.a.ts
+```typescript
+@Injectable()
+export class ServiceA {
+    method() {
+        return "ServiceA Method입니다.";
+    }
+}
+```
+
+* service.b.ts
+```typescript
+@Injectable()
+export class ServiceB extends BaseService {
+    constructor(private readonly _serviceA: ServiceA) {
+        super(_serviceA);
+    }
+
+    method() {
+        return this.BaseService.doSomeServiceAMethod();
+    }
+}
+```
+
+<br>
+
+### **Scope**
+NodeJS는 다른 Web Framework와 다르게 멀티 스레드 상태 비저장(Stateless) Model을 따르지 않는다. <br>
+
+따라서 Singleton 방식을 사용하는 건 매우 안전하며 이는 Request로 들어오는 모든 정보(Database Connection 등)가 공유될 수 있다는 걸 의미한다. <br>
+
+<br>
+
+* Controller와 Provider에 Scope를 주어 **_생명주기_** 를 지정하는 방법이 있다. <br>
+Scope의 종류는 다음과 같으며 가급적 DEFAULT Scope 사용을 권장한다. 이유는 Instance 캐싱과 초기화가 Application 시작 중 한 번만 발생하므로 메모리와 동작 성능을 향상시킬 수 있다.
+
+<br>
+
+1. DEFAULT: Singleton Instance가 모든 **_Application과 공유_** 된다. Instance 수명은 Application의 수명과 같다. <br>
+Application이 Bootstrap 과정을 마치면 모든 Singleton Provider의 Instance가 만들어진다. 따로 선언하지 않으면 DEFAULT 
+
+<br>
+
+2. REQUEST: 들어오는 Request마다 별도의 Instance가 생성된다. Request를 처리하고 나면 Instance는 **_Garbage-colleted_**
+
+<br>
+
+3. TRANSIENT: **_임시_** 라는 의미로 이 Scope를 지정한 Instance는 공유되지 않는다.
+
+<br>
+
+#### **Provider에 Scope 주기**
+* @Injectable() Decorator에 Scope
+```typescript
+import { Injectable, Scope } from "@nestjs/common";
+
+@Injectable({ scope: Scope.REQUEST })
+export class userService {}
+```
 
 
 
