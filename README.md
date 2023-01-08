@@ -498,9 +498,11 @@ export class UserService {
 
 ### **Provider 등록과 사용**
 1. Provider 등록 <br>
-Provider Instance 역시 **_Module_** 에서 사용할 수 있도록 등록 해줘야 한다. <br>
+Provider Instance 역시 **_Module_** 에서 사용할 수 있도록 등록 해줘야 한다. 
 
-user
+<br>
+
+* user.module.ts
 ```typescript
 import { UserService } from "";
 
@@ -512,7 +514,7 @@ export class UserModule {}
 
 <br>
 
-2. 속성 기반 주입 <br>
+1. 속성 기반 주입 <br>
 보통 Constructor(생성자)를 통해 Provider를 주입한다. <br>
 하지만 Provider를 직접 주입받아 사용하지 않고 상속 관계에 있는 **_자식 클래스_** 를 주입받아 사용할 수도 있다. <br>
 자식 클래스에서 부모 클래스가 제공하는 Method를 호출하기 위해서는 부모 클래스에서 필요한 Provider를 **_super()_** 를 통해 전달해야 한다. <br>
@@ -593,14 +595,3 @@ import { Injectable, Scope } from "@nestjs/common";
 @Injectable({ scope: Scope.REQUEST })
 export class userService {}
 ```
-
-
-
-
-
-
-
-
-
-
-
