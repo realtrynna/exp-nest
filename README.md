@@ -10,6 +10,110 @@
 |23.01.04|Chapter2 |Controller에서의 Routing, Wildcard, Body, Exception, Header, StatusCode 설정|
 |23.01.05|Chapter3 |Dto, Service Layer의 특징, AOP, 횡단 관심사 | 
 |23.01.06|Chapter4 |Provider, DI, Scope |
+|23.01.09|Chapter5 | Custom Provider, SW 복잡도를 낮추기 위한 Module 설계, Swagger |
+
+<br>
+
+<details>
+<summary><strong>Swagger</strong></summary>
+<div markdown="1">
+
+Nest는 Dto와 Decorator를 통해 Controller를 참조하여 Swagger 문서를 어느정도 자동화해준다. <br>
+(Express는 Type이 없으므로 불가능 Typescript를 적용해도 불가능 Swagger 문서 자동화는 내부적으로 매우 복잡함) 
+
+<br>
+
+**설치** <br>
+Express를 기반으로 작동
+```cmd
+npm i @nestjs/swagger swagger-ui-express
+```
+
+<br>
+
+**설정** <br>
+```typescript
+// main.ts
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+
+const config = new DocumentBuilder()
+    .setTitle("제목")
+    .setDescription("설명")
+    .setVersion("1.0.0")
+    .addCookieAuth("connect.sid")    // SessionCookie?
+    .build()
+const document = SwaggerModule.createDocument(app, config);
+
+SwaggerModule.setup("api", app, document, {
+    swaggerOptions: {
+        tagsSorter: "alpha",
+        operationSorter: "method",
+    },
+});
+```
+
+<br>
+
+**Decorator 종류**
+```typescript
+@ApiTags("기능 구분")
+
+@ApiOperation({
+    summary: "회원 가입",
+    description:`
+        
+    `, 
+})
+
+@ApiParam({
+    name: "userId"
+    required: true,
+    description: `
+    
+    `,
+})
+@ApiResponse({
+    status: 404,
+    description: "NotFoundException",
+})
+@ApiOkResponse({
+    status: 200,
+    description: "사용자",
+})
+@Get("/userId")
+findUserById(@Param("userId") userId: number) {
+
+}
+
+@ApiQuery({
+    name: "limit",
+    required: true,
+    description: `
+    
+    `,
+})
+@ApiQuery({
+    name: "page",
+    required: true,
+    description: `
+    
+    `,
+})
+@ApiBadRequestResponse({
+    type: NotValidNumberError,
+    description: "에러 내용",
+})
+@Get("/")
+getUserList(
+    @Query(new ValidationPipe({ transform: true }))
+    userSearchRequest: UserSearchRequestDto,
+) {
+
+}
+```
+
+</div> 
+</details>
 
 <br>
 
@@ -587,7 +691,7 @@ Application이 Bootstrap 과정을 마치면 모든 Singleton Provider의 Instan
 
 <br>
 
-#### **Provider에 Scope 주기**
+### **Provider에 Scope 주기**
 * @Injectable() Decorator에 Scope
 ```typescript
 import { Injectable, Scope } from "@nestjs/common";
@@ -595,3 +699,113 @@ import { Injectable, Scope } from "@nestjs/common";
 @Injectable({ scope: Scope.REQUEST })
 export class userService {}
 ```
+
+<br>
+
+### **Scope Layer**
+Scope Layer는 Component가 가질 수 있는 Scope의 **_범위_** 를 나타낸다. <br>
+Scope는 **_Controller_** 와 **_Provider_** 에 선언 가능하며 연관된 Component들이 서로 다른 Scope를 가지게 된다면 어떻게 될까. <br>
+
+**_UserController_** => **_UserService_** => **_UserRepository_** 와 같은 종속성 그래프를 가지고 있는 상태에서 UserService는 **_REQUEST_** Scope를 가지고 나머지는 모두 **_DEFAULT_** Scope를 가질 경우를 가정. <br>
+UserController는 UserService에 의존적이므로 REQUEST로 Scope가 변경된다. <br>
+하지만 UserRepository는 UserService에 종속되지 않으므로 그대로 DEFAULT로 남게 된다. <br>
+
+결과적으로 종속성을 가진 Component의 Scope를 따라가게 된다. 
+
+<br>
+
+## **Custom Provider**
+일반적인 Provider 등록 방법
+```typescript
+// users.module.ts
+@Module({
+    providers: [UserService],
+})
+export class UsersModule {}
+```
+
+기능을 추가로 확장하다 보면 라이브러리의 선언된 클래스를 가져오거나 Test Code에 Mocking을 하려고 할 경우 위 방식은 문제가 될 수 있다. <br>
+
+다음과 같은 3가지 경우에 **_Custom Provider_** 를 사용하면 효율적이다.
+
+<br>
+
+1. Nest가 만들어주는 Instance 또는 Cache Instance 대신 Instance를 직접 생성하고 싶은 경우 <br>
+2. 여러 Class가 의존관계에 있을 경우 이미 존재하는 Class를 재사용하고싶을 경우 <br>
+3. Test를 위해 Mocking Version으로 재정의 하려는 경우 
+
+<br>
+
+### **Provider 종류**
+1. value Provider <br>
+2. class Provider <br>
+3. factory Provider <br>
+
+<br>
+
+## **_Chapter5_** Software 복잡도를 낮추기 위한 Module 설계
+일반적으로 Module 이라고 하면 작은 Class, Function 처럼 1가지 기능만 수행하는 Component가 아니라 여러 Component를 조합하여 **_더 큰 기능_** 을 수행할 수 있게 하는 단위를 의미한다.
+
+<br>
+
+채팅 서비스에서 사용자의 정보를 관리하고 로그인을 처리하는 UserModule, 사용자의 채팅을 관리하고 저장하는 ChatModule, 이 처럼 여러 개의 Module이 모여 서비스가 완성된다. <br>
+Nest Application이 실행되기 위해서 하나의 Root Module(AppModule)이 존재하고 이 **_Root Module_** 은 여러 가지의 다른 Module로 구성되어있다. <br>
+Module을 기능 별로 분리하는 이유는 여러 Module 간의 각자 맡은 **_책임을 나누고 응집도를 높이기 위함이다._** <br>
+또한 Microservice Architecture의 관점에서, 하나의 Module이 거대해지면 하나의 Microservice로 분리할 수도 있다. 
+
+<br>
+
+Module을 어떻게 나눌 건지에 대한 명확한 기준은 존재하지 않는다. <br>
+서비스를 설계하면서 또는 규모가 커지면서 유사한 기능끼리 Module로 **_그룹핑_** 해야한다. <br>
+Module 간의 **_응집도_** 를 높이는 작업을 게을리하면 의존 관계가 매우 복잡해져 **_유지 보수_** 가 어려워진다. 
+
+<br>
+
+Module은 @Module Decorator를 사용하며 인수로 **_ModuleMetadata_** 를 받는다. <br>
+
+```typescript
+export declare function Module(metadata: ModuleMetadata): ClassDecorator;
+
+export interface ModuleMetadata {
+    imports?: Array<Type<any> | DynamicModule | Promise<DynamicModule> | ForwardReference>;
+    controllers?: Type<any>[];
+    providers?: Provider[];
+    exports?: Array<DynamicModule | Promise<DynamicModule> | string | symbol | Provider | ForwardReference | Abstract<any> | Function>
+}
+```
+
+<br>
+
+1. **imports** <br>
+    현재 Module에서 사용하기 위한 Provider를 가지고 있는 다른 Module을 가져온다. <br>
+    (AppModule에서 UserModule, PostModule을 가져와 Build)
+
+<br>
+
+2. **controllers/providers** <br>
+    Module 전반에서 Controller와 Provider를 사용할 수 있도록 Nest가 객체를 생성 후 **_Injection_**
+
+<br>
+
+3. **export** <br>
+    현재 Module에서 다시 내보낸다. (export) <br>
+    A, B, C Module이 있을 경우 A가 B를 가져오고 C가 A를 가져왔다고 가정 <br>
+    C가 B를 가져올 경우 가져온 Module을 내보내야 한다. <br>
+    export로 내보내면 어디에서나 가져다 쓸 수 있도록 **_Public Interface_** 또는 **_API_** 로 간주한다. <br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
