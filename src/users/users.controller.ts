@@ -8,8 +8,17 @@ import {
 	UseInterceptors
 } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common/exceptions';
-import uuid from "uuid";
 import { ConfigService } from "@nestjs/config";
+import { 
+	ApiTags,
+	ApiOperation,
+	ApiResponse,
+	ApiOkResponse,
+	ApiQuery,
+	ApiParam,
+	ApiBadRequestResponse,
+} from "@nestjs/swagger";
+import uuid from "uuid";
 
 import { UserService } from './users.service';
 import { createUserDto, VerifyEmailDto, LoginDto, UserMeta } from './dto';
@@ -17,6 +26,7 @@ import { EmailService } from 'src/email/email.service';
 import { BaseInterceptor } from 'src/common/interceptors/date.interceptor';
 
 @Controller('users')
+@ApiTags("사용자")
 export class UsersController {
 	constructor(
 		private readonly userService: UserService,
@@ -34,7 +44,21 @@ export class UsersController {
 	}
 	
 	// 회원 가입
+	@ApiOperation({
+		summary: "회원 가입",
+		description: ``,
+	})
+	@ApiOkResponse({
+		// status: 201, 				// Default 200
+		type: UserMeta,
+		description: "회원 가입 성공",
+	})
+	@ApiBadRequestResponse({
+		status: 404,
+		description: "클라이언트 에러",
+	})
 	@Post()
+
 	async createUser(@Body() createUserDto: createUserDto): Promise<void> {
 		const createUserVerifyToken = "DLLO-44L2-DLLA-WMDC";
 
