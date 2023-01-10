@@ -1,7 +1,5 @@
 <img src="https://user-images.githubusercontent.com/119386740/210351976-44486a71-6753-46cf-8cf5-0b1dd1ddd21e.jpg" width="300">
 
-<br>
-
 # NestJS로 배우는 백엔드 프로그래밍
 
 |Date|Content|Description|
@@ -10,7 +8,8 @@
 |23.01.04|Chapter2 |Controller에서의 Routing, Wildcard, Body, Exception, Header, StatusCode 설정|
 |23.01.05|Chapter3 |Dto, Service Layer의 특징, AOP, 횡단 관심사 | 
 |23.01.06|Chapter4 |Provider, DI, Scope |
-|23.01.09|Chapter5 | Custom Provider, SW 복잡도를 낮추기 위한 Module 설계, Swagger |
+|23.01.09|Chapter5 |Custom Provider, SW 복잡도를 낮추기 위한 Module 설계, Swagger |
+|23.01.10|Chapter6 |Module(Global, exports), Dynamic Module| 
 
 <br>
 
@@ -793,19 +792,182 @@ export interface ModuleMetadata {
     C가 B를 가져올 경우 가져온 Module을 내보내야 한다. <br>
     export로 내보내면 어디에서나 가져다 쓸 수 있도록 **_Public Interface_** 또는 **_API_** 로 간주한다. <br>
 
+<br>
 
+### **Module Export**
+가져온 Module은 다시 **_내보내기_** 가 가능하다. <br>
 
+서비스 전반에 쓰이는 공통 기능을 모아놓은 **_CommonModule_**, 공통 기능이지만 Application을 구동하는데 필요한 기능을 모아놓은 **_CoreModule_** 이 있다. <br>
+Root Module은 CommonModule, CoreModule 둘 다 가져오는 게 아니라 CoreModule만을 가져오고 CoreModule에서 가져온 CommonModule을 다시 내보내면(Export) AppModule에서 CommonModule을 가져오지 않아도 사용할 수 있다. <br>
 
+* CommonModule
+```typescript
+@Module({
+    providers: [CommonService],
+    exports: [CommonService],
+})
+export class CommonModule
+```
 
+<br>
 
+* CommonService
+    hello Method를 가지고 있다.
+```typescript
+// common.service.ts
+@Injectable()
+export class CommonService {
+    hello(): string {
+        return "This is commonService";
+    }
+}
+```
 
+<br>
 
+* CoreModule
+    CommonModule을 가져온 후 다시 내보낸다.
+```typescript
+@Module({
+    imports: [CommonModule],
+    exports: [CommonModule],
+})
+export class CoreModule {}
+```
 
+<br>
 
+* AppModule
+```typescript
+@Module({
+    imports: [CoreModule],
+    controllers: [AppController],
+    providers: [AppService],
+})
+export class AppModule {}
+```
 
+<br>
 
+* AppController
+    CommonModule에 Provider인 CommonService에 hello Method를 사용할 수 있다.
+```typescript
+@Controller()
+export class AppController {
+    constructor(private readonly commonService: CommonService) {}
 
+    @Get("/")
+    hello(): string {
+        return this.commonService.hello();
+    }
+}
+```
 
+> Module은 Provider처럼 Inject 해서 사용할 수 없다. (**_Module 간의 순환 종속성 발생_**) <br>
 
+<br>
+
+### **Global Module**
+Nest는 Module 범위 내에서 Provider를 **_캡슐화_** 한다. 따라서 어떤 Module에 있는 Provider를 사용하려면 Module을 먼저 가져와야 한다. <br>
+
+Helper, Database Connection과 같은 공통 기능의 Provider가 필요한 경우가 있다. <br>
+이런 Provider를 모아 Global Module로 제공하면 된다. 
+
+<br>
+
+* **Global Module** <br>
+    **_@Global() Decorator_** 로 선언한다. <br>
+    Global Module은 RootModule이나 CoreModule에서 한 번만 등록해야 한다. <br>
+    Global 생성은 SW 구조상 **_지양_** 해야 한다. Global로 만들면 기능이 어디에나 존재하므로 응집도가 떨어진다. <br>    
+```typescript
+@Global()
+@Module({
+    providers: [CommonService],
+    exports: [CommonService],
+})
+export class CommonModule {}
+```
+
+<br>
+
+## **_Chapter6_** Dynamic Module을 활용한 환경 변수 설정
+지금까지 사용한 UserModule, EmailModule 등은 모두 **_Static Module_** 이다. <br>
+
+**_Dynamic Module_** 이란 Module 실행 시 **_동적_** 으로 어떠한 변수들이 정해진다. <br>
+즉 Host Module(Provider, Controller와 같은 Component를 제공하는 Module)을 가져다 쓰는 소비 Module에서 Host Module을 생성할 경우 동적으로 값을 설정하는 방식이다. <br>
+
+Dynamic Module을 사용하면 코드가 간결해진다. <br>
+Module Instance 생성 시 결정되기는 하지만 Module Instance마다 다르게 결정되어야 하는 걸 소비 Module에서 지정할 수 있고 Static, Dynamic Module과 같이 제공할 수도 있다. <br>
+
+Dynamic Module에 대표적인 예로 실행 환경에 따라 동적으로 서버에 설정되는 환경 변수를 관리하는 **_Config Module_** 이 있다. <br>
+
+<br>
+
+### **일반적인(dotenv) 환경 변수 관리 방법**
+Database Host는 실행 환경에 따라 동적으로 달라져야한다. <br>
+
+```cmd
+Local: localhost
+Staging: stage-reader.com
+Production: prod-reader.com
+```
+
+<br>
+
+설치
+```cmd
+npm i dotenv
+```
+
+<br>
+
+* 개발 환경: .development.env <br>
+```cmd
+DATABASE_HOST=localhost
+```
+
+<br>
+
+* 스테이지 환경: .stage.env <br>
+```cmd
+DATABASE_HOST=stage-reader.com
+```
+
+<br>
+
+* 배포 환경: .production.env <br>
+```cmd
+DATABASE_HOST=prod-reader.com
+```
+
+<br>
+
+* package.json script 수정
+```json
+"scripts": {
+    "prebuild": "rimraf dist",
+    "start:dev": "npm run prebuild && NODE_ENV=development nest start --watch"
+}
+```
+
+<br>
+
+* main.ts
+```typescript
+import { NestFactory } from "@nestjs/core";
+import { AppModule } from "";
+
+import dotenv from "dotenv";
+import path from "path";
+
+dotenv.config({
+    path: path.resolve(
+        (process.env.NODE_ENV === "production") ? ".production.env"
+            : (process.env.NODE_ENV === "stage") ? ".stage.env" : ".development.env"
+    )
+})
+
+async function bootstrap() {}
+```
 
 
