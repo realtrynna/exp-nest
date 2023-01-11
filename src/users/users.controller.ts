@@ -8,7 +8,6 @@ import {
 	UseInterceptors
 } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common/exceptions';
-import { ConfigService } from "@nestjs/config";
 import { 
 	ApiTags,
 	ApiOperation,
@@ -31,15 +30,12 @@ export class UsersController {
 	constructor(
 		private readonly userService: UserService,
 		private readonly emailService: EmailService,
-		private readonly configService: ConfigService
 	) {}
 
 	// 회원 정보 조회
 	@Get("/:userId")
 	@UseInterceptors(BaseInterceptor)
 	async findUserById(@Param("userId") userId: number): Promise<any> {
-		const result = this.configService.get("PW");
-		console.log(result);
 		return "응답했어요!";
 	}
 	
