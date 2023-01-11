@@ -9,7 +9,8 @@
 |23.01.05|Chapter3 |Dto, Service Layer의 특징, AOP, 횡단 관심사 | 
 |23.01.06|Chapter4 |Provider, DI, Scope |
 |23.01.09|Chapter5 |Custom Provider, SW 복잡도를 낮추기 위한 Module 설계, Swagger |
-|23.01.10|Chapter6 |Module(Global, exports), Dynamic Module| 
+|23.01.10|Chapter6 |Module(Global, exports), Dynamic Module|
+|23.01.11|Chapter6 |Dynamic Module, Custom Configuration|
 
 <br>
 
@@ -112,6 +113,134 @@ getUserList(
 ```
 
 </div> 
+</details>
+
+<details>
+<summary><strong>ConfigModule</strong></summary>
+<div markdown="1">
+
+Nest는 내부적으로 dotenv를 활용하는 **_Config_** 패키지를 제공한다. <br>
+
+<br>
+
+**설치**
+```cmd
+npm i @nestjs/config
+```
+
+<br>
+
+**app.module.ts** <br>
+Static Module을 가져올 경우와 달리 **_forRoot Method_** 를 호출한다. <br>
+forRoot는 Dynamic Module을 Return 하는 Static Method다.
+
+<br>
+
+Dynamic Module 생성 시 forRoot 외 다른 이름을 써도 상관없지만 **_forRoot, register는 Convention_** <br>
+비동기일 경우 forRootAsync, registerAsync 
+```typescript
+import { ConfigService } from "@nestjs/config";
+
+@Module({
+    imports: [
+        ConfigService.forRoot(),
+    ],
+})
+export class AppModule {}
+```
+
+<br>
+
+**forRoot** <br>
+인수로 ConfigModuleOptions를 받는다. 즉 ConfigModule은 소비 Module이 원하는 옵션 값을 전달하여 **_동적_** 으로 ConfigModule을 생성한다. <br>
+```typescript
+static forRoot(options?: ConfigModuleOptions): DynamicModule
+```
+
+**.env 작성** <br>
+**_envFilePath_** 속성으로 동적으로 환경 변수 설정
+```typescript
+import { ConfigModule } from "@nestjs/config";
+
+@Module({
+    imports: [ConfigModule.forRoot({
+        envFilePath: (process.env.NODE_ENV === "production") ? ".production.env"
+            : (process.env.NODE_ENV === "stage") ? ".stage.env" : "development.env"
+    })],
+    controllers: [AppController],
+    providers: [AppService, ConfigService],
+})
+export class AppModule {}
+```
+
+<br>
+
+**ConfigService**
+ConfigModule의 Provider를 원하는 Component에서 DI 하여 사용
+```typescript
+import { ConfigService } from "@nestjs/config";
+
+@Controller()
+export class EmailService {
+    #transporter: Mail;
+
+    constructor(private readonly configService: ConfigService) {
+        this.#transporter = nodemailer.createTransporter({
+            service: this.configService.get("EMAIL_SERVICE"),
+			auth: {
+				user: this.configService.get("EMAIL_USER"),
+				pass: this.configService.get("EMAIL_PASS"),
+			},
+        });
+    }
+}
+```
+
+<br>
+
+**Custom Config**
+DatabaseConfig, EmailConfig와 같이 그룹핑해서 처리하고 싶을 경우 사용한다. <br>
+처음 인수로 Token 문자열을 받고 다음 인수로 ConfigFactory를 받는다. <br>
+email이라는 토큰으로 ConfigFactory를 등록할 수 있는 함수를 의미한다. <br>
+```typescript
+// src > config > email.config.ts
+import { registerAs } from "@nestjs/config";
+
+export default registerAs("email", () => ({
+    baseUrl: process.env.BASE_URL,
+    service: process.env.EMAIL_SERVICE,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+    },
+}));
+```
+
+<br>
+
+**nest-cli.json**
+Nest의 기본 Build Option은 .ts 파일 외 Asset은 제외하도록 설정돼있다. <br>
+.env 파일을 dist 폴더에 복사할 수 있도록 설정을 수정한다. <br>
+```json
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "src",
+  "compilerOptions": {
+    "assets": [
+      {
+        "include": "./config/env/*.env",
+        "outDir": "./dist"
+      }
+    ]
+  }
+}
+```
+
+<br>
+
+
+
 </details>
 
 <br>
