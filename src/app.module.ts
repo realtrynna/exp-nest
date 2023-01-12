@@ -3,6 +3,7 @@ import { ConfigModule } from "@nestjs/config";
 import { UserModule } from "./users/users.module";
 
 import EmailConfig from "./config/email.config";
+import { validationEnv } from "./config/validation";
 
 // function test() {
 //     console.log("언제 실행되나요??");
@@ -22,7 +23,7 @@ import EmailConfig from "./config/email.config";
             ],
             load: [EmailConfig],
             isGlobal: true,
-            // validationSchema,
+            validationSchema: validationEnv,
         }),
     ],
     providers: [],
