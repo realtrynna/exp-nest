@@ -1099,4 +1099,32 @@ dotenv.config({
 async function bootstrap() {}
 ```
 
+<br>
+
+### **의존성 주입과 제어 반전**
+좋은 개발자는 항상 좋은 **_Software Architecture_** 를 설계하고 이해하려고 노력해야 한다. <br>
+프로젝트는 시간이 지날수록 규모가 커지고 복잡해진다. Architecture 고민은 유지 보수와 생산성 향상을 위해 반드시 해야 하는 이유다. <br>
+객체 지향 원칙, SOLID 설계 원칙, Layered Architecture 등을 학습할 수 있는 로버트 마틴의 **_클린 아키텍처_** 서적을 추천한다. <br>
+
+<br>
+
+* ***제어 반전** <br>
+    SOLID 원칙의 D에 해당하는 **_의존 관계 역전 원칙_** 을 구현하기 위해서는 제어 반전(**_Inversion Of Control_**) Container 기술이 필요하다. <br>
+    Nest에서 Framework에 IoC를 구현하며, Provider(Service)를 다른 Component에 주입한 경우가 이에 해당한다. <br>
+
+    다음은 UserController는 UserService에 **_의존적_** 이다. UserService는 **_Object Life Cycle_** 에는 전혀 관여하지 않는다. <br>
+    어디선가 자신의 생성자에 주어지는 객체를 가져다 쓰고 있을 뿐이다. 이 역할을 수행하는 게 IoC이다. <br>
+    IoC에 도움으로 객체의 Object Life Cycle에 신경 쓰지 않아도 되며, 이로 인해 코드가 읽기 쉬워지며 직관적인 형태로 변한다. <br>
+
+<br>
+
+* **의존성 주입** <br>
+    의존성 주입(Dependence Injection)은 IoC Container가 **_직접_** Object Life Cycle를 관리하는 방식이다. <br>
+
+    A 객체에서 B 객체가 필요할 경우(A는 B에 의존적) A Class에서 B Class를 직접 생성하여 사용할 수 있다. <br>
+    이 경우 문제는 B의 구현체가 변경되었을 경우 발생한다. A는 B를 직접 참조하고 있으므로 B가 변경될 경우 Compiler는 A를 다시 Compile 해야 한다. <br>
+    A와 B가 Class가 아니라 Module이라고 하면 그 변경의 크기는 매우 커지게 되고 Compile 시간은 더 오래 걸린다. <br>
+
+
+
 
