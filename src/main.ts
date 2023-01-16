@@ -1,3 +1,4 @@
+import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
@@ -10,6 +11,12 @@ async function bootstrap() {
 
     // Global Interceptor
     // app.useGlobalInterceptors(new DateInterCeptor());
+
+    app.useGlobalPipes(
+        new ValidationPipe({
+            transform: true,
+        }),
+    );
 
     const swaggerConfig = new DocumentBuilder()
         .setTitle("NestJS로 배우는 백엔드 프로그래밍")

@@ -5,7 +5,9 @@ import {
 	Body,
 	Param,
 	Query,
-	UseInterceptors
+	UseInterceptors,
+	ParseIntPipe,
+	DefaultValuePipe
 } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common/exceptions';
 import { 
@@ -23,6 +25,7 @@ import { UserService } from './users.service';
 import { createUserDto, VerifyEmailDto, LoginDto, UserMeta } from './dto';
 import { EmailService } from 'src/email/email.service';
 import { BaseInterceptor } from 'src/common/interceptors/date.interceptor';
+import { ValidationPipe } from "../common/validations/validation.pipe";
 
 @Controller('users')
 @ApiTags("사용자")
@@ -32,10 +35,16 @@ export class UsersController {
 		private readonly emailService: EmailService,
 	) {}
 
+	@Get("/practice/:id")
+	async practice(@Param("id", ValidationPipe) id: number) {
+		console.log("Controller Id", typeof id);
+	}
+
 	// 회원 정보 조회
 	@Get("/:userId")
 	@UseInterceptors(BaseInterceptor)
-	async findUserById(@Param("userId") userId: number): Promise<any> {
+	async findUserById(@Param("userId", new ParseIntPipe({ errorHttpStatusCode: 500 })) userId: number): Promise<any> {
+		console.log(typeof userId);
 		return "응답했어요!";
 	}
 	
@@ -58,9 +67,9 @@ export class UsersController {
 	async createUser(@Body() createUserDto: createUserDto): Promise<void> {
 		const createUserVerifyToken = "DLLO-44L2-DLLA-WMDC";
 
-		console.log(createUserVerifyToken);
+		console.log("Controller Data", createUserDto.gender);
 
-		this.emailService.sendUserCreateVerification(
+		await this.emailService.sendUserCreateVerification(
 			createUserDto.email,
 			createUserVerifyToken
 		);
