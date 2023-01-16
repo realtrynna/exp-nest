@@ -4,13 +4,14 @@
 
 |Date|Content|Description|
 |------|---|------|
-|23.01.03|Chapter1, 2| Node와 Nest 특징, Decorator|
-|23.01.04|Chapter2 |Controller에서의 Routing, Wildcard, Body, Exception, Header, StatusCode 설정|
-|23.01.05|Chapter3 |Dto, Service Layer의 특징, AOP, 횡단 관심사 | 
-|23.01.06|Chapter4 |Provider, DI, Scope |
-|23.01.09|Chapter5 |Custom Provider, SW 복잡도를 낮추기 위한 Module 설계, Swagger |
-|23.01.10|Chapter6 |Module(Global, exports), Dynamic Module|
-|23.01.11|Chapter6 |Dynamic Module, Custom Configuration|
+|23.01.03|[Chapter1](#chapter1-hello-nestjs)| Node와 Nest 특징, Decorator|
+|23.01.04|[Chapter2](#chapter2-웹-개발-기초-지식) |Controller에서의 Routing, Wildcard, Body, Exception, Header, StatusCode 설정|
+|23.01.05|[Chapter3](#chapter3-애플리케이션의-관문-인터페이스) |Dto, Service Layer의 특징, AOP, 횡단 관심사 | 
+|23.01.06|[Chapter4](#chapter4-핵심-도메인-로직을-포함하는-프로바이더) |Provider, DI, Scope |
+|23.01.09|[Chapter5](#chapter5-software-복잡도를-낮추기-위한-module-설계) |Custom Provider, SW 복잡도를 낮추기 위한 Module 설계, Swagger |
+|23.01.10|[Chapter6](#chapter6-dynamic-module을-활용한-환경-변수-설정) |Module(Global, exports), Dynamic Module|
+|23.01.11|[Chapter6](#chapter6-dynamic-module을-활용한-환경-변수-설정) |Dynamic Module, Custom Configuration|
+|23.01.16|[Chapter7](#chapter7-파이프와-유효성-검사-요청이-제대로-전달되었는가) |Pipe, Validation, Transformer|
 
 <br>
 
@@ -1123,8 +1124,210 @@ async function bootstrap() {}
 
     A 객체에서 B 객체가 필요할 경우(A는 B에 의존적) A Class에서 B Class를 직접 생성하여 사용할 수 있다. <br>
     이 경우 문제는 B의 구현체가 변경되었을 경우 발생한다. A는 B를 직접 참조하고 있으므로 B가 변경될 경우 Compiler는 A를 다시 Compile 해야 한다. <br>
-    A와 B가 Class가 아니라 Module이라고 하면 그 변경의 크기는 매우 커지게 되고 Compile 시간은 더 오래 걸린다. <br>
+    A와 B가 Class가 아니라 Module이라고 하면 그 변경의 크기는 매우 커지게 되고 Compile 시간은 더 오래 걸린다.
 
+<br>
 
+**IoC 미적용**
+```typescript
+export interface UserMeta {
+    getLanguage: () => string;
+}
+
+@Injectable()
+export class AUser implements UserMeta {
+    getLanguage() {
+        return "JavaScript"
+    }
+}
+
+@Injectable()
+export class BUser implements UserMeta {
+    getLanguage() {
+        return "TypeScript"
+    }
+}
+
+// Property로 UserMeta 멤버 변수 선언 후 생성자로 호출 
+class App {
+    private readonly userMeta: UserMeta
+
+    constructor() P
+    this.userMeta = new AUser()
+}
+```
+
+<br>
+
+**IoC 적용**
+UserMeta의 멤버 변수는 IoC가 담당한다.
+```typescript
+class App {
+    constructor(@Inject("UserMeta") private readonly userMeta: UserMeta) {
+
+    }
+}
+
+// Module 선언
+@Module({
+    controllers: [UserController],
+    providers: [
+        UserService,
+        [
+            provide: "UserMeta",
+            useClass: AUser,
+        ],
+    ]
+})
+```
+
+<br>
+
+## **_Chapter7_** 파이프와 유효성 검사 요청이 제대로 전달되었는가
+Pipe는 Request가 Handler로 전달되기 전 **_Request Object_** 를 **_변환_** 할 수 있는 기회를 제공하며 Middleware와 역할과 동일하다. <br>
+
+> Middleware는 Application의 모든 Context에서 사용할 수 없다. Middleware는 현재 Request가 어떤 Handler에서 수행되는지 어떤 Parameter를 가지고 있는지에 대한 Execution Context를 모른다.
+
+<br>
+
+Pipe는 주로 다음과 같은 **_목적_** 으로 사용된다. <br>
+
+1. **_변환_** (Transformation) <br>
+    Request Data를 원하는 형식으로 변환한다. /users/:userId의 Params를 String에서 Number 형태로 변환 <br>
+
+2. **_유효성 검사_** (Validation) <br>
+    Request Data가 사용자가 정한 기준에 적합한지 검사 
+
+<br>
+
+Nest는 다음과 같은 내장 Pipe를 제공한다. <br>
+* ValidationPipe
+* ParseIntPipe
+* ParseBoolPipe
+* ParseArrayPipe
+* ParseUUIDPipe
+* DefaultValuePipe
+
+<br>
+
+ParseIntPipe, ParseBoolPipe, ParseArrayPipe, ParseUUIDPipe는 전달된 **_Parameter의 Type_** 을 검사하는 용도다. 
+
+<br>
+
+**ParseIntPipe** <br>
+@Param() Decorator의 **_두 번째_** 인수로 Pipe를 넣어 현재 **_ExecutionContext_** 에 바인딩 <br>
+Parsing 할 수 없는 Parameter를 전달할 경우 알아서 **_Exception Response_** 발생 <br>
+Exception 발생할 경우 Controller에 **_Request가 도달하지 않음_** <br>
+```typescript
+@Get("/:userId")
+findUserById(@Param("userId", ParseIntPipe) userId: number) {
+    return this.userService.findUserById(userId);
+}
+```
+
+<br>
+
+**Exception Response**
+```typescript
+{   
+    "statusCode": 400,
+    "message": "Validation ...",
+    "error": "Bad Request"
+}
+```
+
+<br>
+
+**Custom Exception Response**
+```typescript
+@Get("userId")
+findUserById(@Param("userId", new ParseIntPipe({ errorHttpStatusCode: 500 })))
+```
+
+<br>
+
+**DefaultValuePipe**
+Parameter의 기본값 설정 시 사용 <br>
+**_Query Parameter_** 가 생략된 경우 유용하게 사용 가능 <br>
+```typescript
+@Get()
+findUserList(
+    @Query("offset", new DefaultValuePipe(0), ParseIntPipe) offset: number,
+    @Query("limit", new DefaultValuePipe(10), ParseIntPipe) limit: number,
+) {
+    console.log(offset, limit);
+}
+```
+
+<br>
+
+**Custom Pipe** <br>
+Custom Pipe는 **_PipeTransform Interface_** 를 상속받은 클래스에 @Injectable Decorator를 붙여 만든다. <br>
+
+* Custom Pipe <br>
+    **_value_**: 현재 Pipe의 전달된 인수 <br>
+    **_metadata_**: 현재 Pipe의 전달된 인수의 Metadata
+```typescript
+import { PipeTransform, Injectable, ArgumentMetadata } from "@nestjs/common";
+
+@Injectable()
+export class ValidationPipe implements PipeTransform {
+    transform(value: any, metadata: ArgumentMetadata) {
+        console.log(metadata);
+        return value;
+    }
+}
+
+// PipeTransform 원형
+export interface PipeTransform<T = any, R = any> {
+    transform(value: T, metadata: ArgumentMetadata): R;
+}
+
+// userController
+@Get("/:userId")
+findUserById(@Param("userId", ValidationPipe) userId: number) {
+    console.log(userId);
+}
+```
+
+<br>
+
+**ValidationPipe (유효성 검사 파이프)**
+```cmd
+npm i class-validator class-transformer
+```
+
+<br>
+
+* Nest가 제공하는 ValidationPipe 전역으로 적용 <br>
+    class-transformer를 적용시키려면 **_transform: true_**
+```typescript
+import { ValidationPipe } from "@nestjs/common"
+
+async function bootstrap() {
+    const app = await NestFactory(AppModule)
+    
+    app.useGlobalPipes(new ValidationPipe({
+        transform: true,
+    }));
+
+    await app.listen(3000)
+}
+
+bootstrap()
+```
+
+<br>
+
+```typescript
+import { Transform } from "class-transformer";
+
+export class CreatePostDto {
+    @Transform(({ key, value, obj }) => {
+        return value === undefined ? null : value;
+    })
+    imageUrl: string;
+}
+```
 
 
