@@ -12,6 +12,7 @@
 |23.01.10|[Chapter6](#chapter6-dynamic-module을-활용한-환경-변수-설정) |Module(Global, exports), Dynamic Module|
 |23.01.11|[Chapter6](#chapter6-dynamic-module을-활용한-환경-변수-설정) |Dynamic Module, Custom Configuration|
 |23.01.16|[Chapter7](#chapter7-파이프와-유효성-검사-요청이-제대로-전달되었는가) |Pipe, Validation, Transformer|
+|23.01.17|[Chapter7](#chapter7-파이프와-유효성-검사-요청이-제대로-전달되었는가) |Custom Validation, Authentication, Authorization|
 
 <br>
 
@@ -1210,13 +1211,13 @@ Nest는 다음과 같은 내장 Pipe를 제공한다. <br>
 
 <br>
 
-ParseIntPipe, ParseBoolPipe, ParseArrayPipe, ParseUUIDPipe는 전달된 **_Parameter의 Type_** 을 검사하는 용도다. 
+**_ParseIntPipe_**, **_ParseBoolPipe_**, **_ParseArrayPipe_**, **_ParseUUIDPipe_** 는 전달된 **_Parameter의 Type_** 을 검사하는 용도다. 
 
 <br>
 
 **ParseIntPipe** <br>
 @Param() Decorator의 **_두 번째_** 인수로 Pipe를 넣어 현재 **_ExecutionContext_** 에 바인딩 <br>
-Parsing 할 수 없는 Parameter를 전달할 경우 알아서 **_Exception Response_** 발생 <br>
+Parsing 할 수 없는 Parameter(String)를 전달할 경우 알아서 **_Exception Response_** 발생 <br>
 Exception 발생할 경우 Controller에 **_Request가 도달하지 않음_** <br>
 ```typescript
 @Get("/:userId")
@@ -1323,11 +1324,110 @@ bootstrap()
 import { Transform } from "class-transformer";
 
 export class CreatePostDto {
+    // obj => 현재 객체(Dto) 가리킴
     @Transform(({ key, value, obj }) => {
         return value === undefined ? null : value;
+        // 또는
+        return value.trim()
     })
     imageUrl: string;
 }
 ```
 
+<br>
 
+**Throw Exception** <br>
+```typescript
+@Transform(({ value, obj }) => {
+    if (obj.password.includes(obj.name.trim())) {
+        return new BadRequestException("비밀번호는 이름과 같은 문자열을 포함할 수 없습니다.");
+    }
+})
+```
+
+<br>
+
+**Custom Throw Error** <br>
+유효성 검사를 수행하는 Decorator를 직접 만들 수 있다. <br>
+Nest의 기술이 아니라 class-validator의 영역 <br>
+```typescript
+// not.in.ts
+import { registerDecorator, ValidationOptions, ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface} from "class-validator";
+
+export function notIn(
+    property: string,
+    validationOptions?: ValidationOptions                                               // Decorator의 인수는 객체에서 참조하려고 하는 다른 속성의 이름과 ValidationOptions을 받는다.
+) {
+    return (object: Object, propertyName: string) => {                                  // registerDecorator를 호출하는 함수를 리턴한다. 이 함수의 인수로 Decorator가 선언될 객체와 속성의 이름을 받는다.
+        registerDecorator({                                                             // registerDecorator 함수는 ValidationDecoratorOptions 객체를 인수로 받는다. 
+            name: "notIn",                                                              // Decorator 이름
+            target: object.constructor,                                                 // 이 Decorator는 객체 생성 시 적용
+            propertyName,
+            options: validationOptions,                                                 // 유효성 옵션은 Decorator의 인수로 전달받은 걸 사용한다.
+            constraints: [property],                                                    // 이 Decorator는 속성에 적용되도록 제약 부여
+            validator: {                                                                // 유효성 검사 규칙 작성 (ValidatorConstraint Interface를 구현한 함수)
+                validate(value: any, args: ValidationArguments) {
+                    const [relatedPropertyName] = args.constraints
+                    const relatedValue = (args.object as any)[relatedPropertyName]
+                    return 
+                        typeof value === "string" && 
+                        typeof relatedValue === "string" && 
+                        !relatedValue.includes(value)
+                }
+            }
+        })
+    }
+}
+```
+
+<br>
+
+### **인증(Authentication)과 인가(Authorization)**
+최근 서비스들은 인가(Authorization)를 얻기 위한 수단으로 JWT를 사용한다. <br>
+
+로그인 성공 시 Server는 Token을 발급하며 Client는 매 요청마다 Header에 Token을 실어 보낸다. <br>
+이 후 Server는 Token에 대한 유효성을 검증 후 얻은 정보를 토대로 인가를 진행한다. <br>
+인증(Authentication)과 인가(Authorization)는 항상 같이 등장하는 개념이지만 사용 시 혼용되는 경우가 많다. 
+
+<br>
+
+1. **_인증_**(Authentication) <br>
+    인증은 어떤 개체(사용자 또는 장치)의 신원을 확인하는 과정이다. 개체는 보통 어떤 인증 요소(Authencation Factor)를 증거로 제시하여 자신을 증명한다. <br>
+    은행에 가서 돈을 인출하려면 내가 누군지 은행에게 확인시켜주기 위해 신분증을 제시하는데 이 과정이 개체의 신원을 확인하기 위한 과정에 해당한다. <br>
+
+    Online에서도 마찮가지다. 특정 서비스 이용 시 보통 아이디와 패스워드를 입력하거나 휴대폰에 전달된 인증번호를 입력한다. <br>
+    인증 요소(Authencation Factor)는 하나일 수도 있고 두개 또는 그 이상(Multi Factor)일 수 있다. <br>
+
+2. **_인가_**(Authorization) <br>
+    인증과 달리 인가는 개체(사용자 또는 장치)가 특정 리소스에 접근할 수 있는지 또는 어떤 동작을 수행할 수 있는지 검증하는 과정 즉 접근 권한을 의미한다. <br>
+    공연장에 입장하기 위해 표를 제시하는 과정과 동일하다. 공연장은 나의 신원을 확인하고자 하는 게 아니라 입장할 권한이 있는지 없는지만 관심있다. <br>
+    신원 정보를 포함하고 있지 않더라도 입장이 실패하지 않는다. <br>
+
+    보통 Application은 Token을 사용해 인가 과정을 진행한다. 사용자가 로그인을하면 Application은 사용자가 뭘 할 수 있는가에 관심을 갖으며 사용자 신원을 바탕으로 인가 세부사항을 가진 Token을 생성한다. <br>
+    이렇게 발급된 인가 Token을 이용해 리소스에 대한 접근을 허용할지 말지를 결정한다. 
+    
+<br>
+
+> 인증은 인가로 이어지지만 인가가 인증으로 이어지지는 않는다. <br>
+> 신원 증명이 접근 권한을 승인하기에 충분하다해도 즉 무언가 얻는 데 인가를 받을 수 있다고해도 인가가 항상 개체를 식별할 순 없다.
+> 비행기 탑승권은 인가와 인증 역할을 모두 수행하는 반면 공연 입장권은 인가의 역할만 수행한다. 
+
+<br>
+
+* 인증은 개체(사용자 또는 장치)의 신원을 증명하는 행위 <br>
+* 인가는 개체에게 접근 권한을 부여하거나 거부하는 행위 <br>
+* 인증은 인가 의사결정의 한 요소가 될 수 있다. <br>
+* 인가 가공물(Token)로 개체의 신원을 파악하는 방법은 유용하지 않음 <br>
+
+## **_Chapter8_** 영속화 데이터를 기록하고 다루기
+Nest는 다양한 Database와 연결이 가능하며 RDBMS와 NoSQL Database도 가능하다. <br>
+
+> 객체 관계 매핑(Object Relational Mapping)이란 Database의 관계를 객체로 바꾸어 개발자가 OOP로 Database를 쉽게 다룰 수 있도록 해주는 도구이다. <br>
+> SQL Query를 그대로 코드에 기술하고 그 결과를 QuerySet으로 다루는 방식에서 세부 Query문을 추상화하는 걸로 발전했다. 
+
+<br>
+
+### TypeORM
+```cmd
+npm i typeorm @nestjs/typeorm mysql2
+```
