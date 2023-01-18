@@ -2,7 +2,14 @@
     "singleQuote": false,
     "trailingComma": "all",
     "tabWidth": 4,
-    "parser": "flow",
     "semi": true,
-    "printWidth": 80
+    "prettier/prettier": [
+        "error",
+        {
+            "singleQuote": false,
+            "parser": "flow",
+            "semi": true,
+            "printWidth": 100
+        }
+    ]
 }
