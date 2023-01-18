@@ -13,28 +13,28 @@ import { Transform } from "class-transformer";
 // eslint-disable-next-line prettier/prettier
 export class createUserDto {
     @Transform(({ key, value, obj }) => {
-		return value;
+        return value;
     })
     email: string;
     // eslint-disable-next-line prettier/prettier
 
-	@IsString()
-	@IsNotEmpty()
-	@MinLength(5)
-	@MaxLength(20)
+    @IsString()
+    @IsNotEmpty()
+    @MinLength(5)
+    @MaxLength(20)
     name: string;
     // eslint-disable-next-line prettier/prettier
 
-	@IsString()
-	@IsNotEmpty()
+    @IsString()
+    @IsNotEmpty()
     password: string;
     // eslint-disable-next-line prettier/prettier
 
-	@Transform(({ key, value, obj }) => {
-		return value === "1" ? true : false;
-	})
-	@IsNotEmpty()
-	@IsBoolean()
+    @Transform(({ key, value, obj }) => {
+        return value === "1" ? true : false;
+    })
+    @IsNotEmpty()
+    @IsBoolean()
     gender: boolean;
 
     // constructor({ email, name, password, gender }) {

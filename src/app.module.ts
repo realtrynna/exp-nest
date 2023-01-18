@@ -1,18 +1,11 @@
 import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
-import { UserModule } from "./users/users.module";
+import { TypeOrmModule, TypeOrmModuleOptions } from "@nestjs/typeorm";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 
+import { UserModule } from "./users/users.module";
 import EmailConfig from "./config/email.config";
 import { validationEnv } from "./config/validation";
-
-// function test() {
-//     console.log("언제 실행되나요??");
-//     return {
-//         DB: "mysql",
-//         ID: "root",
-//         PW: "password",
-//     };
-// }
+import dbConnect from "./config";
 
 @Module({
     imports: [
@@ -25,8 +18,18 @@ import { validationEnv } from "./config/validation";
             isGlobal: true,
             validationSchema: validationEnv,
         }),
+        TypeOrmModule.forRootAsync({
+            imports: [ConfigModule],
+            useFactory: async (
+                configService: ConfigService,
+            ): Promise<TypeOrmModuleOptions> => {
+                const config = dbConnect(configService);
+
+                return config.production;
+            },
+            inject: [ConfigService],
+        }),
     ],
-    providers: [],
 })
 export class AppModule {}
 
