@@ -13,7 +13,8 @@
 |23.01.11|[Chapter6](#chapter6-dynamic-module을-활용한-환경-변수-설정) |Dynamic Module, Custom Configuration|
 |23.01.16|[Chapter7](#chapter7-파이프와-유효성-검사-요청이-제대로-전달되었는가) |Pipe, Validation, Transformer|
 |23.01.17|[Chapter7](#chapter7-파이프와-유효성-검사-요청이-제대로-전달되었는가) |Custom Validation, Authentication, Authorization|
-|23.01.18|[Chapter7](#chapter8-영속화-데이터를-기록하고-다루기) |TypeOrm Config|
+|23.01.18|[Chapter8](#chapter8-영속화-데이터를-기록하고-다루기) |TypeOrm Config|
+|23.01.19|[Chapter8](#chapter8-영속화-데이터를-기록하고-다루기) |TypeOrm Relations|
 
 <br>
 
@@ -1434,3 +1435,45 @@ Nest는 다양한 Database와 연결이 가능하며 RDBMS와 NoSQL Database도 
 ```cmd
 npm i typeorm @nestjs/typeorm mysql2
 ```
+
+<br>
+
+-   1:1 (**One-To-One**)
+    -   사용자 프로필 **Profile**
+    ```typescript
+    @Entity()
+    export class Profile {
+        @PrimaryGeneratedColumn()
+        id: number;
+
+        @Column()
+        address: string;
+
+        @Column()
+        introduce: string;
+
+        @Column()
+        married: boolean;
+    }
+    ```
+
+    <br>
+
+    -   사용자 **User**
+    ```typescript
+    @Entity()
+    export class User {
+        @PrimaryGeneratedColumn()
+        id: number;
+
+        @Column()
+        email: string;
+
+        @Column()
+        password: string;
+
+        @OneToOne(() => Profile)
+        @JoinColumn()
+        profile: Profile
+    }
+    ```
