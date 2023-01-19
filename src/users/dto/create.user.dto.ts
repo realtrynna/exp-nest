@@ -20,7 +20,7 @@ export class createUserDto {
 
     @IsString()
     @IsNotEmpty()
-    @MinLength(5)
+    @MinLength(3)
     @MaxLength(20)
     name: string;
     // eslint-disable-next-line prettier/prettier
@@ -30,12 +30,11 @@ export class createUserDto {
     password: string;
     // eslint-disable-next-line prettier/prettier
 
-    @Transform(({ key, value, obj }) => {
-        return value === "1" ? true : false;
-    })
+    // @Transform(({ key, value, obj }) => {
+    //     return value === "1" ? true : false;
+    // })
     @IsNotEmpty()
-    @IsBoolean()
-    gender: boolean;
+    gender: string;
 
     // constructor({ email, name, password, gender }) {
     //     this.email = email;
