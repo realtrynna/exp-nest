@@ -15,6 +15,7 @@
 |23.01.17|[Chapter7](#chapter7-파이프와-유효성-검사-요청이-제대로-전달되었는가) |Custom Validation, Authentication, Authorization|
 |23.01.18|[Chapter8](#chapter8-영속화-데이터를-기록하고-다루기) |TypeOrm Config|
 |23.01.19|[Chapter8](#chapter8-영속화-데이터를-기록하고-다루기) |TypeOrm Relations|
+|23.01.21|[Chapter9](#chapter9-요청-처리-전-부가-기능을-수행하기-위한-미들웨어) |Repository Pattern, Middleware|
 
 <br>
 
@@ -1439,6 +1440,7 @@ npm i typeorm @nestjs/typeorm mysql2
 <br>
 
 -   1:1 (**One-To-One**)
+    -   @JoinColumn()은 FK가 있어야 하는 테이블에 설정해야 한다. <br>
     -   사용자 프로필 **Profile**
     ```typescript
     @Entity()
@@ -1460,6 +1462,7 @@ npm i typeorm @nestjs/typeorm mysql2
     <br>
 
     -   사용자 **User**
+    -   사용자 테이블에 **_profileId_** 컬럼 추가 
     ```typescript
     @Entity()
     export class User {
@@ -1477,3 +1480,108 @@ npm i typeorm @nestjs/typeorm mysql2
         profile: Profile
     }
     ```
+
+<br>
+
+### **Repository Pattern**
+저장소 패턴(Repository Pattern)이란 Database와 같은 저장소를 다루는 로직을 Data Layer로 분리하여 핵심 비즈니스 로직에 집중할 수 있게 해준다. <br>
+
+저장소는 Interface를 통해 Data를 처리하도록 추상화되어 있으므로 필요할 경우 데이터 저장소를 변경하기 쉽다는 장점이 있다. <br>
+
+-   마틴 파울러 <엔터프라이즈 애플리케이션 아키텍처 패턴> <br>
+> 저장소는 도메인 모델 계층과 데이터 매핑의 중간자 역할을 하며 메모리 내의 도메인 개체 집합에 대해서도 동일한 방식으로 작업을 수행한다. <br>
+> Clinent Object는 Query를 선어적으로 빌드하고 저장소에 요청한다. <br>
+> 개념적으로 저장소는 Database에 저장되는 객체 집합과 수행하는 작업을 캡슐화하여 영속화 계층에 더 가까운 방법을 제공한다. <br>
+> 또한 저장소는 작업 도메인 및 데이터 할당 또는 매핑 간의 종속성을 명확하게 한 방향으로 구분하려는 목적을 지원한다. <br>
+
+<br>
+
+비즈니스 로직을 처리하는 클라이언트는 직접 데이터 소스를 다루지 않는다. <br>
+저장소를 활용해 Entity Object를 영속화하고 저장소를 통해 데이터를 비즈니스 Entity 개체로 전달받는다. <br>
+영속화와 Query Request와 Response를 가공하는 Repository는 데이터 소스에 맞는 구현체를 가진다. <br>
+즉 데이터를 Dtabase에 저장하기 적합하게 Mapping하고 Query 결과를 Client가 원하는 방식으로 가공한다. <br>
+> Database를 MySQL에서 PostgreSQL로 변경하고자 한다면 Client와 Interface는 그대로 두고 구현부만 적합하게 변경하면 된다. <br>
+
+<br>
+
+## **_Chapter9_** 요청 처리 전 부가 기능을 수행하기 위한 미들웨어
+웹 개발에서 미들웨어의 의미란 Router Hanlder가 Client의 Request를 처리하기 전 수행되는 Component를 의미한다. 
+
+<br>
+
+> Client => (HTTP Request) => Middleware => Router Handler(@RequestMapping)
+
+<br>
+
+Nest의 Middleware는 Express의 Middleware와 동일하게 동작하며 기능은 다음과 같다. <br>
+* 어떤 형태의 코드라도 수행할 수 있다. <br>
+* Request와 Response에 변형을 가할 수 있다. <br>
+* Request와 Response에 주기를 끝낼 수 있다. (응답을 보내거나 에러 처리를 의미) <br>
+* 여러 개의 Middleware를 사용한다면 next()를 호출해 Call Stack상 다음 Middleware에게 제어권을 전달해야한다. <br>
+
+<br>
+
+현재 사용되는 Middleware가 응답을 보내지 않는다고 하면 반드시 next()를 호출해야하며 다음과 같은 작업을 수행할 수 있다. <br>
+* Cookie Parsing <br>
+    Cookie를 Parsing하여 사용하기 쉬운 Data Structure로 변경한다. 이를 이용해 Router Handler가 매번 Cookie를 Parsing하지 않아도 된다. <br>
+* Session <br>
+    Session Cookie를 찾고 해당 Cookie에 대한 Session의 상태를 조회해 Request에 Session 정보를 추가한다. <br>
+    이를 통해 다른 Handler가 Session 객체를 사용할 수 있다. <br>
+* Authentication Authorization
+    사용자가 서비스에 접근 가능한 권한이 있는지 검증한다. <br>
+    Nest에서는 인가 구현 시 Guard 사용을 권장한다. <br>
+* Body Parsing
+    Body는 POST/PUT Request로 들어오는 JSON Type뿐만아니라 File Stream과 같은 Data도 있다. <br>
+    해당 Data를 Type에 따라 읽고 해석 후 다음 Parameter에 넣는 작업을 한다. <br>
+
+<br>
+
+원하는 기능이 있다면 직접 Middleware 구현이 가능하다. <br>
+예를 들어 Transaction Request가 필요할 경우 Transaction을 걸고 작업을 수행 후 Commit하는 Middleware를 구현할 수 있다.
+Custom Middleware를 잘 만들면 Domain에 관심사를 집중할 수 있는 Application을 작성할 수 있다. <br>
+
+<br>
+
+#### **Logger Middleware**
+Middleware는 일반 Function과 NestMiddleware Interface를 구현한 Class로 구현할 수 있다. <br>
+```typescript
+import { Injectable, NestMiddleware } from "@nestjs/common"
+import { Request, Response, NextFunciton} from "express"
+
+@Injectable()
+export class LoggerMiddleware implements NestMiddleware {
+    use(req: Request, res: Reponse, next: NextFunction) {
+        console.log("Middleware Execute")
+        next()
+    }
+}
+```
+
+<br>
+
+-   AppModule Class에서 NestModule을 implements하여 configure Method를 구현한다.
+```typescript
+import { MiddlewareConsumer } from "@nestjs/common"
+import { LoggerMiddleware } from "./"
+
+export class AppModule implements NestModule {
+    configure(consumer: MiddlewareConsumer): any {
+        consumer
+            .apply(LoggerMiddleware)
+            .forRoutes("/users"); // Path 설정 가능
+    }
+}
+```
+
+<br>
+
+-   **MiddlewareConsumer**
+    configure Method에 인수로 전달된 MiddlewareConsumer 객체를 이용해 Middleware를 어떤 Router에 실행시킬지 관리할 수 있다. <br>
+    **_apply_** Method에 원형은 다음과 같다.
+    ```typescript
+    apply(...middleware: (Type<any> | Function)[]): MiddlewareConfigProxy
+    ``` 
+
+
+
+
