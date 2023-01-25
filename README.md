@@ -16,6 +16,7 @@
 |23.01.18|[Chapter8](#chapter8-영속화-데이터를-기록하고-다루기) |TypeOrm Config|
 |23.01.19|[Chapter8](#chapter8-영속화-데이터를-기록하고-다루기) |TypeOrm Relations|
 |23.01.21|[Chapter9](#chapter9-요청-처리-전-부가-기능을-수행하기-위한-미들웨어) |Repository Pattern, Middleware|
+|23.01.25|[Chapter10](#chapter10-권한-확인을-위한-가드-jwt-인증인가) |Middleware, Guard|
 
 <br>
 
@@ -1575,13 +1576,75 @@ export class AppModule implements NestModule {
 
 <br>
 
--   **MiddlewareConsumer**
-    configure Method에 인수로 전달된 MiddlewareConsumer 객체를 이용해 Middleware를 어떤 Router에 실행시킬지 관리할 수 있다. <br>
-    **_apply_** Method에 원형은 다음과 같다.
-    ```typescript
-    apply(...middleware: (Type<any> | Function)[]): MiddlewareConfigProxy
-    ``` 
+-   **MiddlewareConsumer** <br>
+configure Method에 인수로 전달된 **_MiddlewareConsumer_** 객체를 이용해 Middleware를 어떤 Router에 실행시킬지 관리할 수 있다. <br>
+**_apply_** Method에 원형은 다음과 같다.
 
+```typescript
+apply(...middleware: (Type<any> | Function)[]): MiddlewareConfigProxy
+``` 
 
+<br>
 
+-   여러 개의 Middleware 사용 시 **_apply_** Method에 순서대로 나열
+```typescript
+consumer
+    .apply(FirstMiddleware, SecondMiddleware)
+    .forRoutes("/users")
+```
+
+<br>
+
+-   **_Controller_** Class 활용
+```typescript
+consumer
+    .apply(LoggerMiddleware)
+    .forRoutes(UserController)
+```
+
+<br>
+
+-   **_exclude_** 를 활용해 Middleware를 적용하지 않을 Router Path 설정
+```typescript
+consumer
+    .apply(LoggerMiddleware)
+    .exclude({ path: "/users", method: RequestMethod.GET })
+    .forRoutes(UserController)
+```
+
+<br>
+
+-   전역 설정 (Global)
+```typescript
+const app = await NestFactory.create(AppModule)
+
+app.use(LoggerMiddleware)
+```
+
+<br>
+
+> Function Middleware는 **_DI Container_** 를 사용할 수 없다 즉 Provider를 Injection 받아 사용할 수 없다.
+
+<br>
+
+## **_Chapter10_** 권한 확인을 위한 가드 JWT 인증/인가
+Express에서 인증(Authentication) 과정은 Middleware로 구현한다. Application은 사용자의 권한을 확인하기 위해 인증(Authentication)과 인가(Authorization)을 수행한다. <br>
+
+인증은 사용자가 누구인지 증명하는 과정이고 Client Header에 Token을 검증하여 확인한다. <br>  
+인가는 인증을 통과한 사용자가 요청한 Resource를 사용할 수 있는 권한(Permission, Role, ACL)이 있는지를 검증한다. <br>
+
+> 인증과 인가가 실패할 경우 응답에 대한 HTTP Status Code는 401 Unauthorized, 403 Forbidden이다. <br>
+
+Middleware는 실행 콘텍스트(ExectionContext)에 접근할 수 없어 인증 작업에 적합하지 않다. <br>
+반면 Nest에서 권장하는 Guard는 실행 콘텍스트에 접근 할 수 있어 다음 실행될 작업을 정확히 알고있다. 
+
+<br>
+
+### Guard를 이용한 인가
+CanActivate Interface를 구현한다. <br>
+canActivate Method는 ExectionContext를 인수로 받으며 ExectionContext는 ArgumentsHost를 상속받고 Request와 Response에 대한 정보를 가지고 있다. <br>
+현재는 HTTP 통신을 하고있으므로 Interface에서 제공하는 Method 중 switchToHttp() Method를 사용해 필요한 Request를 가져올 수 있다. <br> 
+```typescript
+
+```
 
