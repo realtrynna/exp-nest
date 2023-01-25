@@ -42,7 +42,7 @@ export default (configService: ConfigService): IDatabaseConnection => {
             dateStrings: true,
             bigNumberStrings: false,
             timezone: "Asia/Seoul",
-            // synchronize: true,
+            synchronize: false,
             logging: ["error", "warn"],
             entities: [__dirname + "/**/*.entity{.ts,.js}"],
         },

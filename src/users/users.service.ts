@@ -10,40 +10,31 @@ import { ProfileEntity } from "src/entities/profile.entity";
 @Injectable()
 export class UserService {
     constructor(
-        private readonly emailService: EmailService,
-        @InjectRepository(UserEntity)
-        private readonly usersRepository: Repository<UserEntity>,
-        @InjectRepository(ProfileEntity)
-        private readonly profileRepository: Repository<ProfileEntity>,
-        private readonly dataSource: DataSource,
+        private readonly emailService: EmailService, // @InjectRepository(UserEntity) // private readonly usersRepository: Repository<UserEntity>, // @InjectRepository(ProfileEntity) // private readonly profileRepository: Repository<ProfileEntity>, // private readonly dataSource: DataSource,
     ) {}
 
     async findUserById(userId: number) {
         // const queryRunner = this.dataSource.createQueryRunner();
-
-        const user = await this.dataSource
-            .getRepository(UserEntity)
-            .createQueryBuilder("user")
-            .leftJoinAndSelect("user.profile", "profile")
-            .getOne();
-
-        return user;
+        // const user = await this.dataSource
+        //     .getRepository(UserEntity)
+        //     .createQueryBuilder("user")
+        //     .leftJoinAndSelect("user.profile", "profile")
+        //     .getOne();
+        // return user;
     }
 
     async createUser({ email, name, password, gender }: createUserDto) {
-        console.log("Gender", gender);
-        const profile = new ProfileEntity();
-        profile.gender = gender;
-        await this.profileRepository.save(profile);
-
-        const user = new UserEntity();
-        user.email = email;
-        user.name = name;
-        user.password = password;
-        user.profile = profile;
-        await this.usersRepository.save(user);
-
-        return;
+        // console.log("Gender", gender);
+        // const profile = new ProfileEntity();
+        // profile.gender = gender;
+        // await this.profileRepository.save(profile);
+        // const user = new UserEntity();
+        // user.email = email;
+        // user.name = name;
+        // user.password = password;
+        // user.profile = profile;
+        // await this.usersRepository.save(user);
+        // return;
     }
 
     async verifyEmail(verifyEmailDto: VerifyEmailDto) {
