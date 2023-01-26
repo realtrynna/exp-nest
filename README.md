@@ -17,6 +17,7 @@
 |23.01.19|[Chapter8](#chapter8-영속화-데이터를-기록하고-다루기) |TypeOrm Relations|
 |23.01.21|[Chapter9](#chapter9-요청-처리-전-부가-기능을-수행하기-위한-미들웨어) |Repository Pattern, Middleware|
 |23.01.25|[Chapter10](#chapter10-권한-확인을-위한-가드-jwt-인증인가) |Middleware, Guard|
+|23.01.26|[Chapter10](#chapter10-권한-확인을-위한-가드-jwt-인증인가) |Authentication(Sliding Session, Refresh Token)|
 
 <br>
 
@@ -1628,23 +1629,145 @@ app.use(LoggerMiddleware)
 <br>
 
 ## **_Chapter10_** 권한 확인을 위한 가드 JWT 인증/인가
-Express에서 인증(Authentication) 과정은 Middleware로 구현한다. Application은 사용자의 권한을 확인하기 위해 인증(Authentication)과 인가(Authorization)을 수행한다. <br>
+Express에서 인증(**_Authentication_**) 과정은 **_Middleware_** 로 구현한다. Application은 사용자의 권한을 확인하기 위해 **_인증_**(Authentication)과 **_인가_**(Authorization)을 수행한다. <br>
 
-인증은 사용자가 누구인지 증명하는 과정이고 Client Header에 Token을 검증하여 확인한다. <br>  
-인가는 인증을 통과한 사용자가 요청한 Resource를 사용할 수 있는 권한(Permission, Role, ACL)이 있는지를 검증한다. <br>
+인증은 사용자가 **_누구인지 증명_** 하는 과정이고 Client Header에 Token을 검증하여 확인한다. <br>  
+인가는 인증을 통과한 사용자가 요청한 **_Resource_** 를 사용할 수 있는 **_권한_**(Permission, Role, ACL)이 있는지를 검증한다. <br>
 
 > 인증과 인가가 실패할 경우 응답에 대한 HTTP Status Code는 401 Unauthorized, 403 Forbidden이다. <br>
 
-Middleware는 실행 콘텍스트(ExectionContext)에 접근할 수 없어 인증 작업에 적합하지 않다. <br>
-반면 Nest에서 권장하는 Guard는 실행 콘텍스트에 접근 할 수 있어 다음 실행될 작업을 정확히 알고있다. 
+Middleware는 실행 콘텍스트(**_ExectionContext_**)에 접근할 수 없어 인증 작업에 적합하지 않다. <br>
+반면 Nest에서 권장하는 Guard는 실행 콘텍스트에 접근할 수 있어 다음 실행될 작업을 정확히 알고 있다. 
 
 <br>
 
 ### Guard를 이용한 인가
 CanActivate Interface를 구현한다. <br>
-canActivate Method는 ExectionContext를 인수로 받으며 ExectionContext는 ArgumentsHost를 상속받고 Request와 Response에 대한 정보를 가지고 있다. <br>
-현재는 HTTP 통신을 하고있으므로 Interface에서 제공하는 Method 중 switchToHttp() Method를 사용해 필요한 Request를 가져올 수 있다. <br> 
-```typescript
+canActivate Method는 ExectionContext를 인수로 받으며 ExectionContext는 **_ArgumentsHost_** 를 상속받고 Request와 Response에 대한 정보를 가지고 있다. <br>
+현재는 HTTP 통신을 하고 있으므로 Interface에서 제공하는 Method 중 switchToHttp() Method를 사용해 필요한 Request를 가져올 수 있다. <br> 
 
+```typescript
+import { CanActivate, ExecutionContext, Injectale } from "@nestjs/common"
+import { Observable } from "rxjs"
+
+@Injectable()
+export class AuthGuard implements CanActivate {
+    canActivate(
+        context: ExecutionContext,
+    ): boolean | Promise<boolean> | Observable<booelan> {
+        const rquest = context.switchToHttp().getRequest();
+
+        return this.validateRequest(request);
+    }
+
+    #validateRequest(request: any) {
+        return true;
+    }
+} 
 ```
+```typescript
+@Controller()
+export class UserController {
+    constructor(private readonly userService: UserService) {}
+
+    @UseGuards(AuthGuard)
+    @Get()
+    findUserById(@Param("id") id: number) {
+        return this.userService.findUserById(id);
+    }
+}
+```
+
+<br>
+
+-   Global Guard (main.ts)
+```typescript
+async function bootstrap() {
+    const app = await NestFactory.create(AppModule)
+
+    app.useGlobalGuards(new AuthGuard());
+}
+```
+
+<br>
+
+### **인증**
+사용자의 Resource를 보호하기 위해 Server에 접속하는 Client가 Resource의 주인인지 식별해야 하는 인증 절차를 거쳐야 한다. <br>
+로그인 시점부터 로그아웃까지 사용자가 가진 권한 내에서 서비스를 이용할 수 있어야 한다. <br>
+대표적인 인증 방식은 Token, Session 2가지가 있으며 요즘 표준은 Token이다. 
+
+<br>
+
+1. **Session** <br>
+    로그인에 성공한 사용자가 서비스를 이용하는 동안 저장하고 있는 정보이다. <br>
+    Session 생성 후 Server는 Memory 혹은 Database에 저장하며 이후 사용자의 요청에 포함된 Session을 통해 인증 과정을 거친다. 
+    
+    <br>
+
+    > 브라우저에는 Data를 저장할 수 있는 공간이 있다. <br>
+    > 현재 브라우저를 닫거나 새로우 탭 또는 창을 열면 데이터가 삭제되는 Session Storage <br>
+    > 창을 닫아도 데이터가 남아있는 Local Storage <br>
+    > 간단한 데이터를 저장할 수 있는 Cookie 
+    
+    <br>
+
+    Session은 Server에 저장되므로 사용자가 몰렸을 경우 Server에 부하가 심해진다. <br>
+    Cloud를 이용하면 Server와 Database를 유연하게 증설할 수 있지만 그 시간에 서비스가 중단될 수도 있다. <br>
+    Redis와 같은 Infra를 이용해 In-Memory 방식으로 저장하는 방법도 있다. <br>
+    서비스가 여러 도메인으로 분리돼있을 경우 CORS 문제로 도메인 간 Session을 공유하는 비용이 증가한다. 
+    
+<br>
+
+2. **Token** <br>
+    사용자 로그인 시 Server에서 Token 생성 후 사용자에게 전달한다. <br>
+    로그인 이후 Request에 대해 Client가 전달한 Token 검증만 수행한다. <br>
+    Session과 같이 상태를 관리할 필요 없어 어느 도메인의 서비스로 보내더라도 같은 인증을 수행할 수 있다. <br>
+    이를 확장해 Oauth 기반의 인증 방식도 구현할 수 있다. <br>
+
+<br>
+
+#### **Sliding Session** 과 **Refresh Token**
+Stateless 방식인 Token을 사용하면 Server에 부담을 덜어줄 수 있지만 Token이 탈취되었을 경우 해당 Token을 무효화시키기 어렵다. <br>
+이를 보완하기 위해 Token의 유효 기간을 짧게 설정하지만 이마저도 사용자가 매번 로그인해야하는 단점이 있다. <br>
+
+Stateless 방식의 Token의 보안 취약점을 보강하고 사용자의 편의성을 유지하기 위해 Sliding Session을 사용한다. <br>
+Sliding Session은 로그인 정보를 다시 입력하지 않고 현재 가지고 있는 Token을 새로운 Token으로 발급하는 방식을 의미한다. <br>
+
+이를 활용하려면 사용자가 로그인하는 과정을 대신할 방법이 필요한데 이를 Refresh Token으로 구현한다. <br>
+Refresh Token은 Access Token과 마찬가지로 Token을 사용할 수 있고 Access Token에 비해 유효기간이 매우 길다. <br>
+최초 사용자 로그인 시 Access와 Refresh Token 모두 발급하고 Client는 Access Token 유효 기간 만료로 에러가 발생한 경우 Refresh Token을 이용하여 새로운 Access Token을 발급받는다. <br>
+
+Refresh Token 또한 유효 기간 만료로 재발급 할 경우 가장 최근에 발급한 Refresh Token으로 새로운 Token을 발급받는다. (사용자는 항상 최신 Refresh Token) <br>
+Refresh Token 탈취된다면 Access Token보다 유효 기간이 길어 보안에 취약점이 생기므로 Client는 반드시 안전한 공간에 보관해야한다. <br>
+
+Access Token과 Refresh Token 만료 기간은 사용자의 패턴을 보고 적당한 기간으로 설정한다. <br>
+Refresh Token은 보통 Database에 저장하고 Request에 포함된 Refresh Token과 비교한다. Stateless 방식의 장점이 약화되기는 했지만 Stateless 저장과 보안성 사용성을 위해 타협한 방식이다. 
+
+<br>
+
+#### **Refresh Token Strategy**
+Access Token은 만료 기간이 남은 Token을 여러 개 발급해 사용할 수 있지만 Refresh Token은 서비스 실행 중 유일하게 다뤄져야 한다. <br>
+
+Refresh Token은 만료 기간이 길고 Acess Token을 언제든지 다시 얻을 수 있으므로 새로운 Refresh Token을 발급했을 경우 이전에 발급한 Token이 유효하지 않도록 해서 탈취된 Token이 만료 기간이 남았더라도 비정상 Token으로 인지할 수 있도록 해야한다. <br>
+
+Refresh Token을 Database에 영속화하고 유효한지 여부를 따지는 컬럼을 생성할 수도 있다. <br>
+이를 통해 공격자가 무작위로 Refresh Token을 생성했는지 아니면 과거에 유요하게 발급되었던 Token이 실제 사용되고 있는지 식별할 수 있다. <br>
+
+<br>
+
+#### **Custom Parameter Decorator**
+|Nest Decorator | Express |
+|----------|----------|
+|@Request(), @Req()|req|
+|@Response(), @Res()|res|
+|@Next() | next |
+|@Session() | req.session|
+|@Param(param?: string)| req.params |
+|@Body(param?: string) | req.body |
+|@Query(param?: string) | req.query |
+|@Headers(param?: string) | req.headers |
+| @Ip() | req.ip|
+| @HostParam() | req.hosts|
+
+
 
