@@ -10,7 +10,12 @@ import { ProfileEntity } from "src/entities/profile.entity";
 @Injectable()
 export class UserService {
     constructor(
-        private readonly emailService: EmailService, // @InjectRepository(UserEntity) // private readonly usersRepository: Repository<UserEntity>, // @InjectRepository(ProfileEntity) // private readonly profileRepository: Repository<ProfileEntity>, // private readonly dataSource: DataSource,
+        private readonly emailService: EmailService,
+        @InjectRepository(UserEntity)
+        private readonly usersRepository: Repository<UserEntity>,
+        @InjectRepository(ProfileEntity)
+        private readonly profileRepository: Repository<ProfileEntity>,
+        private readonly dataSource: DataSource,
     ) {}
 
     async findUserById(userId: number) {
@@ -24,17 +29,39 @@ export class UserService {
     }
 
     async createUser({ email, name, password, gender }: createUserDto) {
-        // console.log("Gender", gender);
-        // const profile = new ProfileEntity();
-        // profile.gender = gender;
-        // await this.profileRepository.save(profile);
-        // const user = new UserEntity();
-        // user.email = email;
-        // user.name = name;
-        // user.password = password;
-        // user.profile = profile;
-        // await this.usersRepository.save(user);
-        // return;
+        const connection = this.dataSource;
+        const queryRunner = connection.createQueryRunner();
+
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+
+        try {
+            const profile = await this.profileRepository.create({
+                gender,
+            });
+
+            await queryRunner.manager.save(profile);
+
+            const user = await this.usersRepository.create({
+                email,
+                name,
+                password,
+            });
+
+            user.profile = profile;
+
+            await queryRunner.manager.save(user);
+
+            await queryRunner.commitTransaction();
+
+            return user;
+        } catch (err) {
+            await queryRunner.rollbackTransaction();
+
+            throw Error("");
+        } finally {
+            await queryRunner.release();
+        }
     }
 
     async verifyEmail(verifyEmailDto: VerifyEmailDto) {

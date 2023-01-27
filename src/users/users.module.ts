@@ -10,7 +10,7 @@ import { ProfileEntity } from "src/entities/profile.entity";
 @Module({
     imports: [
         EmailModule,
-        // TypeOrmModule.forFeature([UserEntity, ProfileEntity]),
+        TypeOrmModule.forFeature([UserEntity, ProfileEntity]),
     ],
     controllers: [UsersController],
     providers: [UserService],

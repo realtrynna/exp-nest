@@ -20,17 +20,17 @@ import { Logger2Middleware } from "./middlewares/logger2.middleware";
             isGlobal: true,
             validationSchema: validationEnv,
         }),
-        // TypeOrmModule.forRootAsync({
-        //     imports: [ConfigModule],
-        //     useFactory: async (
-        //         configService: ConfigService,
-        //     ): Promise<TypeOrmModuleOptions> => {
-        //         const config = dbConnect(configService);
+        TypeOrmModule.forRootAsync({
+            imports: [ConfigModule],
+            useFactory: async (
+                configService: ConfigService,
+            ): Promise<TypeOrmModuleOptions> => {
+                const config = dbConnect(configService);
 
-        //         return config.production;
-        //     },
-        //     inject: [ConfigService],
-        // }),
+                return config.production;
+            },
+            inject: [ConfigService],
+        }),
     ],
 })
 export class AppModule implements NestModule {
