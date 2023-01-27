@@ -69,10 +69,11 @@ export class UsersController {
         description: "클라이언트 에러",
     })
     @Post()
-    async createUser(@Body() createUserDto: createUserDto): Promise<void> {
+    async createUser(@Body() createUserDto: createUserDto) {
         const createUserVerifyToken = "DLLO-44L2-DLLA-WMDC";
-
         const createUser = await this.userService.createUser(createUserDto);
+
+        return createUser;
     }
 
     // 이메일 인증
