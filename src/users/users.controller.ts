@@ -8,6 +8,10 @@ import {
     UseInterceptors,
     ParseIntPipe,
     DefaultValuePipe,
+    UseGuards,
+    ConsoleLogger,
+    LoggerService,
+    Inject,
 } from "@nestjs/common";
 import { BadRequestException } from "@nestjs/common/exceptions";
 import {
@@ -20,27 +24,47 @@ import {
     ApiBadRequestResponse,
 } from "@nestjs/swagger";
 import uuid from "uuid";
+import { Logger } from "winston";
+import { WINSTON_MODULE_NEST_PROVIDER } from "nest-winston";
 
 import { UserService } from "./users.service";
 import { createUserDto, VerifyEmailDto, LoginDto, Profile } from "./dto";
 import { EmailService } from "src/email/email.service";
 import { BaseInterceptor } from "src/common/interceptors/date.interceptor";
 import { ValidationPipe } from "../common/validations/validation.pipe";
+import { UserMeta } from "src/common/decorators/user.decorator";
+import { AuthGuard } from "src/guard/auth.guard";
+import { CustomLogger } from "src/log/logger.service";
+
+interface IUser {
+    name: string;
+    age: number;
+}
 
 @Controller("users")
 @ApiTags("사용자")
 export class UsersController {
+    // readonly #logger = new Logger(UsersController.name);
+
     constructor(
         private readonly userService: UserService,
         private readonly emailService: EmailService,
+        // private readonly logger: CustomLogger,
+        @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: Logger,
     ) {}
 
     @Get("/practice/:id")
-    async practice(@Param("id", ValidationPipe) id: number) {
-        // console.log(id);
-        const user = await this.userService.findUserById(id);
+    @UseGuards(AuthGuard)
+    async practice(
+        @Param("id", ValidationPipe) id: number,
+        @UserMeta() user: IUser,
+    ) {
+        this.#printLogger();
+        const finduser = await this.userService.findUserById(id);
 
-        return user;
+        console.log("User는", user);
+
+        return "hello";
     }
 
     // 회원 정보 조회
@@ -86,5 +110,9 @@ export class UsersController {
     @Post("/login")
     async login(@Body() loginDto: LoginDto): Promise<void> {
         return this.userService.login(loginDto);
+    }
+
+    #printLogger() {
+        this.logger.error("error", "Test");
     }
 }
