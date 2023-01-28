@@ -6,6 +6,8 @@ export class Logger2Middleware implements NestMiddleware {
     use(req: Request, res: Response, next: NextFunction) {
         console.log("Second Middleware Execute");
 
+        // req.user = ""
+
         return next();
     }
 }

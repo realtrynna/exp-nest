@@ -10,7 +10,12 @@ export class AuthGuard implements CanActivate {
 
         console.log("AuthGuard Execution");
 
-        return this.#validateRequest(request);
+        request.user = {
+            name: "윤승근",
+            age: 30,
+        };
+
+        return true;
     }
 
     #validateRequest(request: any) {

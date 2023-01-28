@@ -7,7 +7,12 @@ import { AppModule } from "./app.module";
 // import { BaseInterceptor } from './common/interceptors/date.interceptor';
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, {
+        logger:
+            process.env.NODE_ENV === "production"
+                ? ["error", "warn", "log"]
+                : ["error", "warn", "log", "verbose", "debug"],
+    });
 
     // Global Interceptor
     // app.useGlobalInterceptors(new DateInterCeptor());
