@@ -18,6 +18,7 @@
 |23.01.21|[Chapter9](#chapter9-요청-처리-전-부가-기능을-수행하기-위한-미들웨어) |Repository Pattern, Middleware|
 |23.01.25|[Chapter10](#chapter10-권한-확인을-위한-가드-jwt-인증인가) |Middleware, Guard|
 |23.01.26|[Chapter10](#chapter10-권한-확인을-위한-가드-jwt-인증인가) |Authentication(Sliding Session, Refresh Token)|
+|23.01.28|[Chapter11](#chapter11-로깅-애플리케이션의-동작-기록) |Logger(BuiltIn, Custom)|
 
 <br>
 
@@ -1769,5 +1770,132 @@ Refresh Token을 Database에 영속화하고 유효한지 여부를 따지는 �
 | @Ip() | req.ip|
 | @HostParam() | req.hosts|
 
+<br>  
 
+-   **UserDecorator** <br>
+    createParamDecorator를 이용해 User Decorator를 선언 <br>
+    ExecutionContext에서 Request를 얻어온다. <br>
+    Guard에서 설정(reqeust.user)한 사용자 객체를 반환한다. <br>
+    req.uset가 any Type이었다면 Decorator를 만듬으로 UserMeta Type을 가지게되어 Type의 안정성도 누릴 수 있다. 
+    
+    <br>
 
+    ```typescript
+    import { createParamDecorator, ExecutionContext} from "@nestjs/common"
+
+    export const UserMeta = createParamDecorator(
+        (data: unknown, ctx: ExecutionContext) => {
+            const request = ctx.switchToHttp().getRequest()
+
+            return request.user;
+        }
+    )
+    ```
+
+<br>
+
+#### 추후 작성
+-   Decorator 합성
+-   Metadata(Reflection Class)
+
+<br>
+
+## **_Chapter11_** 로깅 애플리케이션의 동작 기록
+서비스에 기능이 늘어나 규모가 커지면 기능에 동작 과정을 남기고 추적하는 일이 매우 중요하다. <br>
+
+Issue가 발생했을 경우 해당 Issue만 보고 해결하는 건 많은 비용이 들고 코드를 역추적하는 과정은 매우 복잡하다. <br>
+Issue 발생 지점과 Callstack이 제공된다면 신속한 조취가 가능하다. <br>
+
+Nest는 내장 Logger Class를 지원하며 다음과 같은 System Logging 동작을 제어할 수 있다. <br>
+-   Logging 비활성화
+-   Log Level: log, error, warn, debug, varbose
+-   Logger의 Timestamp 재정의
+-   기본 Logger 재정의(오버라이딩)
+-   기본 Logger를 확장해 Custom Logger 작성
+-   DI를 통해 손쉽게 Logger를 주입하거나 Test Module로 제공
+
+<br>
+
+*   **내장 로거** <br>
+    Logger Instance는 Log를 남기고자 하는 부분에 직접 생성해 사용한다.
+    ```typescript
+    import { Injectable, Logger } from "@nestjs/common"
+
+    @Injectable()
+    export class UserService {
+        private readonly logger = new Logger(UserService.name);
+    
+        findUserById() {
+            this.logger.error("")
+            this.logger.warn("")
+            this.logger.log("")
+            this.logger.verbose("")
+            this.logger.debug("")
+        }
+    }
+    ```
+
+<br>
+
+*   **커스텀 로거** <br>
+    내장 로거는 File 또는 Database 저장 기능을 제공하지 않으므로 Custom Logger를 직접 구현할 수 있다. <br>
+    Custom Logger는 @nestjs/common의 LoggerService Interface를 구현해야한다. 
+
+    <br>
+
+    -   **logger.service.ts**
+    ```typescript
+    export class CustomLogger extends ConsoleLogger {
+        error(message: any, stack?: string, context?: string) {
+            super.error.apply(this, arguments)
+
+            this.loggerExecution
+        }
+
+        loggerExecution() {
+            // Ddatabase Save Logic 등 Logger Logic
+        }
+    }
+    ```
+
+    <br>
+
+    -   **logger.module.ts**
+    ```typescript
+    import { Module } from "@nestjs/common"
+    import { CustomLogger } from ""
+
+    @Module({
+        providers: [CustomLogger],
+        exports: [CustomLogger],
+    })
+    export class LoggerModule {}
+    ```
+    
+    <br>
+
+    -   **Global 설정**
+    ```typescript
+    async function bootstrap() {
+        const app = await NestFactory.create(AppModule)
+
+        app.useLogger(app.get(CustomLogger))
+    }
+    ```
+
+<br>
+
+### Winston Logger
+Nest 제공 Logger도 사용 가능하지만 상용 수준의 서비스에선 Log 출력뿐 아니라 File을 저장하거나 중요 Log는 Database에 저장해야한다. <br>
+
+이러한 기능을 Logger를 활용해 직접 구현하기엔 비효율적이므로 Winston을 사용한다. <br>
+Winston은 Logging Process를 분리시켜 좀 더 유연하고 확장 가능한 Logging System 구축이 가능하다. <br>
+Log Format과 Level을 유연하게 설정할 수 있다. 
+
+<br>
+
+```cmd
+npm i nest-winston winston
+```
+
+<br>
