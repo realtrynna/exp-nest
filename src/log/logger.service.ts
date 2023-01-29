@@ -6,6 +6,8 @@ export class CustomLogger extends ConsoleLogger {
         super.error.apply(this, arguments);
 
         this.logger();
+
+        console.log(message, stack, context)
     }
 
     logger() {
