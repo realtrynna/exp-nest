@@ -12,8 +12,12 @@ import {
     ConsoleLogger,
     LoggerService,
     Inject,
+    UseFilters,
 } from "@nestjs/common";
-import { BadRequestException } from "@nestjs/common/exceptions";
+import {
+    BadRequestException,
+    InternalServerErrorException,
+} from "@nestjs/common/exceptions";
 import {
     ApiTags,
     ApiOperation,
@@ -24,6 +28,7 @@ import {
     ApiBadRequestResponse,
 } from "@nestjs/swagger";
 import uuid from "uuid";
+import { HttpExceptionFilter } from "../exceptions/exception.filter";
 import { Logger } from "winston";
 import { WINSTON_MODULE_NEST_PROVIDER } from "nest-winston";
 
@@ -55,6 +60,7 @@ export class UsersController {
 
     @Get("/practice/:id")
     @UseGuards(AuthGuard)
+    @UseFilters(HttpExceptionFilter)
     async practice(
         @Param("id", ValidationPipe) id: number,
         @UserMeta() user: IUser,
@@ -62,7 +68,13 @@ export class UsersController {
         this.#printLogger();
         const finduser = await this.userService.findUserById(id);
 
-        console.log("User는", user);
+        throw new HttpExceptionFilter();
+
+        // if (id < 1)
+        //     throw new BadRequestException(
+        //         "파라미터는 1이상이어야합니다.",
+        //         "에러에 대한 부가 설명",
+        //     );
 
         return "hello";
     }

@@ -19,6 +19,7 @@
 |23.01.25|[Chapter10](#chapter10-권한-확인을-위한-가드-jwt-인증인가) |Middleware, Guard|
 |23.01.26|[Chapter10](#chapter10-권한-확인을-위한-가드-jwt-인증인가) |Authentication(Sliding Session, Refresh Token)|
 |23.01.28|[Chapter11](#chapter11-로깅-애플리케이션의-동작-기록) |Logger(BuiltIn, Custom)|
+|23.01.30|[Chapter12](#chapter12-모든-건-항상-실패한다-예외-필터) |Exception(Handler, Filter)|
 
 <br>
 
@@ -1804,7 +1805,7 @@ Refresh Token을 Database에 영속화하고 유효한지 여부를 따지는 �
 서비스에 기능이 늘어나 규모가 커지면 기능에 동작 과정을 남기고 추적하는 일이 매우 중요하다. <br>
 
 Issue가 발생했을 경우 해당 Issue만 보고 해결하는 건 많은 비용이 들고 코드를 역추적하는 과정은 매우 복잡하다. <br>
-Issue 발생 지점과 Callstack이 제공된다면 신속한 조취가 가능하다. <br>
+Issue 발생 지점과 CallStack이 제공된다면 신속한 조취가 가능하다. <br>
 
 Nest는 내장 Logger Class를 지원하며 다음과 같은 System Logging 동작을 제어할 수 있다. <br>
 -   Logging 비활성화
@@ -1899,3 +1900,123 @@ npm i nest-winston winston
 ```
 
 <br>
+
+```typescript
+import winston from "winston";
+import {
+    nestWinstonModuleUtilities,
+    WinstonModule,
+} from "nest-winston"
+
+@Module({
+    imports: [
+        ...,
+        WinstonModule.forRoot({
+            transports: [                                           // transports Option 설정 
+                new winston.transports.Console({                     
+                    level:
+                        process.env.NODE_ENV === "production"       // 개발 환경별로 Log Level 설정
+                            ? "info"
+                            : "silly",
+                    format: winston.format.combine(                 
+                        winston.format.timestamp(),                 // Log Time 설정
+                        utilities.format.nestLike("MyApp", {        // 어디에서 Log를 남기는지 구분하는 MyApp과 가독성을 위한 prettyPrint 설정 
+                            prettyPrint: true,
+                        }),
+                    ),
+                }),
+            ],
+        }),
+    ]
+})
+```
+
+<br>
+
+-   Winston이 지원하는 Log Level
+    설정된 Log Level보다 Level 높은 Log는 같이 출력된다. <br>
+    ```javascript
+    {
+        error: 0,
+        warn: 1,
+        info: 2,
+        http: 3,
+        verbose: 4,
+        debug: 5,
+        silly: 6
+    }
+    ```
+
+<br>
+
+## **_Chapter12_** 모든 건 항상 실패한다 예외 필터
+서비스에서 예외(Exception) 처리는 필수 사항이다. 어떤 상황이던 에러는 발생할 수 있으며 개발자는 에러에 대응책을 마련해야한다. <br>
+
+장애 또는 예외가 발생할만한 모든 부분에 예외 처맄 코드를 삽입하는 건 중복 코드를 양산할 뿐만 아니라 기능 구현과 관련 없는 코드가 삽입되므로 비지니스 로직에 집중하기 어렵다. <br>
+예외 발생 시 Log와 CallStack을 남겨 Debug에 사용할 수 있는 별도의 Module을 작성했다면 에러 처리기 역시 따로 만들어 공통으로 관리해야한다. <br>
+
+### 예외 처리
+Nest는 Framework 내부에 Exception Layer를 두고있다. <br>
+Application을 통틀어 제대로 처리되지 않은 예외를 처리하는 역할을 한다. <br>
+
+기본적으로 Nest는 예외에 대한 많은 Class를 제공하며 에러 발생 시 응답 형식을 JSON으로 변경해준다. <br>
+이는 기본으로 내장된 Global ExceptionFilter가 처리한다. <br>
+
+내장 예외 필터는 인식할 수 없는 에러(HttpException도 아니고 HttpException을 상속받지도 않은 에러)를 InternalServerErrorException으로 반환한다.
+
+<br>
+
+> InternalServerErrorException: 요청을 처리하는 과정에서 서버가 예상하지 못한 상황
+
+<br>
+
+InternalServerErrorException는 HttpException을 상속받고 HttpException은 자바스크립트의 Error를 상속받는다. <br>
+결국 모든 에러는 Error Object로부터 파생된다.
+
+<br>
+
+그 외 Nest 기본 제공 ExceptionFilter는 HttpException을 상속받으며 해당 Class를 사용해 적절한 예외를 던진다(throw). <br>
+적절한 예외 처리는 Client에서 에러를  쉽게 이해하고 대처할 수 있도록 한다.
+
+<br>
+
+-   **HttpException Class** <br>
+    생성자(constructor)는 response, status 2개의 인수를 받는다. <br>
+    response: JSON 응답의 본문이다. 문자열 또는 Record<string, any> 타입의 객체를 전달할 수 있다 <br>
+    status: 에러의 속성을 나타내는 HTTP Status Code <br>
+    JSON 읃답의 본문은 statusCode와 message 속성을 기본으로 가진다. <br>
+    ```typescript
+    export declare class HttpException extends Error {
+        constructor(response: string | Record<string, any>, status: number);
+    }
+    ```
+
+<br>
+
+-   **BadRequestException**
+    ```typescript
+    import { BadRequestException } from "@nestjs/common/exceptions"
+
+    throw new BadRequestException("message", "description")
+    ```
+
+<br>
+
+-   Nest에서 제공하는 예외 클래스의 생성자는 다음과 같은 모양을 가진다. <br>
+    ```typescript
+    constructor(objectOrError?: string | object | any, description: string);
+    ```
+
+<br>
+
+### **예외 필터**
+Nest에서 제공하는 Global 예외 필터 외에 직접 ExceptionFilter Layer를 두어 원하는 대로 예외 처리를 다룰 수 있다. <br>
+예외가 일어날 경우 Log를 남기거나 Response Object를 원하는대로 변경하는 등 요구 사항을 해결할 경우 사용한다. <br>
+
+-   예외 발생 시 예외를 잡고 Request URL과 Timestamp를 출력
+    ```typescript
+    import { ArgumentHost, Catch, ExceptionFilter, HttpException, internalServerErrorException } from "@nestjs/common"
+    import { Request, Response } from "express"
+
+    
+    ```
