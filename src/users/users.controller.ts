@@ -35,7 +35,7 @@ import { WINSTON_MODULE_NEST_PROVIDER } from "nest-winston";
 import { UserService } from "./users.service";
 import { createUserDto, VerifyEmailDto, LoginDto, Profile } from "./dto";
 import { EmailService } from "src/email/email.service";
-import { BaseInterceptor } from "src/common/interceptors/date.interceptor";
+import { LoggingInterceptor } from "src/common/interceptors/date.interceptor";
 import { ValidationPipe } from "../common/validations/validation.pipe";
 import { UserMeta } from "src/common/decorators/user.decorator";
 import { AuthGuard } from "src/guard/auth.guard";
@@ -60,15 +60,15 @@ export class UsersController {
 
     @Get("/practice/:id")
     @UseGuards(AuthGuard)
-    @UseFilters(HttpExceptionFilter)
+    @UseInterceptors(LoggingInterceptor)
     async practice(
         @Param("id", ValidationPipe) id: number,
         @UserMeta() user: IUser,
     ) {
-        this.#printLogger();
+        // this.#printLogger();
         const finduser = await this.userService.findUserById(id);
 
-        throw new HttpExceptionFilter();
+        // throw new HttpExceptionFilter();
 
         // if (id < 1)
         //     throw new BadRequestException(
@@ -81,7 +81,7 @@ export class UsersController {
 
     // 회원 정보 조회
     @Get("/:userId")
-    @UseInterceptors(BaseInterceptor)
+    @UseInterceptors(LoggingInterceptor)
     async findUserById(
         @Param("userId", new ParseIntPipe({ errorHttpStatusCode: 500 }))
         userId: number,

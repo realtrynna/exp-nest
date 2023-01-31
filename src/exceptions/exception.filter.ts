@@ -6,9 +6,11 @@ import {
     HttpException,
     ExceptionFilter,
 } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
+    constructor(private readonly configService: ConfigService) {}
     catch(exception: Error, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
         const req = ctx.getRequest<Request>();
