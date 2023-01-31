@@ -20,6 +20,7 @@
 |23.01.26|[Chapter10](#chapter10-권한-확인을-위한-가드-jwt-인증인가) |Authentication(Sliding Session, Refresh Token)|
 |23.01.28|[Chapter11](#chapter11-로깅-애플리케이션의-동작-기록) |Logger(BuiltIn, Custom)|
 |23.01.30|[Chapter12](#chapter12-모든-건-항상-실패한다-예외-필터) |Exception(Handler, Filter)|
+|23.01.31|[Chapter13](#chapter13-인터셉터로-요청과-응답을-알맞게-바꾸기) |Interceptor|
 
 <br>
 
@@ -2018,5 +2019,126 @@ Nest에서 제공하는 Global 예외 필터 외에 직접 ExceptionFilter Layer
     import { ArgumentHost, Catch, ExceptionFilter, HttpException, internalServerErrorException } from "@nestjs/common"
     import { Request, Response } from "express"
 
+    @Catch()                                                                // @Catch Decorator: 처리되지 않은 모든 Exception을 Catch
+    export class HttpExceptionFilter implements ExceptionFilter {
+        catch(exception: Error, host: ArgumentHost) {
+            const ctx = host.switchToHttp()
+            const req = ctx.getRequest<Request>()
+            const res = ctx.getResponse<Response>()
+
+            if (!(exception instanceof HttpException)) {                    // Nest의 Built-in Error는 HttpException을 상속 받는다
+                exception = new InternalServerErrorException()              // HttpException이 아닌 예외는 알 수 없는 Error이므로 InternalServerErrorException
+            }
+
+            const response = (exception  as HttpException).getReponse()
+
+            const log = {
+                timestamp: new Data(),
+                url: req.url,
+                response,
+            }
+
+            return res
+                    .status(exception as HttpException).getStatus()
+                    .json(repsonse)
+        }
+    }    
+    ```
+
+<br>
+
+-   다음과 같이 Application Global 설정을 할경우 예외 필터의 동작이 main.ts에서 이뤄지므로 필터에 의존성 주입을 할 수 없다. <br>
+    ```typescript
+    async function bootstrap() {
+        const app = await NestFactory.create(AppModule);
+        app.useGlobalFilters(new HttpExceptionFilter())     // 전역
+    }
+    ```
+
+-   해결을 위해 Custom Provider 등록
+    ```typescript
+    import { Module } from "@nestjs/common"
+    import { APP_FILTER } from "@nestjs/core"
+
+    @Module({
+        providers: [
+            {
+                provide: APP_FILTER,
+                useClass: HttpExceptionFilter,
+            }
+        ]
+    })
+    export class 
+    ```
+
+<br>
+
+## **_Chapter13_** 인터셉터로 요청과 응답을 알맞게 바꾸기
+Interceptor는 Request, Response를 가로채 변형을 가할 수 있는 Component다. <br> 
+AOP(Aspect Oriented Programing) 프로그래밍에서 영향을 받았으며 다음과 같은 기능을 수행할 수 있다. <br>
+
+* Method 실행 전/후 추가 로직을 Binding <br>
+* Function에서 반한된 결과를 변환 <br>
+* Function에 throw된 Exception을 변환 <br>
+* 기본 기능의 동작을 확장 <br>
+* 특정 조건에 따라 기능을 완전히 재정의(캐싱)
+
+<br>
+
+Interceptor는 Middleware와 동일한 기능을 수행하지만 수행 시점(LifeCycle)에 차이가 있다. <br>
+Middleware는 Handler에 전달되기 전 동작하고 Interceptor는 Handler 전/후 호출되어 Request, Response를 다룰 수 있다. <br>
+
+-   LoggingInterceptor <br>
+    ```typescript
+    import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from "@nestjs/common"
+    import { Observable } from "rxjs"
+    import { tap } from "rxjs/operators"
+
+    @Injectable()
+    export class LoggingInterceptor implements NestInterceptor {                        // NestInterceptor Interface를 구현한 Class
+        intercept(context: ExecutionContext, next: CallHandler): Observable<any> {      // NestInterceptor Interface의 intercept Method
+            // Request Before                                                            
+            console.log("Before Execute")                                               // Request Handler 전달 전 실행 로직    
+
+            // Response After
+            const now = new Data()
+            
+            return next
+                .handle()
+                .pipe(
+                    tap(() => console.log("After Execute"))                             // Response 후 실행 로직
+                )
+        }
+    }
+    ```
+
+<br>
+
+-   Global Interceptor <br>
+    ```typescript
+    await function bootstrap() {
+        app.useGlobalInterceptors(new LoggingInterceptor())
+    }
+    ```
+
+<br>
+
+-   NestInterceptor의 구현부 <br>
+    **ExecutionContext**: 현재 실행 콘텍스트 
     
+    <br>
+
+    **CallHandler**: handle() Method를 구현하며 handle() Method는 Router Handler에서 전달된 Response Stream을 돌려주고 RxJS의 Observable로 구현되어있다. <br>
+    handle()를 호출하지 않으면 Router Handler가 동작하지 않을 수도 있다. handle()를 호출하고 Observable을 수신한 후 Response Stream에 추가 작업을 수행하는 방식 <br>
+
+    <br>
+
+    ```typescript
+    export interface NestInterceptor<T = any, R = any> {
+        intercept(context: ExecutionContext, next: CallHandler<T>): Observable<R> | Promise<Observable<R>>
+    }
+
+    export interface CallHandler<T = any> {
+        handle(): Observable<T>;
+    }
     ```
