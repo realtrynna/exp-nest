@@ -21,6 +21,7 @@
 |23.01.28|[Chapter11](#chapter11-로깅-애플리케이션의-동작-기록) |Logger(BuiltIn, Custom)|
 |23.01.30|[Chapter12](#chapter12-모든-건-항상-실패한다-예외-필터) |Exception(Handler, Filter)|
 |23.01.31|[Chapter13](#chapter13-인터셉터로-요청과-응답을-알맞게-바꾸기) |Interceptor|
+|23.02.01|[Chapter13](#chapter13-인터셉터로-요청과-응답을-알맞게-바꾸기) |Lifecycle|
 
 <br>
 
@@ -256,7 +257,8 @@ Nest의 기본 Build Option은 .ts 파일 외 Asset은 제외하도록 설정돼
 <br>
 
 # 오타
-53p, Cusom => Custom
+53p, Cusom => Custom <br>
+228, 예외 필터에 예외 필터 대신 인터셉터가 들어감 <br>
 
 <br>
 
@@ -2142,3 +2144,81 @@ Middleware는 Handler에 전달되기 전 동작하고 Interceptor는 Handler �
         handle(): Observable<T>;
     }
     ```
+
+<br>
+
+### Lifecycle
+요청 생명주기(Request Lifecycle) 또는 요청/응답 생명 주기는 들어온 Request가 어떤 Component를 거쳐 처리되고 생성된 응답은 또 어떤 Component를 거쳐 처리되는지를 의미한다. <br>
+개발 시 Debug나 Application의 동작을 이해하려면 Lifecycle은 필수로 알아야한다. <br>
+
+Nest의 Request Lifecycle 순서는 다음과 같다. 
+
+<br>
+
+1. Middleware <br>
+    Middleware의 실행 순서는 정해져있다. 가장 먼저 Global Binding Middleware가 실행된다. <br>
+    이후 Module에 Binding되는 순서대로 실행되며 다른 Module에 Binding되어있는 Middleware들이 있다면 먼저 RootModule에 Binding된 Middleware를 실행하고 imports에 정의한 순서대로 실행된다. 
+
+<br>
+
+2. Guard <br>
+    가장 먼저 Global Binding Guard가 실행된 후 Controller에 정의된 순서대로 실행된다. <br>
+    Guard1 => Guard2 => Guard3
+    ```typescript
+    @UseGuards(Guard1, Guard2)
+    @Controller("users")
+    export class UserController {
+        constructor(private userService: UserService) {}
+
+        @UseGuards(Guard3)
+        @Get()
+        getUserList() {}
+    }
+    ```
+
+<br>
+
+3. Interceptor <br>
+    Guard의 실행 순서와 유사하다. Interceptor는 RxJS의 Observable 객체를 반환하는데 이는 Request의 실행 순서와 반대로 동작한다. <br>
+    즉 요청은 Global => Controller => Router 순서대로 동작하지만 응답은 Router => Controller => Global 순으로 동작한다. <br>
+
+<br>
+
+4. Pipe <br>
+    Pipe가 여러 Level에 적용되어 있다면 순서대로 적용된다. 특이점은 Pipe가 적용된 Router의 매개변수가 여러개 있을 경우 정의한 순서의 역순으로 적용된다. <br>
+    updateUser Method에는 Pipe가 둘 다 적용되어있는데 GeneralValidationPipe => RouteSpecificPipe 순으로 동작한다. <br>
+    updateUser Method 매개 변수는 query => params => body 순으로 동작한다. <br>  
+    ```typescript
+    @UsePipes(GeneralValidationPipe)
+    @Controller("users")
+    export class UserController {
+        constructor(private readonly userService: UserService) {}
+
+        @UsePipes(RouteSpecificPipe)
+        @Patch(":id")
+        updateUser(
+            @Body() body: UpdateUserDto,
+            @Param() params: UpdateUserParams,
+            @Query() query: UpdateUserQuery
+        ) {}
+    }
+    ```
+
+<br>
+
+5. ExceptionFilter <br>
+    유일하게 예외 필터는 Global ExceptionFilter가 먼저 적용되지 않는다. <br>
+    Router => Contropller => Global 순으로 Binding된 순서대로 동작한다. <br>
+    Filter가 예외를 잡으면(Catch) 다른 Filter가 동일한 예외를 잡을 수없다.
+
+<br>
+
+> 1. Middleware (Global => Module) <br>
+> 2. Guard (Global => Controller => Router) <br>
+> 3. Interceptor (Global => Controller => Router) <br>
+> 4. Pipe (Global => Controller => Router) <br>
+> Controller <=> Service <br>
+> 5. Interceptor (Global => Controller => Router) <br>
+> 6. ExceptionFilter (Global => Controller => Router)
+
+<br>
