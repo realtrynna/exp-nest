@@ -2491,3 +2491,25 @@ npm i @nestjs/schedule @types/cron
 | 0 30 11 \* \* 1-5 | 월~금 오전 11시 30분에             |
 
 <br>
+
+2. **Interval** <br>
+   테스크 수행 함수에 @Interval() Decorator를 사용할 수 있다. 인수로 Task Name, Timeout(MS) <br>
+    ```typescript
+    @Interval("intervalTask", 3000)
+    handleInterval() {
+        this.logger.log("Task Called By Interval");
+    }
+    ```
+
+<br>
+
+3. **Timeout** <br>
+   Application 실행 후 Task가 한번 실행되며 @Timeout() Decorator를 사용하며 인수는 Interval과 동일하다. <br>
+    ```typescript
+     @Timeout("timeoutTask", 5000)
+     handleTimeout() {
+         this.logger.log("Task Called By Timeout");
+     }
+    ```
+
+<br>
