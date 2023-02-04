@@ -23,6 +23,7 @@
 | 23.01.31 | [Chapter13](#chapter13-인터셉터로-요청과-응답을-알맞게-바꾸기)        | Interceptor                                                                  |
 | 23.02.01 | [Chapter13](#chapter13-인터셉터로-요청과-응답을-알맞게-바꾸기)        | Lifecycle                                                                    |
 | 23.02.02 | [Chapter14](#chapter14-태스크-스케줄링)                               | Task Schedule                                                                |
+| 23.02.04 | [Chapter15](#chapter15-헬스-체크-댁의-서버는-건강하신가요)            | Task Schedule                                                                |
 
 <br>
 
@@ -1954,12 +1955,12 @@ Refresh Token을 Database에 영속화하고 유효한지 여부를 따지는 �
 
 ## **_Chapter11_** 로깅 애플리케이션의 동작 기록
 
-서비스에 기능이 늘어나 규모가 커지면 기능에 동작 과정을 남기고 추적하는 일이 매우 중요하다. <br>
+서비스에 기능이 늘어나 규모가 커지면 기능에 동작 과정을 남기고 **_추적_** 하는 일이 매우 중요하다. <br>
 
 Issue가 발생했을 경우 해당 Issue만 보고 해결하는 건 많은 비용이 들고 코드를 역추적하는 과정은 매우 복잡하다. <br>
-Issue 발생 지점과 CallStack이 제공된다면 신속한 조취가 가능하다. <br>
+Issue 발생 지점과 CallStack이 제공된다면 **_신속한 조치_** 가 가능하다. <br>
 
-Nest는 내장 Logger Class를 지원하며 다음과 같은 System Logging 동작을 제어할 수 있다. <br>
+Nest는 **_내장 Logger Class_** 를 지원하며 다음과 같은 System Logging 동작을 제어할 수 있다. <br>
 
 -   Logging 비활성화
 -   Log Level: log, error, warn, debug, varbose
@@ -1993,8 +1994,8 @@ Nest는 내장 Logger Class를 지원하며 다음과 같은 System Logging 동�
 <br>
 
 -   **커스텀 로거** <br>
-    내장 로거는 File 또는 Database 저장 기능을 제공하지 않으므로 Custom Logger를 직접 구현할 수 있다. <br>
-    Custom Logger는 @nestjs/common의 LoggerService Interface를 구현해야한다.
+    내장 로거는 File 또는 Database 저장 기능을 제공하지 않으므로 **_Custom Logger_** 를 직접 구현할 수 있다. <br>
+    Custom Logger는 @nestjs/common의 LoggerService Interface를 구현해야 한다.
 
     <br>
 
@@ -2045,11 +2046,11 @@ Nest는 내장 Logger Class를 지원하며 다음과 같은 System Logging 동�
 
 ### Winston Logger
 
-Nest 제공 Logger도 사용 가능하지만 상용 수준의 서비스에선 Log 출력뿐 아니라 File을 저장하거나 중요 Log는 Database에 저장해야한다. <br>
+Nest 제공 Logger도 사용 가능하지만 상용 수준의 서비스에선 Log 출력뿐 아니라 File을 저장하거나 중요 Log는 Database에 저장해야 한다. <br>
 
 이러한 기능을 Logger를 활용해 직접 구현하기엔 비효율적이므로 Winston을 사용한다. <br>
-Winston은 Logging Process를 분리시켜 좀 더 유연하고 확장 가능한 Logging System 구축이 가능하다. <br>
-Log Format과 Level을 유연하게 설정할 수 있다.
+Winston은 **Logging Process** 를 **_분리_** 시켜 좀 더 유연하고 확장 가능한 Logging System 구축이 가능하다. <br>
+**_Log Format_** 과 **_Level_** 을 유연하게 설정할 수 있다.
 
 <br>
 
@@ -2091,8 +2092,8 @@ import {
 
 <br>
 
--   Winston이 지원하는 Log Level
-    설정된 Log Level보다 Level 높은 Log는 같이 출력된다. <br>
+-   Winston이 지원하는 **Log Level**
+    설정된 Log Level보다 높은 Log는 **_같이_** 출력된다. <br>
     ```javascript
     {
         error: 0,
@@ -2109,20 +2110,22 @@ import {
 
 ## **_Chapter12_** 모든 건 항상 실패한다 예외 필터
 
-서비스에서 예외(Exception) 처리는 필수 사항이다. 어떤 상황이던 에러는 발생할 수 있으며 개발자는 에러에 대응책을 마련해야한다. <br>
+서비스에서 예외(**_Exception_**) 처리는 필수 사항이다. 어떤 상황이던 에러는 발생할 수 있으며 개발자는 에러에 대응책을 마련해야 한다. <br>
 
-장애 또는 예외가 발생할만한 모든 부분에 예외 처맄 코드를 삽입하는 건 중복 코드를 양산할 뿐만 아니라 기능 구현과 관련 없는 코드가 삽입되므로 비지니스 로직에 집중하기 어렵다. <br>
-예외 발생 시 Log와 CallStack을 남겨 Debug에 사용할 수 있는 별도의 Module을 작성했다면 에러 처리기 역시 따로 만들어 공통으로 관리해야한다. <br>
+장애 또는 예외가 발생할 만한 모든 부분에 예외 처맄 코드를 삽입하는 건 **_중복 코드를 양산_** 할 뿐만 아니라 기능 구현과 관련 없는 코드가 삽입되므로 **_비즈니스 로직_** 에 집중하기 어렵다. <br>
+예외 발생 시 **_Log_** 와 **_CallStack_** 을 남겨 Debug에 사용할 수 있는 별도의 Module을 작성했다면 에러 처리기 역시 따로 만들어 공통으로 관리해야 한다.
 
-### 예외 처리
+<br>
 
-Nest는 Framework 내부에 Exception Layer를 두고있다. <br>
+### **예외 처리**
+
+Nest는 Framework 내부에 **_Exception Layer_** 를 두고있다. <br>
 Application을 통틀어 제대로 처리되지 않은 예외를 처리하는 역할을 한다. <br>
 
-기본적으로 Nest는 예외에 대한 많은 Class를 제공하며 에러 발생 시 응답 형식을 JSON으로 변경해준다. <br>
-이는 기본으로 내장된 Global ExceptionFilter가 처리한다. <br>
+기본적으로 Nest는 예외에 대한 많은 Class를 제공하며 에러 발생 시 응답 형식을 JSON으로 변경해 준다. <br>
+이는 기본으로 내장된 **_Global ExceptionFilter_** 가 처리한다. <br>
 
-내장 예외 필터는 인식할 수 없는 에러(HttpException도 아니고 HttpException을 상속받지도 않은 에러)를 InternalServerErrorException으로 반환한다.
+내장 예외 필터는 인식할 수 없는 에러(HttpException도 아니고 HttpException을 상속받지도 않은 에러)를 **_InternalServerErrorException_**(500) 으로 반환한다.
 
 <br>
 
@@ -2130,18 +2133,18 @@ Application을 통틀어 제대로 처리되지 않은 예외를 처리하는 �
 
 <br>
 
-InternalServerErrorException는 HttpException을 상속받고 HttpException은 자바스크립트의 Error를 상속받는다. <br>
-결국 모든 에러는 Error Object로부터 파생된다.
+InternalServerErrorException는 HttpException을 상속받고 HttpException은 **_자바스크립트의 Error_** 를 상속받는다. <br>
+결국 모든 에러는 **_Error Object_** 로부터 파생된다.
 
 <br>
 
 그 외 Nest 기본 제공 ExceptionFilter는 HttpException을 상속받으며 해당 Class를 사용해 적절한 예외를 던진다(throw). <br>
-적절한 예외 처리는 Client에서 에러를 쉽게 이해하고 대처할 수 있도록 한다.
+적절한 예외 처리는 Client에서 에러를 쉽게 **_이해하고 대처_** 할 수 있도록 한다.
 
 <br>
 
 -   **HttpException Class** <br>
-    생성자(constructor)는 response, status 2개의 인수를 받는다. <br>
+    생성자(constructor)는 **_response_**, **_status_** 2개의 인수를 받는다. <br>
     response: JSON 응답의 본문이다. 문자열 또는 Record<string, any> 타입의 객체를 전달할 수 있다 <br>
     status: 에러의 속성을 나타내는 HTTP Status Code <br>
     JSON 읃답의 본문은 statusCode와 message 속성을 기본으로 가진다. <br>
@@ -2164,6 +2167,7 @@ InternalServerErrorException는 HttpException을 상속받고 HttpException은 �
 <br>
 
 -   Nest에서 제공하는 예외 클래스의 생성자는 다음과 같은 모양을 가진다. <br>
+
     ```typescript
     constructor(objectOrError?: string | object | any, description: string);
     ```
@@ -2173,7 +2177,7 @@ InternalServerErrorException는 HttpException을 상속받고 HttpException은 �
 ### **예외 필터**
 
 Nest에서 제공하는 Global 예외 필터 외에 직접 ExceptionFilter Layer를 두어 원하는 대로 예외 처리를 다룰 수 있다. <br>
-예외가 일어날 경우 Log를 남기거나 Response Object를 원하는대로 변경하는 등 요구 사항을 해결할 경우 사용한다. <br>
+예외가 일어날 경우 Log를 남기거나 Response Object를 원하는 대로 변경하는 등 요구 사항을 해결할 경우 사용한다. <br>
 
 -   예외 발생 시 예외를 잡고 Request URL과 Timestamp를 출력
 
@@ -2217,7 +2221,7 @@ Nest에서 제공하는 Global 예외 필터 외에 직접 ExceptionFilter Layer
 
 <br>
 
--   다음과 같이 Application Global 설정을 할경우 예외 필터의 동작이 main.ts에서 이뤄지므로 필터에 의존성 주입을 할 수 없다. <br>
+-   다음과 같이 Application Global 설정을 할 경우 예외 필터의 동작이 main.ts에서 이뤄지므로 필터에 **_의존성 주입_** 을 할 수 없다. <br>
 
     ```typescript
     async function bootstrap() {
@@ -2226,7 +2230,7 @@ Nest에서 제공하는 Global 예외 필터 외에 직접 ExceptionFilter Layer
     }
     ```
 
--   해결을 위해 Custom Provider 등록
+-   해결을 위해 **_Custom Provider_** 등록
 
     ```typescript
     import { Module } from "@nestjs/common"
@@ -2247,7 +2251,7 @@ Nest에서 제공하는 Global 예외 필터 외에 직접 ExceptionFilter Layer
 
 ## **_Chapter13_** 인터셉터로 요청과 응답을 알맞게 바꾸기
 
-Interceptor는 Request, Response를 가로채 변형을 가할 수 있는 Component다. <br>
+Interceptor는 Request, Response를 가로채 변형을 가할 수 있는 **Component** <br>
 AOP(Aspect Oriented Programing) 프로그래밍에서 영향을 받았으며 다음과 같은 기능을 수행할 수 있다. <br>
 
 -   Method 실행 전/후 추가 로직을 Binding <br>
@@ -2258,10 +2262,10 @@ AOP(Aspect Oriented Programing) 프로그래밍에서 영향을 받았으며 다
 
 <br>
 
-Interceptor는 Middleware와 동일한 기능을 수행하지만 수행 시점(LifeCycle)에 차이가 있다. <br>
+Interceptor는 Middleware와 동일한 기능을 수행하지만 수행 시점(**_LifeCycle_**)에 차이가 있다. <br>
 Middleware는 Handler에 전달되기 전 동작하고 Interceptor는 Handler 전/후 호출되어 Request, Response를 다룰 수 있다. <br>
 
--   LoggingInterceptor <br>
+-   **LoggingInterceptor** <br>
 
     ```typescript
     import {
@@ -2310,8 +2314,9 @@ Middleware는 Handler에 전달되기 전 동작하고 Interceptor는 Handler �
 
     <br>
 
-    **CallHandler**: handle() Method를 구현하며 handle() Method는 Router Handler에서 전달된 Response Stream을 돌려주고 RxJS의 Observable로 구현되어있다. <br>
-    handle()를 호출하지 않으면 Router Handler가 동작하지 않을 수도 있다. handle()를 호출하고 Observable을 수신한 후 Response Stream에 추가 작업을 수행하는 방식 <br>
+    **CallHandler**: handle() Method를 구현하며 handle() Method는 Router Handler에서 전달된 **_Response Stream_** 을 돌려주고 RxJS의 **_Observable_** 로 구현되어 있다. <br>
+    handle()를 호출하지 않으면 Router Handler가 동작하지 않을 수도 있다. <br>
+    handle()를 호출하고 Observable을 수신한 후 Response Stream에 추가 작업을 수행하는 방식 <br>
 
     <br>
 
@@ -2333,20 +2338,21 @@ Middleware는 Handler에 전달되기 전 동작하고 Interceptor는 Handler �
 ### Lifecycle
 
 요청 생명주기(Request Lifecycle) 또는 요청/응답 생명 주기는 들어온 Request가 어떤 Component를 거쳐 처리되고 생성된 응답은 또 어떤 Component를 거쳐 처리되는지를 의미한다. <br>
-개발 시 Debug나 Application의 동작을 이해하려면 Lifecycle은 필수로 알아야한다. <br>
+개발 시 Debug나 Application의 동작을 이해하려면 Lifecycle은 필수로 알아야 한다. <br>
 
 Nest의 Request Lifecycle 순서는 다음과 같다.
 
 <br>
 
 1. Middleware <br>
-   Middleware의 실행 순서는 정해져있다. 가장 먼저 Global Binding Middleware가 실행된다. <br>
-   이후 Module에 Binding되는 순서대로 실행되며 다른 Module에 Binding되어있는 Middleware들이 있다면 먼저 RootModule에 Binding된 Middleware를 실행하고 imports에 정의한 순서대로 실행된다.
+   Middleware의 실행 순서는 정해져 있다. <br>
+   가장 먼저 **_Global Binding Middleware_** 가 실행된다. <br>
+   이후 Module에 Binding 되는 **_순서대로_** 실행되며 다른 Module에 Binding 되어있는 Middleware들이 있다면 먼저 RootModule에 Binding된 Middleware를 실행하고 imports에 정의한 순서대로 실행된다.
 
 <br>
 
 2. Guard <br>
-   가장 먼저 Global Binding Guard가 실행된 후 Controller에 정의된 순서대로 실행된다. <br>
+   가장 먼저 Global Binding Guard가 실행된 후 **_Controller에 정의_** 된 순서대로 실행된다. <br>
    Guard1 => Guard2 => Guard3
 
     ```typescript
@@ -2370,8 +2376,8 @@ Nest의 Request Lifecycle 순서는 다음과 같다.
 <br>
 
 4. Pipe <br>
-   Pipe가 여러 Level에 적용되어 있다면 순서대로 적용된다. 특이점은 Pipe가 적용된 Router의 매개변수가 여러개 있을 경우 정의한 순서의 역순으로 적용된다. <br>
-   updateUser Method에는 Pipe가 둘 다 적용되어있는데 GeneralValidationPipe => RouteSpecificPipe 순으로 동작한다. <br>
+   Pipe가 여러 Level에 적용되어 있다면 **_순서대로_** 적용된다. 특이점은 Pipe가 적용된 Router의 매개변수가 여러 개 있을 경우 정의한 순서의 **_역순_** 으로 적용된다. <br>
+   updateUser Method에는 Pipe가 둘 다 적용되어 있는데 GeneralValidationPipe => RouteSpecificPipe 순으로 동작한다. <br>
    updateUser Method 매개 변수는 query => params => body 순으로 동작한다. <br>
 
     ```typescript
@@ -2411,11 +2417,11 @@ Nest의 Request Lifecycle 순서는 다음과 같다.
 
 ## **_Chapter14_** 태스크 스케줄링
 
-서비스 개발 시 주기적으로 동일한 작업을 반복적으로 처리해야하는 경우가 생긴다. <br>
-예를 들어 유료 서비스 구독 시 매월 정기적으로 결제가 이루어져야하는데 이런 반복 작업을 태스크(Task) 또는 배치(Batch 일괄 처리)부른다. <br>
+서비스 개발 시 주기적으로 동일한 작업을 반복적으로 처리해야 하는 경우가 생긴다. <br>
+예를 들어 유료 서비스 구독 시 매월 정기적으로 결제가 이루어져야 하는데 이런 반복 작업을 태스크(**_Task_**) 또는 배치(**_Batch_** 일괄 처리) 부른다. <br>
 
 태스크 스케줄링은 반드시 반복적인 작업에만 적용해야 하는 건 아니다. 다음 달 아침에 메일을 발송하는 1회성 태스크를 만들수도 있다. <br>
-대표적으로 Linux에 Cron이 있으며 Nest에는 node-cron을 통합한 @nestjs/schedule 패키지가있다.
+대표적으로 Linux에 Cron이 있으며 Nest에는 node-cron을 통합한 **_@nestjs/schedule_** 패키지가있다.
 
 <br>
 
@@ -2430,10 +2436,10 @@ npm i @nestjs/schedule @types/cron
 <br>
 
 -   **Batch Module** <br>
-    ScheduleModule은 forRoot Method를 통해 가져오며 이 과정에서 Nest는 스케줄러를 초기화하고 Application에 선언한 CronJob(Task), Timeout, Interval을 등록한다. <br>
+    ScheduleModule은 **_forRoot Method_** 를 통해 가져오며 이 과정에서 Nest는 스케줄러를 초기화하고 Application에 선언한 **_CronJob_**(Task), **_Timeout_**, **_Interval_** 을 등록한다. <br>
     Timeout은 스케줄링이 끝나는 시각, Interval은 주기적으로 반복되는 시간 가격 <br>
     태스크 스케줄링은 모든 Module이 예약된 작업을 로드하고 확인하는 onApplicationBootstrap 생명주기 Hook이 발생할 경우 등록된다. <br>
-    ScheduleModule에는 Task를 등록하는 방법이 여러가지 존재한다.
+    ScheduleModule에는 Task를 등록하는 방법이 여러 가지 존재한다.
 
     <br>
 
@@ -2513,3 +2519,89 @@ npm i @nestjs/schedule @types/cron
     ```
 
 <br>
+
+### Dynamic Task Scheduled
+
+<br>
+
+## **_Chapter15_** 헬스 체크 댁의 서버는 건강하신가요
+
+서비스 운영 시 트래픽이 늘어나거나 Database에 부하가 생기기도 하고 심지어 기간 통신망이 끊어지기도 한다. <br>
+장애는 **_어떤 Layer_** 에서 발생할 수 있으며 사용자의 불편을 줄이기 위해 최대한 신속하게 대응해야 한다. <br>
+이를 위해 서버의 상태를 주기적으로 체크하는 행위를 **_Health Check_** 라고 부른다. <br>
+
+서버는 Http, Database, Memory, Disk 등의 상태를 체크하는 Health Check 장치가 있어야 한다. <br>
+Health Check 중 이상 현상이 발견되면 즉시 담당자에게 알람이 가야 하며 서비스에 맞는 적절한 알람 발신 기준 세워야 한다.
+
+<br>
+
+> 예를 들어 10분간 응답 성공률이 95% 이하일 경우 담당자에게 알림 발신
+
+<br>
+
+Nest는 Terminus(**_@nestjs/terminus_**) Health Check 라이브러리르 제공한다. <br>
+Terminus는 끝단, 종점을 의미하며 서비스 마지막 부분까지 **_정상 작동_** 하는지 확인한다는 의미다. <br>
+다양한 상태 표시기를 제공하고 필요하다면 Custom 할 수 있다.
+
+<br>
+
+@nestjs/terminus가 제공하는 상태 표시기는 다음과 같다. <br>
+
+-   HttpHealthIndicator <br>
+-   MongooseHealthIndicator <br>
+-   TypeOrmHealthIndicator <br>
+-   SequelizeHealthIndicator <br>
+-   MicroserviceHealthIndicator <br>
+-   MemoryHealthIndicator <br>
+-   GRPCHealthIndicator <br>
+-   DiskHealthIndicator
+
+<br>
+
+### **Terminus**
+
+```cmd
+npm i @nestjs/terminus
+nest g controller health-check
+```
+
+<br>
+
+상태 확인은 특정 Router Endpoint(@GET() /healtch-check)에 **_Request_** 를 보내고 **_Response_** 를 받아 확인하는 방법을 사용한다.
+
+<br>
+
+```typescript
+import { TerminusModule } from "@nestjs/terminus";
+import { HealthCheckController } from "";
+
+@Module({
+    imports: [TerminusModule],
+    providers: [HealthCheckController],
+})
+export class AppModule {}
+```
+
+<br>
+
+### **Health Check**
+
+HttpHealthIndicator는 동작 과정에서 **_@nestjs/axios_** 에 의존한다.
+
+<br>
+
+```cmd
+npm i @nestjs/axios
+```
+
+```typescript
+import { HttpModule } from "@nestjs/axios";
+import { TerminusModule } from "@nestjs/terminus";
+import { HealthCheckController } from "";
+
+@Module({
+    imports: [TerminusModule, HttpModule],
+    providers: [HealthCheckController],
+})
+export class AppModule {}
+```
