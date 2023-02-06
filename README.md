@@ -2601,7 +2601,113 @@ import { HealthCheckController } from "";
 
 @Module({
     imports: [TerminusModule, HttpModule],
-    providers: [HealthCheckController],
+    controllers: [HealthCheckController],
 })
 export class AppModule {}
 ```
+
+```typescript
+import { Controller, Get } from "@nestjs/common";
+import {
+    HealthCheckService,
+    HttpHealthIndicator,
+    HealthCheck,
+} from "@nestjs/terminus";
+
+@Controller("health-check")
+export class HealthCheckController {
+    constructor(
+        private health: HealthCheckService,
+        private http: HttpHealthIndicator,
+    ) {}
+
+    @Get()
+    @HealthCheck()
+    check() {
+        return this.health.check([
+            () => this.http.pingCheck("NestJS", "https://docs.nestjs.com"),
+        ]);
+    }
+}
+```
+
+<br>
+
+-   **Repsonse**
+
+```json
+{
+    "status": "ok",
+    "info": {
+        "NestJS": {
+            "status": "up"
+        }
+    },
+    "error": {},
+    "details": {
+        "NestJS": {
+            "status": "up"
+        }
+    }
+}
+```
+
+<br>
+
+-   위 응답은 다음과 같은 **_HealthCheckResult_** Type을 가지고 있다.
+
+    ```Typescript
+    export interface HealthCheckResult {
+        // 헬스 체크를 수행한 전반적인 상태 ("error" | "ok" | "shutting_down")
+        status: HealthCheckStatus
+
+        // 상태 "up" 정보
+        info?: HealthIndicatorResult
+
+        // 상태 "down" 정보
+        error?: HealthIndicatorResult
+
+        // 모든 상태 정보
+        details: HealthIndicatorResult
+    }
+    ```
+
+<br>
+
+## **_Chapter16_** CQRS를 이용한 관심사 분리
+
+CQRS(**_Command Query Responsibility Separation_**) Pattern은 **_명령_**(Command)과 **_조회_**(Query)를 분리해 **_성능_** 과 **_확장성_** 및 보안성을 높일 수 있도록 하는 아키텍처 패턴이다. <br>
+요구 사항이 복잡해질수록 Domain Model 역시 복잡해진다.
+
+<br>
+
+데이터를 조회한 쪽에서는 현재의 복잡한 모델 구조의 데이터가 필요하지 않은 대부분이므로 조회 시 Modle과 Data를 업데이트할 시 Model을 다르게 가져가도록 하는 방식이다. <br>
+
+조회는 CRUD에 Read를 의미하며 **_Resource_** 를 조회한 결과만을 반환하므로 시스템의 상태를 변경하지 않고 부작용이 없다. <br>
+명령은 Create, Update, Delete 요청과 같이 시스템의 상태를 변경한다.
+
+<br>
+
+**_Martin Fowler_** 는 CQRS를 도입하면 다음과 같은 **_이점_** 이 있다고 한다. <br>
+
+1. **_복잡한 Domain_** 을 다루기 더 쉬운 경우 <br>
+   CQRS를 사용하면 복잡성이 추가되 생산성이 감소한다. Model을 공유하는 게 Domain을 다루기 더 쉬운지 면밀히 판단해야 한다. <br>
+   System 전체가 아닌 도메인 주도 설계(DDD)에서 말하는 **_Bounded Context_** 내에서만 사용해야 한다. <br>
+
+2. 고성능 처리가 필요한 Application을 다루는 경우 <br>
+   CQRS를 사용하면 Read, Write 작업에 로드를 분리해 각각을 독립적으로 확장할 수 있다. <br>
+   성능을 위해 쓰기는 RDB로 읽기는 Document DB를 사용하는 경우도 많다. <br>
+   Application에서 읽기와 쓰기 사이에 큰 성능 차이가 있는 경우 CQRS를 쓰면 편리하며 양쪽에서 서로 다른 최적화 전략을 사용할 수 있다. <br>
+
+3. CRUD를 통해 상호작용하는 단일 표현(Representation)에서 작접(Task) 기반 UI로 쉽게 이동한다. <br>
+   예를 들어 ReservationStatus를 RESERVED로 설정이라는 명령을 "룸 예약"으로 변경한다. <br>
+
+4. 이벤트 소싱을 쉽게 활용해 **_Event Driven Programing_** 과 궁합이 좋다. <br>
+
+5. **_최종 일관성_**(Eventually Consistent)을 사용할 가능성이 높아진다. <br>
+
+6. Domain을 사용할 경우 Update 시 많은 로직이 필요하므로 **_EagerReadDerivation_** 을 사용해 Query 측 Model을 단순화하는 게 합리적일 수 있다. <br>
+
+7. Write Model이 모든 Update에 대한 Event를 생성하는 경우 Read Model을 별도로 구성해 과도한 Database 상호작용을 피할 수 있다. <br>
+
+8. CQRS는 복잡한 Domain을 다루고 **_DDD_** 를 적용하는데 적합하다. <br>
