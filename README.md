@@ -2710,4 +2710,19 @@ CQRS(**_Command Query Responsibility Separation_**) Pattern은 **_명령_**(Comm
 
 7. Write Model이 모든 Update에 대한 Event를 생성하는 경우 Read Model을 별도로 구성해 과도한 Database 상호작용을 피할 수 있다. <br>
 
-8. CQRS는 복잡한 Domain을 다루고 **_DDD_** 를 적용하는데 적합하다. <br>
+8. CQRS는 복잡한 Domain을 다루고 **_DDD_** 를 적용하는데 적합하다.
+
+<br>
+
+### 적용
+
+```cmd
+npm i @nestjs/cqrs
+```
+
+<br>
+
+CRUD는 Create, Update, Delete는 Command를 이용해 처리한다. Command는 Service, Controller, Gateway에서 직접 발송할 수 있다. <br>
+전송한 Command는 Command Handler가 받아서 처리한다.
+
+

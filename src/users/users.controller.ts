@@ -14,6 +14,7 @@ import {
     Inject,
     UseFilters,
 } from "@nestjs/common";
+import { CommandBus } from "@nestjs/cqrs";
 import {
     BadRequestException,
     InternalServerErrorException,
@@ -40,6 +41,7 @@ import { ValidationPipe } from "../common/validations/validation.pipe";
 import { UserMeta } from "src/common/decorators/user.decorator";
 import { AuthGuard } from "src/guard/auth.guard";
 import { CustomLogger } from "src/log/logger.service";
+import { CreateUserCommand } from "src/command/user.command";
 
 interface IUser {
     name: string;
@@ -56,6 +58,7 @@ export class UsersController {
         private readonly emailService: EmailService,
         // private readonly logger: CustomLogger,
         @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: Logger,
+        private readonly commandBus: CommandBus,
     ) {}
 
     @Get("/practice/:id")
@@ -64,20 +67,7 @@ export class UsersController {
     async practice(
         @Param("id", ValidationPipe) id: number,
         @UserMeta() user: IUser,
-    ) {
-        // this.#printLogger();
-        const finduser = await this.userService.findUserById(id);
-
-        // throw new HttpExceptionFilter();
-
-        // if (id < 1)
-        //     throw new BadRequestException(
-        //         "파라미터는 1이상이어야합니다.",
-        //         "에러에 대한 부가 설명",
-        //     );
-
-        return "hello";
-    }
+    ) {}
 
     // 회원 정보 조회
     @Get("/:userId")
@@ -106,15 +96,18 @@ export class UsersController {
     })
     @Post()
     async createUser(@Body() createUserDto: createUserDto) {
-        const createUserVerifyToken = "DLLO-44L2-DLLA-WMDC";
-        const createUser = await this.userService.createUser(createUserDto);
+        const command = new CreateUserCommand(createUserDto);
 
-        return createUser;
+        return this.commandBus.execute(command);
+        // const createUserVerifyToken = "DLLO-44L2-DLLA-WMDC";
+        // const createUser =await this.userService.createUser(createUserDto);
+
+        // return createUser;
     }
 
     // 이메일 인증
     // @Post("/email-verify")
-    // async verifyEmail(@Query() verifyEmailDto: VerifyEmailDto): Promise<void> {
+    // aync verifyEmail(@Query() verifyEmailDto: VerifyEmailDto): Promise<void> {
     //     return this.userService.verifyEmail(verifyEmailDto);
     // }
 
@@ -124,7 +117,7 @@ export class UsersController {
         return this.userService.login(loginDto);
     }
 
-    #printLogger() {
+    #rintLogger() {
         this.logger.error("error", "Test");
     }
 }

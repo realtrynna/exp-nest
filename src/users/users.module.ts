@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { CqrsModule } from "@nestjs/cqrs";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { EmailModule } from "../email/email.module";
@@ -11,6 +12,7 @@ import { ProfileEntity } from "src/entities/profile.entity";
 @Module({
     imports: [
         EmailModule,
+        CqrsModule,
         TypeOrmModule.forFeature([UserEntity, ProfileEntity]),
     ],
     controllers: [UsersController],
