@@ -2692,29 +2692,41 @@ CQRS(**_Command Query Responsibility Separation_**) Pattern은 **_명령_**(Comm
 
 1. **_복잡한 Domain_** 을 다루기 더 쉬운 경우 <br>
    CQRS를 사용하면 복잡성이 추가되 생산성이 감소한다. Model을 공유하는 게 Domain을 다루기 더 쉬운지 면밀히 판단해야 한다. <br>
-   System 전체가 아닌 도메인 주도 설계(DDD)에서 말하는 **_Bounded Context_** 내에서만 사용해야 한다. <br>
+   System 전체가 아닌 도메인 주도 설계(DDD)에서 말하는 **_Bounded Context_** 내에서만 사용해야 한다.
+
+<br>
 
 2. 고성능 처리가 필요한 Application을 다루는 경우 <br>
    CQRS를 사용하면 Read, Write 작업에 로드를 분리해 각각을 독립적으로 확장할 수 있다. <br>
    성능을 위해 쓰기는 RDB로 읽기는 Document DB를 사용하는 경우도 많다. <br>
-   Application에서 읽기와 쓰기 사이에 큰 성능 차이가 있는 경우 CQRS를 쓰면 편리하며 양쪽에서 서로 다른 최적화 전략을 사용할 수 있다. <br>
+   Application에서 읽기와 쓰기 사이에 큰 성능 차이가 있는 경우 CQRS를 쓰면 편리하며 양쪽에서 서로 다른 최적화 전략을 사용할 수 있다.
+
+<br>
 
 3. CRUD를 통해 상호작용하는 단일 표현(Representation)에서 작접(Task) 기반 UI로 쉽게 이동한다. <br>
-   예를 들어 ReservationStatus를 RESERVED로 설정이라는 명령을 "룸 예약"으로 변경한다. <br>
+   예를 들어 ReservationStatus를 RESERVED로 설정이라는 명령을 "룸 예약"으로 변경한다.
 
-4. 이벤트 소싱을 쉽게 활용해 **_Event Driven Programing_** 과 궁합이 좋다. <br>
+<br>
+
+4. 이벤트 소싱을 쉽게 활용해 **_Event Driven Programing_** 과 궁합이 좋다.
+
+<br>
 
 5. **_최종 일관성_**(Eventually Consistent)을 사용할 가능성이 높아진다. <br>
 
-6. Domain을 사용할 경우 Update 시 많은 로직이 필요하므로 **_EagerReadDerivation_** 을 사용해 Query 측 Model을 단순화하는 게 합리적일 수 있다. <br>
+6. Domain을 사용할 경우 Update 시 많은 로직이 필요하므로 **_EagerReadDerivation_** 을 사용해 Query 측 Model을 단순화하는 게 합리적일 수 있다.
 
-7. Write Model이 모든 Update에 대한 Event를 생성하는 경우 Read Model을 별도로 구성해 과도한 Database 상호작용을 피할 수 있다. <br>
+<br>
+
+7. Write Model이 모든 Update에 대한 Event를 생성하는 경우 Read Model을 별도로 구성해 과도한 Database 상호작용을 피할 수 있다.
+
+<br>
 
 8. CQRS는 복잡한 Domain을 다루고 **_DDD_** 를 적용하는데 적합하다.
 
 <br>
 
-### 적용
+### **적용**
 
 ```cmd
 npm i @nestjs/cqrs
@@ -2725,4 +2737,66 @@ npm i @nestjs/cqrs
 CRUD는 Create, Update, Delete는 Command를 이용해 처리한다. Command는 Service, Controller, Gateway에서 직접 발송할 수 있다. <br>
 전송한 Command는 Command Handler가 받아서 처리한다.
 
+<br>
 
+<hr>
+
+<br>
+
+## **_Chapter17_** 클린 아키텍처
+
+아키텍처는 점차 나은 방향으로 발전했으며, Application 아키텍처에도 유행이 있다. <br>
+
+클린 아키텍처는 **_Clean Code_** 의 저자 로버트 C. 마틴이 제안한 아키텍처이며 기존의 **_양파(Onion) 아키텍처_** 라고 불리던 아키텍처에서 발전한 형태이다. <br>
+Software를 여러 **_동심원 Layer_** 로 나누고 각 Layer에 있는 Component는 안쪽 원에 있는 Component에만 **_의존성_** 을 가지도록 한다. <br>
+따라서 안쪽 원에 존재하는 Component는 바깥 원에 독립적이다.
+
+<br>
+
+해당 책에서는 클린 아키텍처를 4개로 분류하며 가장 바깥쪽 Layer부터 **_인프라스트럭처_**(InfraStructure), **_인터페이스_**(Interface), **_애플리케이션_**(Application), **_도메인_**(Domain)이다. <br>
+해당 이름은 정해진 바는 없으며 저자가 재직 중인 회사에서 **_직관적_** 으로 이해할 수 있게 작성했다. <br>
+
+1. **InfraStructure** <br>
+   Application에 필요하지만 개발자가 직접 작성한 게 아닌 **_외부_** 에서 가져다 쓰는 Component를 의미한다. <br>
+   Database, Email Transport, 다른 서비스와의 통신 프로토콜 **_구현체_** 등 외부에서 제공하는 Interface나 라이브러리를 이용해 Application에 맞게 사용한 구현체가 포함된다.
+
+<br>
+
+2. **Interface** <br>
+   Application이 제공하는 Interface가 구현되는 레이어다. <br>
+   Controller는 Request와 Response에 형태를 제공한다. Gateway, 프레젠터와 같은 Component도 외부와의 Interface를 담당한다.
+
+<br>
+
+3. **Application** <br>
+   Service 레이어가 해당되며, **_비즈니스 로직_** 이 구현되는 레이어다.
+
+<br>
+
+4. **Domain** <br>
+   Application의 Domain을 구현하는 핵심 레이어다. <br>
+   Domain 레이어는 다른 레이어에 의존하지 않으며, **_핵심 요소_** 만 가진다. <br>
+   Domain 레이어의 Component가 변경되면, 이를 이용하는 모든 레이어를 수정해야 하므로 **_신중하게_** 작성해야 한다.
+
+<br>
+
+각 레이어는 의존성이 안쪽으로 향한다. <br>
+하지만 구현을 하기 위해 안쪽 원에서 바깥 원의 구현체가 필요한 경우가 있다. <br>
+이런 경우 구현체가 변경되면 같이 수정이 이뤄져야 하므로 독립적이지 않다.
+특히 InfraStructure는 기존 Component를 변경할 경우가 종종 있다. (MySQL => PostgreSQL) <br>
+
+의존성이 역전되는 경우 안쪽 레이어에서는 그 레이어 내에서 Interface를 정의하고, Interface를 구현한 구현체는 바깥 레이어에 둠으로써 의존성이 역전되지 않도록 할 수 있다.
+
+<br>
+
+### **은탄환은 없다** (프레더릭 브룩스) <br>
+
+    클린 아키텍처는 만능이 아니다.
+    레이어를 4개로 나누고 각 레이어로 책임을 분리하게 되면 작성할 코드 양이 많아진다.
+    테스트 코드를 작성한다면 따라서 테스트 코드의 양도 늘어난다. 코드 양이 늘어난다고 해서 Software의 복잡성이 떨어진다는 의미는 아니다.
+    오히려 레이어 별로 **_분리_** 되어 있으므로, **_직관성_** 이 증가해 이해하기 쉬운 코드가 된다.
+    하지만 작은 변경 사항이나 추가 기능 구현에도 시간이 오래 걸리는 단점이 존재한다.
+    만약 간단한 MVP(**_Minimum Viable Product_**)를 만들어 아이디어를 **_빠르게_** 검증해 보고 싶다면 적합하지 않은 아키텍처일 수 있다.
+    MVP 구조가 제품의 구조가 되는 경우가 많으므로 시간 압박에 의해 상용 서비스의 품질을 떨어뜨리는 실수를 하지 말아야 한다.
+
+<br>
