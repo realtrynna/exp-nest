@@ -24,6 +24,9 @@
 | 23.02.01 | [Chapter13](#chapter13-인터셉터로-요청과-응답을-알맞게-바꾸기)        | Lifecycle                                                                    |
 | 23.02.02 | [Chapter14](#chapter14-태스크-스케줄링)                               | Task Schedule                                                                |
 | 23.02.04 | [Chapter15](#chapter15-헬스-체크-댁의-서버는-건강하신가요)            | Task Schedule                                                                |
+| 23.02.07 | [Chapter16](#chapter16-cqrs를-이용한-관심사-분리)                     | Cqrs                                                                         |
+| 23.02.08 | [Chapter17](#chapter17-클린-아키텍처)                                 | Clean Architecture                                                           |
+| 23.02.09 | [Chapter17](#chapter17-클린-아키텍처)                                 | SOLID                                                                        |
 
 <br>
 
@@ -2789,7 +2792,7 @@ Software를 여러 **_동심원 Layer_** 로 나누고 각 Layer에 있는 Compo
 
 <br>
 
-### **은탄환은 없다** (프레더릭 브룩스) <br>
+### **은탄환은 없다** (프레더릭 브룩스)
 
     클린 아키텍처는 만능이 아니다.
     레이어를 4개로 나누고 각 레이어로 책임을 분리하게 되면 작성할 코드 양이 많아진다.
@@ -2798,5 +2801,63 @@ Software를 여러 **_동심원 Layer_** 로 나누고 각 Layer에 있는 Compo
     하지만 작은 변경 사항이나 추가 기능 구현에도 시간이 오래 걸리는 단점이 존재한다.
     만약 간단한 MVP(**_Minimum Viable Product_**)를 만들어 아이디어를 **_빠르게_** 검증해 보고 싶다면 적합하지 않은 아키텍처일 수 있다.
     MVP 구조가 제품의 구조가 되는 경우가 많으므로 시간 압박에 의해 상용 서비스의 품질을 떨어뜨리는 실수를 하지 말아야 한다.
+
+<br>
+
+<details>
+<summary><strong>SOLID</strong></summary>
+<div markdown="1">
+
+### **SOLID 객체 지향 설계 원칙**
+
+SOLID 객체 지향 설계 원칙은 **_클린 아키텍처의 바탕_** 이다. SOLID 원칙은 로버트 C. 마틴이 객체 지향 언어로 Software를 설계할 경우 방법론을 체계적으로 정리한 이론이다. <br>
+SOLID 원칙을 적용한다면 Application의 규모가 커질수록 더욱더 유지 보수성이 좋아지며, 읽기 쉬운 코드가 된다. <br>
+SOLID의 각 원칙은 서로 분리되어 있는 게 아니라 같이 **_조합_** 해야 더 나은 Software 구조를 갖출 수 있다.
+
+<br>
+
+1. 단일 책임 원칙 **SRP**(Single Responsibility Principle) <br>
+   하나의 Class는 **_하나의 책임_** 만 가져야 한다. Class가 변경되는 이유는 단 한 가지뿐 이어야 한다. <br>
+   객체 지향 언어를 배울 경우 항상 접하는 내용이며 여기서의 Class는 Class 자체를 의미하는 거라기보다 Function, Object 등 최소 동작의 단위가 되는 개념을 포함한다. <br>
+   코드를 작성하다 보면 어느새 하나의 Class가 비대해지는 경우가 발생하기도 하는데 Class를 크기가 작고 적은 책임을 가지도록 작성해야 변경에 유연하게 대처할 수 있다. <br>
+   크기가 큰 Class는 다른 Class와의 의존성이 증가하게 되므로 변경 비용이 더 커지게된다.
+
+<br>
+
+2. 개방 폐쇄 원칙 **OCP**(Open Closed Principle) <br>
+   Software 요소는 **_확장_** 에는 열려있고 **_변경_** 에는 폐쇄적이어야 한다. <br>
+   상반된 두 개념이 동시에 존재한다고 생각할 수 있지만, Software의 요구 사항이 추가되었다고 해서 기존의 코드를 계속 수정해야 한다면 요구 사항이 늘어날수록 유지 보수가 매우 힘들어진다. <br>
+   즉 새로운 기능이 기존 코드에 영향을 끼치지 않도록 하는 구조가 필요한데 **_OCP_** 는 **_Interface_** 를 활용해 쉽게 달성할 수 있다. <br>
+   필요 기능은 구현체에 의존하지 말고 Interface에 의존해야 하며, 기능 추가 시 Interface를 추가한다.
+
+<br>
+
+3. 리스코프 치환 원칙 **LSP**(Liskov Substitution Principle) <br>
+   Application Object는 Application의 정확성을 해치지 않으면서 하위 타입의 **_Instance_** 로 변경할 수 있어야 한다. <br>
+   객체 지향 언어의 장점이 LSP로 발현된다. 상속 관계에서 자식 Class의 Instance는 부모 Class로 선언된 함수의 인수로 전달할 수 있다. <br>
+   실제 동작하는 Instance는 Interface가 제공하는 기능을 구현한 객체이지만 Interface를 사용하는 다른 객체에도 전달할 수 있다. <br>
+   실제 구현체인 자식 Instance는 언제든지 부모 또는 Interface가 제공해야 하는 기능을 제공하는 다른 구현체로 바꿀 수 있다. <br>
+
+<br>
+
+4. 인터페이스 분리 원칙 **ISP**(Interface Segregation Principle) <br>
+   특정 Client를 위한 Inteface 여러 개가 범용 Interface 하나 보다 좋다. <br>
+   하나의 Interface에 의존하게 되면 Interface에 기능이 추가될 경우 Interface를 구현하는 모든 Class를 수정해야 한다. <br>
+   Interface를 **_기능별로 나누어_** 특정 Client 용 Interface로 모아 사용하는 게 변경에 대해 의존성을 낮추고 유연하게 대처할 수 있다.
+
+<br>
+
+5. 의존관계 역전 원칙 **DIP**(Dependency Inversion Principle) <br>
+   구체화보다 **_추상화_** 에 의존해야 한다. <br>
+   DIP는 DI(**_Dependency Injection_**)와 연관이 있다. 클린 아키텍처를 구현하기 위해 **_의존관계 역전_** 이 발생하기 마련이다. <br>
+   이를 해소하기 위해 DI를 이용해야 하며 보통 DI는 Framework에서 내장돼있거나 DI를 구현할 수 있는 라이브러리를 사용한다.
+
+<br>
+
+    Class, Interface를 어느 정도 잘게 나누고, 역할을 분리해야 하는지에 대한 정답은 존재하지 않는다.
+    System 발전에 따라 영향도는 낮추고 응집도는 높이는 방향으로 끊임없이 리팩토링 해야한다.
+
+</div> 
+</details>
 
 <br>
