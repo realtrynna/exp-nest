@@ -2861,3 +2861,26 @@ SOLID의 각 원칙은 서로 분리되어 있는 게 아니라 같이 **_조합
 </details>
 
 <br>
+
+<details>
+<summary><strongs>공통 관심 사항과 관점 지향 프로그래밍</strongs></summary>
+<div markdown="1">
+
+1. **공통 관심 사항** (Cross Cutting Concern) <br>
+   Application 에는 Logging과 같은 기본적인 기능과 Transaction과 같은 보안 관련 기능에 이르기까지 서비스 전반에 걸쳐 적용되는 공통 기능이 존재한다. <br>
+   이러한 공통 기능은 특정 Module에만 쓰이는 게 아닌, 여러 Module에서 사용된다. <br>
+   공통 기능은 비즈니스 로직과는 구분되는 기능이며, 이러한 기능을 공통 관심 사항이라고 부른다.
+
+<br>
+
+2. **관점 지향 프로그래밍** (Aspect Oriented Programming) <br>
+   공통 관심 사항은 객체 지향 프로그래밍에 상속, 위임을 통해 여러 Module에 적용할 수 있지만 중복 코드가 양산된다는 한계점이 존재한다. <br>
+   이러한 한계점을 효율적으로 극복하기 위해, AOP(Aspect Oriented Programming) 기법을 사용한다. <br>
+
+    문제를 바라보는 관점으로 프로그래밍하며, <br>
+    문제 해결을 위한 핵심 관심 사항과 서비스 전체에 적용되는 공통 관심 사항을 기준으로 나눔으로써, 공통 기능을 여러 Module에 쉽게 적용한다.
+
+<br>
+
+</div>
+</details>
