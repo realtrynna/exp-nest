@@ -23,11 +23,45 @@
 <br>
 
 <details>
+<summary><strong>Request Lifecycle</strong></summary>
+<div markdown="1">
+
+1. Middleware <br>
+    가장 먼저 전역 Binding Middleware(app.use)가 실행되며, 다음으로 Module에 Binding 된 Middleware가 실행된다. <br>
+    Express Middleware와 작동 방식이 유사하며, 서로 다른 Module에 걸쳐 Binding 된 Middleware의 경우 
+
+</div>
+</details>
+
+<details>
+<summary><strongs>공통 관심 사항과 관점 지향 프로그래밍</strongs></summary>
+<div markdown="1">
+
+1. **공통 관심 사항** (Cross Cutting Concern) <br>
+   Application 에는 Logging과 같은 기본적인 기능과 Transaction과 같은 보안 관련 기능에 이르기까지 서비스 전반에 걸쳐 적용되는 공통 기능이 존재한다. <br>
+    이러한 공통 기능은 특정 Module에만 쓰이는 게 아닌, 여러 Module에서 사용된다. <br>
+    공통 기능은 비즈니스 로직과는 구분되는 기능이며, 이러한 기능을 공통 관심 사항이라고 부른다.
+
+<br>
+
+2. **관점 지향 프로그래밍** (Aspect Oriented Programming) <br>
+    공통 관심 사항은 객체 지향 프로그래밍에 상속, 위임을 통해 여러 Module에 적용할 수 있지만 중복 코드가 양산된다는 한계점이 존재한다. <br>
+    이러한 한계점을 효율적으로 극복하기 위해, AOP(Aspect Oriented Programming) 기법을 사용한다. <br>
+
+    문제를 바라보는 관점으로 프로그래밍하며, <br>
+    문제 해결을 위한 핵심 관심 사항과 서비스 전체에 적용되는 공통 관심 사항을 기준으로 나눔으로써, 공통 기능을 여러 Module에 쉽게 적용한다.
+
+<br>
+
+</div>
+</details>
+
+<details>
 <summary><strong>Swagger</strong></summary>
 <div markdown="1">
 
-Nest는 Dto와 Decorator를 통해 Controller를 참조하여 Swagger 문서를 어느정도 자동화해준다. <br>
-(Express는 Type이 없으므로 불가능 Typescript를 적용해도 불가능 Swagger 문서 자동화는 내부적으로 매우 복잡함) 
+Dto, Decorator를 통해 Controller를 참조하여 Swagger 문서 생성을 자동화해준다 (**_100% 자동화 X_**). <br>
+    Express는 Typescript로 작성하더라도 **_불가능_**
 
 <br>
 
@@ -74,7 +108,7 @@ SwaggerModule.setup("api", app, document, {
 })
 
 @ApiParam({
-    name: "userId"
+    name: "userId",
     required: true,
     description: `
     
@@ -144,7 +178,7 @@ forRoot는 Dynamic Module을 Return 하는 Static Method다.
 
 <br>
 
-Dynamic Module 생성 시 forRoot 외 다른 이름을 써도 상관없지만 **_forRoot, register는 Convention_** <br>
+Dynamic Module 생성 시 forRoot 외 다른 이름을 사용해도 상관없지만 **_forRoot, register Convention_** <br>
 비동기일 경우 forRootAsync, registerAsync 
 ```typescript
 import { ConfigService } from "@nestjs/config";
@@ -160,7 +194,8 @@ export class AppModule {}
 <br>
 
 **forRoot** <br>
-인수로 ConfigModuleOptions를 받는다. 즉 ConfigModule은 소비 Module이 원하는 옵션 값을 전달하여 **_동적_** 으로 ConfigModule을 생성한다. <br>
+인수로 ConfigModuleOptions를 받는다. <br>
+즉 ConfigModule은 소비 Module이 원하는 옵션 값을 전달하여 **_동적_** 으로 ConfigModule을 생성한다. <br>
 ```typescript
 static forRoot(options?: ConfigModuleOptions): DynamicModule
 ```
@@ -184,7 +219,7 @@ export class AppModule {}
 <br>
 
 **ConfigService**
-ConfigModule의 Provider를 원하는 Component에서 DI 하여 사용
+ConfigModule의 Provider를 원하는 Component에서 DI 하여 사용한다.
 ```typescript
 import { ConfigService } from "@nestjs/config";
 
@@ -247,8 +282,6 @@ Nest의 기본 Build Option은 .ts 파일 외 Asset은 제외하도록 설정돼
 
 <br>
 
-
-
 </details>
 
 <br>
@@ -267,7 +300,7 @@ Express는 빠른 시간 안에 효율적인 서버 구축이 가능하고 뛰�
 
 NestJS는 Typescript를 기본으로 채택하고 Angular의 영향을 받아 만들어졌다. <br>
 Module, Component 기반의 프로그래밍으로 코드의 **_재사용성_** 을 높인다. <br>
-또한 Express 사용 시 접할 수 없었던 **_IoC_**(Inversion Of Control), **_DI_**(Dependency Injection), **_AOP_**(Aspect Oriented Programing)과 같은 객체 지향 프로그래밍으로 작성된다. <br>
+또한 Express 사용 시 쉽게 접할 수 없었던 **_IoC_**(Inversion Of Control), **_DI_**(Dependency Injection), **_AOP_**(Aspect Oriented Programing)과 같은 객체 지향 프로그래밍 Pattern으로 작성된다. <br>
 
 <br>
 
@@ -411,7 +444,7 @@ Web Framework 선택 시 고려 사항
 
 ### **단일 스레드에서 구동되는 논 블로킹 I/O 이벤트 기반 비동기 처리 방식**
 동시에 여러 Request가 들어올 경우 각 작업을 처리하기 위해 스레드를 생성하고 할당하는 방식을 멀티 스레딩이라고 한다. <br>
-멀티 스레딩은 동시에 여러 작업을 처리할 수 있는 장점이 있지만 자원을 공유하기 위한 **_비용이 크고_** 동기화에 논리적 오류가 발생하면 **_Lock_** 이 걸릴 수 있다. <br>
+멀티 스레딩은 동시에 여러 작업을 처리할 수 있는 장점이 있지만 자원을 공유하기 위한 **_비용이 크고_** 동기화 논리적 오류 발생 시 **_Lock_** 이 걸릴 수 있다. <br>
 스레드가 늘어날 경우 메모리를 사용하므로 메모리 관리도 중요하다.
 
 <br>
@@ -420,10 +453,8 @@ NodeJS는 **_싱글 스레드_** 로 하나의 스레드가 모든 작업을 처
 **_Application Level_** 에서는 싱글 스레드지만 **_BackGround_** 에서는 **_스레드 풀_** 로 처리된다. <br>
 스레드 풀은 **_libuv_** 라이브러리를 통해 동작하므로 개발자는 신경 쓸 필요 없다. <br>
 
-<br>
-
-NodeJS는 들어온 Request에 대한 완료 여부와 상관없이 다음 작업을 처리하는 **_비동기 방식_** 이다. <br>
-Request는 단일 스레드로 받지만 순서대로 처리하지 않고 먼저 처리되는 순서대로 이벤트를 반환한다.
+<br>NodeJS는 Request에 대한 작업 완료 여부를 기다리지 않고 다음 작업을 실행하는 **_비동기 방식_** 이다. <br>
+Request는 단일 스레드로 받지만 순서대로 처리하지 않고 먼저 처리되는 순서대로 이벤트를  **_Return_** 한다.
 
 <br>
 
