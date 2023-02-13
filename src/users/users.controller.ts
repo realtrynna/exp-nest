@@ -14,7 +14,6 @@ import {
     Inject,
 } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
-import { BadRequestException } from "@nestjs/common/exceptions";
 import {
     ApiTags,
     ApiOperation,
@@ -25,17 +24,23 @@ import {
     ApiBadRequestResponse,
 } from "@nestjs/swagger";
 import uuid from "uuid";
+import { HttpExceptionFilter } from "../exceptions/exception.filter";
 import { Logger } from "winston";
 import { WINSTON_MODULE_NEST_PROVIDER } from "nest-winston";
 
 import { UserService } from "./users.service";
 import { CreateUserDto, VerifyEmailDto, LoginDto } from "./dto";
 import { EmailService } from "src/email/email.service";
-import { BaseInterceptor } from "src/common/interceptors/date.interceptor";
+import { LoggingInterceptor } from "src/common/interceptors/date.interceptor";
 import { ValidationPipe } from "../common/validations/validation.pipe";
 import { UserMeta } from "src/common/decorators/user.decorator";
 import { AuthGuard } from "src/common/guard/auth.guard";
 import { CreateUserCommand } from "./command/create-user.command";
+
+interface IUser {
+    name: string;
+    age: number;
+}
 
 interface IUser {
     name: string;
@@ -56,26 +61,20 @@ export class UsersController {
         // private readonly logger: CustomLogger,
         @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: Logger,
         private readonly commandBus : CommandBus,
-
     ) {}
 
     @Get("/practice/:id")
     @UseGuards(AuthGuard)
+
+    @UseInterceptors(LoggingInterceptor)
     async practice(
         @Param("id", ValidationPipe) id: number,
         @UserMeta() user: IUser,
-    ) {
-        this.#printLogger();
-        const finduser = await this.userService.findUserById(id);
-
-        console.log("User는", user);
-
-        return "hello";
-    }
+    ) {}
 
     // 회원 정보 조회
     @Get("/:userId")
-    @UseInterceptors(BaseInterceptor)
+    @UseInterceptors(LoggingInterceptor)
     async findUserById(
         @Param("userId", new ParseIntPipe({ errorHttpStatusCode: 500 }))
         userId: number,
@@ -103,12 +102,12 @@ export class UsersController {
         const createUserVerifyToken = "DLLO-44L2-DLLA-WMDC";
         const createUser = await this.userService.createUser(createUserDto);
 
-        return createUser;
+        // return this.commandBus.execute(command);
     }
 
     // 이메일 인증
     // @Post("/email-verify")
-    // async verifyEmail(@Query() verifyEmailDto: VerifyEmailDto): Promise<void> {
+    // aync verifyEmail(@Query() verifyEmailDto: VerifyEmailDto): Promise<void> {
     //     return this.userService.verifyEmail(verifyEmailDto);
     // }
 
@@ -125,9 +124,5 @@ export class UsersController {
         const result = await this.commandBus.execute(command);
 
         console.log("Controller Result", result);
-    }
-
-    #printLogger() {
-        this.logger.error("error", "Test");
     }
 }
