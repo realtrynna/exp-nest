@@ -3,13 +3,4 @@
     "trailingComma": "all",
     "tabWidth": 4,
     "semi": true,
-    "prettier/prettier": [
-        "error",
-        {
-            "singleQuote": false,
-            "parser": "flow",
-            "semi": true,
-            "printWidth": 100
-        }
-    ]
 }

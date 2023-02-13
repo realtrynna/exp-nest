@@ -13,6 +13,7 @@ import {
     LoggerService,
     Inject,
 } from "@nestjs/common";
+import { CommandBus } from "@nestjs/cqrs";
 import { BadRequestException } from "@nestjs/common/exceptions";
 import {
     ApiTags,
@@ -28,19 +29,22 @@ import { Logger } from "winston";
 import { WINSTON_MODULE_NEST_PROVIDER } from "nest-winston";
 
 import { UserService } from "./users.service";
-import { createUserDto, VerifyEmailDto, LoginDto, Profile } from "./dto";
+import { CreateUserDto, VerifyEmailDto, LoginDto } from "./dto";
 import { EmailService } from "src/email/email.service";
 import { BaseInterceptor } from "src/common/interceptors/date.interceptor";
 import { ValidationPipe } from "../common/validations/validation.pipe";
 import { UserMeta } from "src/common/decorators/user.decorator";
-import { AuthGuard } from "src/guard/auth.guard";
-import { CustomLogger } from "src/log/logger.service";
+import { AuthGuard } from "src/common/guard/auth.guard";
+import { CreateUserCommand } from "./command/create-user.command";
 
 interface IUser {
     name: string;
     age: number;
 }
 
+/**
+ * @TODO
+ */
 @Controller("users")
 @ApiTags("사용자")
 export class UsersController {
@@ -51,6 +55,8 @@ export class UsersController {
         private readonly emailService: EmailService,
         // private readonly logger: CustomLogger,
         @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: Logger,
+        private readonly commandBus : CommandBus,
+
     ) {}
 
     @Get("/practice/:id")
@@ -83,17 +89,17 @@ export class UsersController {
         summary: "회원 가입",
         description: ``,
     })
-    @ApiOkResponse({
-        // status: 201, 				// Default 200
-        type: Profile,
-        description: "회원 가입 성공",
-    })
+    // @ApiOkResponse({
+    //     // status: 201, 				// Default 200
+    //     type: Profile,
+    //     description: "회원 가입 성공",
+    // })
     @ApiBadRequestResponse({
         status: 404,
         description: "클라이언트 에러",
     })
     @Post()
-    async createUser(@Body() createUserDto: createUserDto) {
+    async createUser(@Body() createUserDto: CreateUserDto) {
         const createUserVerifyToken = "DLLO-44L2-DLLA-WMDC";
         const createUser = await this.userService.createUser(createUserDto);
 
@@ -110,6 +116,15 @@ export class UsersController {
     @Post("/login")
     async login(@Body() loginDto: LoginDto): Promise<void> {
         return this.userService.login(loginDto);
+    }
+
+    @Post("/command")
+    async command(@Body() createUser: CreateUserDto) {
+        const command = new CreateUserCommand(createUser);
+
+        const result = await this.commandBus.execute(command);
+
+        console.log("Controller Result", result);
     }
 
     #printLogger() {

@@ -11,7 +11,7 @@ import { Transform } from "class-transformer";
 
 @ApiHeader({ name: "" })
 // eslint-disable-next-line prettier/prettier
-export class createUserDto {
+export class CreateUserDto {
     @Transform(({ key, value, obj }) => {
         return value;
     })

@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, DataSource } from "typeorm";
 
 import { EmailService } from "src/email/email.service";
-import { createUserDto, VerifyEmailDto, LoginDto, Profile } from "./dto";
+import { CreateUserDto, VerifyEmailDto, LoginDto } from "./dto";
 import { UserEntity } from "../entities/users.entity";
 import { ProfileEntity } from "src/entities/profile.entity";
 
@@ -28,7 +28,7 @@ export class UserService {
         // return user;
     }
 
-    async createUser({ email, name, password, gender }: createUserDto) {
+    async createUser({ email, name, password, gender }: CreateUserDto) {
         const connection = this.dataSource;
         const queryRunner = connection.createQueryRunner();
 
