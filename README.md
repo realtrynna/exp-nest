@@ -68,10 +68,6 @@
 <summary><strong>Swagger</strong></summary>
 <div markdown="1">
 
-<<<<<<< HEAD
-Dto, Decorator를 통해 Controller를 참조하여 Swagger 문서 생성을 자동화해준다 (**_100% 자동화 X_**). <br>
-    Express는 Typescript로 작성하더라도 **_불가능_**
-=======
 Nest는 Dto와 Decorator를 통해 Controller를 참조하여 Swagger 문서를 어느정도 자동화해준다. <br>
 (Express는 Type이 없으므로 불가능 Typescript를 적용해도 불가능 Swagger 문서 자동화는 내부적으로 매우 복잡함)
 >>>>>>> f360e7dc0ff3112449a08360829502a4394847e9
@@ -2018,16 +2014,11 @@ Refresh Token을 Database에 영속화하고 유효한지 여부를 따지는 �
             return request.user;
         },
     );
->>>>>>> f360e7dc0ff3112449a08360829502a4394847e9
     ```
 
 <br>
 
 #### 추후 작성
-<<<<<<< HEAD
-=======
-
->>>>>>> f360e7dc0ff3112449a08360829502a4394847e9
 -   Decorator 합성
 -   Metadata(Reflection Class)
 
@@ -2060,23 +2051,15 @@ Nest는 **_내장 Logger Class_** 를 지원하며 다음과 같은 System Loggi
 
 <br>
 
-<<<<<<< HEAD
-*   **내장 로거** <br>
-    Logger Instance는 Log를 남기고자 하는 부분에 직접 생성해 사용한다.
-    ```typescript
-    import { Injectable, Logger } from "@nestjs/common"
-=======
 -   **내장 로거** <br>
     Logger Instance는 Log를 남기고자 하는 부분에 직접 생성해 사용한다.
 
     ```typescript
     import { Injectable, Logger } from "@nestjs/common";
->>>>>>> f360e7dc0ff3112449a08360829502a4394847e9
 
     @Injectable()
     export class UserService {
         private readonly logger = new Logger(UserService.name);
-<<<<<<< HEAD
     
         findUserById() {
             this.logger.error("")
@@ -2084,50 +2067,25 @@ Nest는 **_내장 Logger Class_** 를 지원하며 다음과 같은 System Loggi
             this.logger.log("")
             this.logger.verbose("")
             this.logger.debug("")
-=======
-
-        findUserById() {
-            this.logger.error("");
-            this.logger.warn("");
-            this.logger.log("");
-            this.logger.verbose("");
-            this.logger.debug("");
->>>>>>> f360e7dc0ff3112449a08360829502a4394847e9
         }
     }
     ```
 
 <br>
 
-<<<<<<< HEAD
 *   **커스텀 로거** <br>
     내장 로거는 File 또는 Database 저장 기능을 제공하지 않으므로 Custom Logger를 직접 구현할 수 있다. <br>
-    Custom Logger는 @nestjs/common의 LoggerService Interface를 구현해야한다. 
-=======
--   **커스텀 로거** <br>
-    내장 로거는 File 또는 Database 저장 기능을 제공하지 않으므로 **_Custom Logger_** 를 직접 구현할 수 있다. <br>
-    Custom Logger는 @nestjs/common의 LoggerService Interface를 구현해야 한다.
->>>>>>> f360e7dc0ff3112449a08360829502a4394847e9
+    Custom Logger는 @nestjs/common의 LoggerService Interface를 구현해야한다.
 
     <br>
 
     -   **logger.service.ts**
-<<<<<<< HEAD
-    ```typescript
-    export class CustomLogger extends ConsoleLogger {
-        error(message: any, stack?: string, context?: string) {
-            super.error.apply(this, arguments)
-
-            this.loggerExecution
-=======
-
     ```typescript
     export class CustomLogger extends ConsoleLogger {
         error(message: any, stack?: string, context?: string) {
             super.error.apply(this, arguments);
 
             this.loggerExecution;
->>>>>>> f360e7dc0ff3112449a08360829502a4394847e9
         }
 
         loggerExecution() {
@@ -2139,16 +2097,9 @@ Nest는 **_내장 Logger Class_** 를 지원하며 다음과 같은 System Loggi
     <br>
 
     -   **logger.module.ts**
-<<<<<<< HEAD
-    ```typescript
-    import { Module } from "@nestjs/common"
-    import { CustomLogger } from ""
-=======
-
     ```typescript
     import { Module } from "@nestjs/common";
     import { CustomLogger } from "";
->>>>>>> f360e7dc0ff3112449a08360829502a4394847e9
 
     @Module({
         providers: [CustomLogger],
@@ -2156,8 +2107,6 @@ Nest는 **_내장 Logger Class_** 를 지원하며 다음과 같은 System Loggi
     })
     export class LoggerModule {}
     ```
-<<<<<<< HEAD
-    
     <br>
 
     -   **Global 설정**
@@ -2166,38 +2115,16 @@ Nest는 **_내장 Logger Class_** 를 지원하며 다음과 같은 System Loggi
         const app = await NestFactory.create(AppModule)
 
         app.useLogger(app.get(CustomLogger))
-=======
-
-    <br>
-
-    -   **Global 설정**
-
-    ```typescript
-    async function bootstrap() {
-        const app = await NestFactory.create(AppModule);
-
-        app.useLogger(app.get(CustomLogger));
->>>>>>> f360e7dc0ff3112449a08360829502a4394847e9
-    }
     ```
 
 <br>
 
 ### Winston Logger
-<<<<<<< HEAD
-Nest 제공 Logger도 사용 가능하지만 상용 수준의 서비스에선 Log 출력뿐 아니라 File을 저장하거나 중요 Log는 Database에 저장해야한다. <br>
-
-이러한 기능을 Logger를 활용해 직접 구현하기엔 비효율적이므로 Winston을 사용한다. <br>
-Winston은 Logging Process를 분리시켜 좀 더 유연하고 확장 가능한 Logging System 구축이 가능하다. <br>
-Log Format과 Level을 유연하게 설정할 수 있다. 
-=======
-
 Nest 제공 Logger도 사용 가능하지만 상용 수준의 서비스에선 Log 출력뿐 아니라 File을 저장하거나 중요 Log는 Database에 저장해야 한다. <br>
 
 이러한 기능을 Logger를 활용해 직접 구현하기엔 비효율적이므로 Winston을 사용한다. <br>
 Winston은 **Logging Process** 를 **_분리_** 시켜 좀 더 유연하고 확장 가능한 Logging System 구축이 가능하다. <br>
 **_Log Format_** 과 **_Level_** 을 유연하게 설정할 수 있다.
->>>>>>> f360e7dc0ff3112449a08360829502a4394847e9
 
 <br>
 
@@ -2205,9 +2132,6 @@ Winston은 **Logging Process** 를 **_분리_** 시켜 좀 더 유연하고 확�
 npm i nest-winston winston
 ```
 
-<<<<<<< HEAD
-<br>
-=======
 <br>
 
 ```typescript
@@ -3031,4 +2955,5 @@ SOLID의 각 원칙은 서로 분리되어 있는 게 아니라 같이 **_조합
 
 </div>
 </details>
->>>>>>> f360e7dc0ff3112449a08360829502a4394847e9
+
+### 이벤트
