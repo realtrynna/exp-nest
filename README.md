@@ -27,6 +27,7 @@
 | 23.02.07 | [Chapter16](#chapter16-cqrs를-이용한-관심사-분리)                     | Cqrs                                                                         |
 | 23.02.08 | [Chapter17](#chapter17-클린-아키텍처)                                 | Clean Architecture                                                           |
 | 23.02.09 | [Chapter17](#chapter17-클린-아키텍처)                                 | SOLID                                                                        |
+| 23.02.15 | [Chapter18](#chapter18-테스트-자동화)                                 | Software Test                                                                |
 
 <br>
 
@@ -35,8 +36,8 @@
 <div markdown="1">
 
 1. Middleware <br>
-    가장 먼저 전역 Binding Middleware(app.use)가 실행되며, 다음으로 Module에 Binding 된 Middleware가 실행된다. <br>
-    Express Middleware와 작동 방식이 유사하며, 서로 다른 Module에 걸쳐 Binding 된 Middleware의 경우 
+   가장 먼저 전역 Binding Middleware(app.use)가 실행되며, 다음으로 Module에 Binding 된 Middleware가 실행된다. <br>
+   Express Middleware와 작동 방식이 유사하며, 서로 다른 Module에 걸쳐 Binding 된 Middleware의 경우
 
 </div>
 </details>
@@ -47,14 +48,14 @@
 
 1. **공통 관심 사항** (Cross Cutting Concern) <br>
    Application 에는 Logging과 같은 기본적인 기능과 Transaction과 같은 보안 관련 기능에 이르기까지 서비스 전반에 걸쳐 적용되는 공통 기능이 존재한다. <br>
-    이러한 공통 기능은 특정 Module에만 쓰이는 게 아닌, 여러 Module에서 사용된다. <br>
-    공통 기능은 비즈니스 로직과는 구분되는 기능이며, 이러한 기능을 공통 관심 사항이라고 부른다.
+   이러한 공통 기능은 특정 Module에만 쓰이는 게 아닌, 여러 Module에서 사용된다. <br>
+   공통 기능은 비즈니스 로직과는 구분되는 기능이며, 이러한 기능을 공통 관심 사항이라고 부른다.
 
 <br>
 
 2. **관점 지향 프로그래밍** (Aspect Oriented Programming) <br>
-    공통 관심 사항은 객체 지향 프로그래밍에 상속, 위임을 통해 여러 Module에 적용할 수 있지만 중복 코드가 양산된다는 한계점이 존재한다. <br>
-    이러한 한계점을 효율적으로 극복하기 위해, AOP(Aspect Oriented Programming) 기법을 사용한다. <br>
+   공통 관심 사항은 객체 지향 프로그래밍에 상속, 위임을 통해 여러 Module에 적용할 수 있지만 중복 코드가 양산된다는 한계점이 존재한다. <br>
+   이러한 한계점을 효율적으로 극복하기 위해, AOP(Aspect Oriented Programming) 기법을 사용한다. <br>
 
     문제를 바라보는 관점으로 프로그래밍하며, <br>
     문제 해결을 위한 핵심 관심 사항과 서비스 전체에 적용되는 공통 관심 사항을 기준으로 나눔으로써, 공통 기능을 여러 Module에 쉽게 적용한다.
@@ -70,7 +71,8 @@
 
 Nest는 Dto와 Decorator를 통해 Controller를 참조하여 Swagger 문서를 어느정도 자동화해준다. <br>
 (Express는 Type이 없으므로 불가능 Typescript를 적용해도 불가능 Swagger 문서 자동화는 내부적으로 매우 복잡함)
->>>>>>> f360e7dc0ff3112449a08360829502a4394847e9
+
+> > > > > > > f360e7dc0ff3112449a08360829502a4394847e9
 
 <br>
 
@@ -193,12 +195,13 @@ forRoot는 Dynamic Module을 Return 하는 Static Method다.
 
 <<<<<<< HEAD
 Dynamic Module 생성 시 forRoot 외 다른 이름을 사용해도 상관없지만 **_forRoot, register Convention_** <br>
-비동기일 경우 forRootAsync, registerAsync 
+비동기일 경우 forRootAsync, registerAsync
 =======
 Dynamic Module 생성 시 forRoot 외 다른 이름을 써도 상관없지만 **_forRoot, register는 Convention_** <br>
 비동기일 경우 forRootAsync, registerAsync
 
->>>>>>> f360e7dc0ff3112449a08360829502a4394847e9
+> > > > > > > f360e7dc0ff3112449a08360829502a4394847e9
+
 ```typescript
 import { ConfigService } from "@nestjs/config";
 
@@ -217,7 +220,8 @@ export class AppModule {}
 =======
 인수로 ConfigModuleOptions를 받는다. 즉 ConfigModule은 소비 Module이 원하는 옵션 값을 전달하여 **_동적_** 으로 ConfigModule을 생성한다. <br>
 
->>>>>>> f360e7dc0ff3112449a08360829502a4394847e9
+> > > > > > > f360e7dc0ff3112449a08360829502a4394847e9
+
 ```typescript
 static forRoot(options?: ConfigModuleOptions): DynamicModule
 ```
@@ -253,7 +257,8 @@ ConfigModule의 Provider를 원하는 Component에서 DI 하여 사용한다.
 =======
 ConfigModule의 Provider를 원하는 Component에서 DI 하여 사용
 
->>>>>>> f360e7dc0ff3112449a08360829502a4394847e9
+> > > > > > > f360e7dc0ff3112449a08360829502a4394847e9
+
 ```typescript
 import { ConfigService } from "@nestjs/config";
 
@@ -500,7 +505,7 @@ NodeJS는 **_싱글 스레드_** 로 하나의 스레드가 모든 작업을 처
 스레드 풀은 **_libuv_** 라이브러리를 통해 동작하므로 개발자는 신경 쓸 필요 없다. <br>
 
 <br>NodeJS는 Request에 대한 작업 완료 여부를 기다리지 않고 다음 작업을 실행하는 **_비동기 방식_** 이다. <br>
-Request는 단일 스레드로 받지만 순서대로 처리하지 않고 먼저 처리되는 순서대로 이벤트를  **_Return_** 한다.
+Request는 단일 스레드로 받지만 순서대로 처리하지 않고 먼저 처리되는 순서대로 이벤트를 **_Return_** 한다.
 
 <br>
 
@@ -1960,39 +1965,40 @@ Refresh Token을 Database에 영속화하고 유효한지 여부를 따지는 �
 #### **Custom Parameter Decorator**
 
 <<<<<<< HEAD
-<br>  
+<br>
 
 -   **UserDecorator** <br>
     createParamDecorator를 이용해 User Decorator를 선언 <br>
     ExecutionContext에서 Request를 얻어온다. <br>
     Guard에서 설정(reqeust.user)한 사용자 객체를 반환한다. <br>
-    req.uset가 any Type이었다면 Decorator를 만듬으로 UserMeta Type을 가지게되어 Type의 안정성도 누릴 수 있다. 
-    
-    <br>
+    req.uset가 any Type이었다면 Decorator를 만듬으로 UserMeta Type을 가지게되어 Type의 안정성도 누릴 수 있다.
 
-    ```typescript
-    import { createParamDecorator, ExecutionContext} from "@nestjs/common"
+        <br>
 
-    export const UserMeta = createParamDecorator(
-        (data: unknown, ctx: ExecutionContext) => {
-            const request = ctx.switchToHttp().getRequest()
+        ```typescript
+        import { createParamDecorator, ExecutionContext} from "@nestjs/common"
 
-            return request.user;
-        }
-    )
-=======
-| Nest Decorator           | Express     |
-| ------------------------ | ----------- |
-| @Request(), @Req()       | req         |
-| @Response(), @Res()      | res         |
-| @Next()                  | next        |
-| @Session()               | req.session |
-| @Param(param?: string)   | req.params  |
-| @Body(param?: string)    | req.body    |
-| @Query(param?: string)   | req.query   |
-| @Headers(param?: string) | req.headers |
-| @Ip()                    | req.ip      |
-| @HostParam()             | req.hosts   |
+        export const UserMeta = createParamDecorator(
+            (data: unknown, ctx: ExecutionContext) => {
+                const request = ctx.switchToHttp().getRequest()
+
+                return request.user;
+            }
+        )
+
+    =======
+    | Nest Decorator | Express |
+    | ------------------------ | ----------- |
+    | @Request(), @Req() | req |
+    | @Response(), @Res() | res |
+    | @Next() | next |
+    | @Session() | req.session |
+    | @Param(param?: string) | req.params |
+    | @Body(param?: string) | req.body |
+    | @Query(param?: string) | req.query |
+    | @Headers(param?: string) | req.headers |
+    | @Ip() | req.ip |
+    | @HostParam() | req.hosts |
 
 <br>
 
@@ -2019,20 +2025,21 @@ Refresh Token을 Database에 영속화하고 유효한지 여부를 따지는 �
 <br>
 
 #### 추후 작성
+
 -   Decorator 합성
 -   Metadata(Reflection Class)
 
 <br>
 
 ## **_Chapter11_** 로깅 애플리케이션의 동작 기록
+
 <<<<<<< HEAD
 서비스에 기능이 늘어나 규모가 커지면 기능에 동작 과정을 남기고 추적하는 일이 매우 중요하다. <br>
 
 Issue가 발생했을 경우 해당 Issue만 보고 해결하는 건 많은 비용이 들고 코드를 역추적하는 과정은 매우 복잡하다. <br>
 Issue 발생 지점과 Callstack이 제공된다면 신속한 조취가 가능하다. <br>
 
-Nest는 내장 Logger Class를 지원하며 다음과 같은 System Logging 동작을 제어할 수 있다. <br>
-=======
+# Nest는 내장 Logger Class를 지원하며 다음과 같은 System Logging 동작을 제어할 수 있다. <br>
 
 서비스에 기능이 늘어나 규모가 커지면 기능에 동작 과정을 남기고 **_추적_** 하는 일이 매우 중요하다. <br>
 
@@ -2041,7 +2048,8 @@ Issue 발생 지점과 CallStack이 제공된다면 **_신속한 조치_** 가 �
 
 Nest는 **_내장 Logger Class_** 를 지원하며 다음과 같은 System Logging 동작을 제어할 수 있다. <br>
 
->>>>>>> f360e7dc0ff3112449a08360829502a4394847e9
+> > > > > > > f360e7dc0ff3112449a08360829502a4394847e9
+
 -   Logging 비활성화
 -   Log Level: log, error, warn, debug, varbose
 -   Logger의 Timestamp 재정의
@@ -2060,26 +2068,27 @@ Nest는 **_내장 Logger Class_** 를 지원하며 다음과 같은 System Loggi
     @Injectable()
     export class UserService {
         private readonly logger = new Logger(UserService.name);
-    
+
         findUserById() {
-            this.logger.error("")
-            this.logger.warn("")
-            this.logger.log("")
-            this.logger.verbose("")
-            this.logger.debug("")
+            this.logger.error("");
+            this.logger.warn("");
+            this.logger.log("");
+            this.logger.verbose("");
+            this.logger.debug("");
         }
     }
     ```
 
 <br>
 
-*   **커스텀 로거** <br>
+-   **커스텀 로거** <br>
     내장 로거는 File 또는 Database 저장 기능을 제공하지 않으므로 Custom Logger를 직접 구현할 수 있다. <br>
     Custom Logger는 @nestjs/common의 LoggerService Interface를 구현해야한다.
 
     <br>
 
     -   **logger.service.ts**
+
     ```typescript
     export class CustomLogger extends ConsoleLogger {
         error(message: any, stack?: string, context?: string) {
@@ -2097,6 +2106,7 @@ Nest는 **_내장 Logger Class_** 를 지원하며 다음과 같은 System Loggi
     <br>
 
     -   **logger.module.ts**
+
     ```typescript
     import { Module } from "@nestjs/common";
     import { CustomLogger } from "";
@@ -2107,9 +2117,11 @@ Nest는 **_내장 Logger Class_** 를 지원하며 다음과 같은 System Loggi
     })
     export class LoggerModule {}
     ```
+
     <br>
 
     -   **Global 설정**
+
     ```typescript
     async function bootstrap() {
         const app = await NestFactory.create(AppModule)
@@ -2120,6 +2132,7 @@ Nest는 **_내장 Logger Class_** 를 지원하며 다음과 같은 System Loggi
 <br>
 
 ### Winston Logger
+
 Nest 제공 Logger도 사용 가능하지만 상용 수준의 서비스에선 Log 출력뿐 아니라 File을 저장하거나 중요 Log는 Database에 저장해야 한다. <br>
 
 이러한 기능을 Logger를 활용해 직접 구현하기엔 비효율적이므로 Winston을 사용한다. <br>
@@ -2957,3 +2970,13 @@ SOLID의 각 원칙은 서로 분리되어 있는 게 아니라 같이 **_조합
 </details>
 
 ### 이벤트
+
+<br>
+
+## **_Chapter18_** 테스트 자동화
+
+버그 없는 Software는 존재하지 않는다. <br>
+코드가 몇줄 되지 않는 간단한 프로그램이라 할지라도 그 프로그램이 수행되는 시스템이나 환경에 따라 제대로 동작하지 않을 가능성은 얼마든지 존재한다. <br>
+실제 상용 서비스와 같이 복잡한 프로그램이 같이 맞물려 돌아가는 System은 실제 보이지 않는 버그들이 숨어 있으며, 개발자와 사용자 모두를 괴롭힌다. <br>
+
+모든 Software는 Release 전 Test를 통과해야 한다. 일반적으로 품질 보증(Quality Assurance), QA라 불리는 테스트 작업을 수행한다.
