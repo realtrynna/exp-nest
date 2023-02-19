@@ -3023,7 +3023,7 @@ V-Model의 테스트 단계에서 뒤쪽 단계의 테스트로 갈수록 테스
 
 <br>
 
-### TDD(Test Driven Development)
+### **TDD**(Test Driven Development)
 
 모자 바꿔 쓰기라고도 불리우며, 테스트 코드를 먼저 작성 후 이를 기반으로 실제 소프트웨어의 기능을 개발해나가는 방법론이다. <br>
 테스트 엔지니어와 개발 엔지니어의 역할을 바꿔가며 테스트 케이스를 풍부하게 작성할 수 있다. <br>
@@ -3035,4 +3035,51 @@ V-Model의 테스트 단계에서 뒤쪽 단계의 테스트로 갈수록 테스
 
 <br>
 
-### Jest
+### **Jest**
+
+테스트 Framework 구성 요소는 다음과 같다. <br>
+
+1. 테스트가 실행되는 환경을 제공하는 테스트 러너(Test Runner) <br>
+2. 테스트의 상황을 가정하는 어서션(Assertion) <br>
+3. 테스트의 기대 결과를 비교하는 매처(Machers) <br>
+4. 테스트 과정에서 현재 테스트 대상 Module이 의존하는 다른 Module을 임의로 대체하는 테스트 더블(Test Double)
+
+<br>
+
+Jest는 Meta가 주도해서 만든 테스트 Framework다.
+
+<br>
+
+#### **Unit Test**
+
+Nest CLI를 통해 프로젝트 생성 시 Component와 같이 테스트 파일(.spec.ts)이 생성된다. <br>
+이 규칙은 package.json에 정의한다. <br>
+
+```json
+{
+    "jest": {
+        "moduleFileExtensions": ["js", "json", "ts"]
+    },
+    "rootDir": "src",
+    "testRegex": ".*\\.spec\\.ts$", // 테스트 코드 파일의 확장자 형식을 정규 표현식으로 선언
+    "transform": {
+        "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": ["**/*.(t|j)s"],
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
+}
+```
+
+<br>
+
+테스트 코드는 describe()와 it() 구문으로 구성된다. describe()는 테스트 스위트(Test suite)를 작성하는 Block이다.
+
+<br>
+
+    테스트 스위트를 그룹화해 더 큰 단위의 테스트 스위트를 만들 수 있으며 특징은 다음과 같다.
+    - 테스트 수행에 필요한 설정, 공통 모듈 생성 등과 같이 세부 테스트 케이스가 수행하기 위한 기반을 마련한다.
+
+<br>
+
+it() 구문은 특정 테스트 시나리오를 작성하는 부분이다.
