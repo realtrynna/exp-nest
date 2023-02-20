@@ -2,32 +2,33 @@
 
 # NestJS로 배우는 백엔드 프로그래밍
 
-| Date     | Content                                                               | Description                                                                  |
-| -------- | --------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| 23.01.03 | [Chapter1](#chapter1-hello-nestjs)                                    | Node와 Nest 특징, Decorator                                                  |
+| Date     | Content                                                               | Description                                                            |
+|----------| --------------------------------------------------------------------- |------------------------------------------------------------------------|
+| 23.01.03 | [Chapter1](#chapter1-hello-nestjs)                                    | Node와 Nest 특징, Decorator                                               |
 | 23.01.04 | [Chapter2](#chapter2-웹-개발-기초-지식)                               | Controller에서의 Routing, Wildcard, Body, Exception, Header, StatusCode 설정 |
-| 23.01.05 | [Chapter3](#chapter3-애플리케이션의-관문-인터페이스)                  | Dto, Service Layer의 특징, AOP, 횡단 관심사                                  |
-| 23.01.06 | [Chapter4](#chapter4-핵심-도메인-로직을-포함하는-프로바이더)          | Provider, DI, Scope                                                          |
-| 23.01.09 | [Chapter5](#chapter5-software-복잡도를-낮추기-위한-module-설계)       | Custom Provider, SW 복잡도를 낮추기 위한 Module 설계, Swagger                |
-| 23.01.10 | [Chapter6](#chapter6-dynamic-module을-활용한-환경-변수-설정)          | Module(Global, exports), Dynamic Module                                      |
-| 23.01.11 | [Chapter6](#chapter6-dynamic-module을-활용한-환경-변수-설정)          | Dynamic Module, Custom Configuration                                         |
-| 23.01.16 | [Chapter7](#chapter7-파이프와-유효성-검사-요청이-제대로-전달되었는가) | Pipe, Validation, Transformer                                                |
-| 23.01.17 | [Chapter7](#chapter7-파이프와-유효성-검사-요청이-제대로-전달되었는가) | Custom Validation, Authentication, Authorization                             |
-| 23.01.18 | [Chapter8](#chapter8-영속화-데이터를-기록하고-다루기)                 | TypeOrm Config                                                               |
-| 23.01.19 | [Chapter8](#chapter8-영속화-데이터를-기록하고-다루기)                 | TypeOrm Relations                                                            |
-| 23.01.21 | [Chapter9](#chapter9-요청-처리-전-부가-기능을-수행하기-위한-미들웨어) | Repository Pattern, Middleware                                               |
-| 23.01.25 | [Chapter10](#chapter10-권한-확인을-위한-가드-jwt-인증인가)            | Middleware, Guard                                                            |
-| 23.01.26 | [Chapter10](#chapter10-권한-확인을-위한-가드-jwt-인증인가)            | Authentication(Sliding Session, Refresh Token)                               |
-| 23.01.28 | [Chapter11](#chapter11-로깅-애플리케이션의-동작-기록)                 | Logger(BuiltIn, Custom)                                                      |
-| 23.01.30 | [Chapter12](#chapter12-모든-건-항상-실패한다-예외-필터)               | Exception(Handler, Filter)                                                   |
-| 23.01.31 | [Chapter13](#chapter13-인터셉터로-요청과-응답을-알맞게-바꾸기)        | Interceptor                                                                  |
-| 23.02.01 | [Chapter13](#chapter13-인터셉터로-요청과-응답을-알맞게-바꾸기)        | Lifecycle                                                                    |
-| 23.02.02 | [Chapter14](#chapter14-태스크-스케줄링)                               | Task Schedule                                                                |
-| 23.02.04 | [Chapter15](#chapter15-헬스-체크-댁의-서버는-건강하신가요)            | Task Schedule                                                                |
-| 23.02.07 | [Chapter16](#chapter16-cqrs를-이용한-관심사-분리)                     | Cqrs                                                                         |
-| 23.02.08 | [Chapter17](#chapter17-클린-아키텍처)                                 | Clean Architecture                                                           |
-| 23.02.09 | [Chapter17](#chapter17-클린-아키텍처)                                 | SOLID                                                                        |
-| 23.02.15 | [Chapter18](#chapter18-테스트-자동화)                                 | Software Test                                                                |
+| 23.01.05 | [Chapter3](#chapter3-애플리케이션의-관문-인터페이스)                  | Dto, Service Layer의 특징, AOP, 횡단 관심사                                    |
+| 23.01.06 | [Chapter4](#chapter4-핵심-도메인-로직을-포함하는-프로바이더)          | Provider, DI, Scope                                                    |
+| 23.01.09 | [Chapter5](#chapter5-software-복잡도를-낮추기-위한-module-설계)       | Custom Provider, SW 복잡도를 낮추기 위한 Module 설계, Swagger                     |
+| 23.01.10 | [Chapter6](#chapter6-dynamic-module을-활용한-환경-변수-설정)          | Module(Global, exports), Dynamic Module                                |
+| 23.01.11 | [Chapter6](#chapter6-dynamic-module을-활용한-환경-변수-설정)          | Dynamic Module, Custom Configuration                                   |
+| 23.01.16 | [Chapter7](#chapter7-파이프와-유효성-검사-요청이-제대로-전달되었는가) | Pipe, Validation, Transformer                                          |
+| 23.01.17 | [Chapter7](#chapter7-파이프와-유효성-검사-요청이-제대로-전달되었는가) | Custom Validation, Authentication, Authorization                       |
+| 23.01.18 | [Chapter8](#chapter8-영속화-데이터를-기록하고-다루기)                 | TypeOrm Config                                                         |
+| 23.01.19 | [Chapter8](#chapter8-영속화-데이터를-기록하고-다루기)                 | TypeOrm Relations                                                      |
+| 23.01.21 | [Chapter9](#chapter9-요청-처리-전-부가-기능을-수행하기-위한-미들웨어) | Repository Pattern, Middleware                                         |
+| 23.01.25 | [Chapter10](#chapter10-권한-확인을-위한-가드-jwt-인증인가)            | Middleware, Guard                                                      |
+| 23.01.26 | [Chapter10](#chapter10-권한-확인을-위한-가드-jwt-인증인가)            | Authentication(Sliding Session, Refresh Token)                         |
+| 23.01.28 | [Chapter11](#chapter11-로깅-애플리케이션의-동작-기록)                 | Logger(BuiltIn, Custom)                                                |
+| 23.01.30 | [Chapter12](#chapter12-모든-건-항상-실패한다-예외-필터)               | Exception(Handler, Filter)                                             |
+| 23.01.31 | [Chapter13](#chapter13-인터셉터로-요청과-응답을-알맞게-바꾸기)        | Interceptor                                                            |
+| 23.02.01 | [Chapter13](#chapter13-인터셉터로-요청과-응답을-알맞게-바꾸기)        | Lifecycle                                                              |
+| 23.02.02 | [Chapter14](#chapter14-태스크-스케줄링)                               | Task Schedule                                                          |
+| 23.02.04 | [Chapter15](#chapter15-헬스-체크-댁의-서버는-건강하신가요)            | Task Schedule                                                          |
+| 23.02.07 | [Chapter16](#chapter16-cqrs를-이용한-관심사-분리)                     | Cqrs                                                                   |
+| 23.02.08 | [Chapter17](#chapter17-클린-아키텍처)                                 | Clean Architecture                                                     |
+| 23.02.09 | [Chapter17](#chapter17-클린-아키텍처)                                 | SOLID                                                                  |
+| 23.02.15 | [Chapter18](#chapter18-테스트-자동화)                                 | Software Test                                                          |
+| 23.02.20 | [Chapter18](#chapter18-테스트-자동화)                                 | Jest                                                                   |
 
 <br>
 
@@ -57,8 +58,8 @@
    공통 관심 사항은 객체 지향 프로그래밍에 상속, 위임을 통해 여러 Module에 적용할 수 있지만 중복 코드가 양산된다는 한계점이 존재한다. <br>
    이러한 한계점을 효율적으로 극복하기 위해, AOP(Aspect Oriented Programming) 기법을 사용한다. <br>
 
-    문제를 바라보는 관점으로 프로그래밍하며, <br>
-    문제 해결을 위한 핵심 관심 사항과 서비스 전체에 적용되는 공통 관심 사항을 기준으로 나눔으로써, 공통 기능을 여러 Module에 쉽게 적용한다.
+   문제를 바라보는 관점으로 프로그래밍하며, <br>
+   문제 해결을 위한 핵심 관심 사항과 서비스 전체에 적용되는 공통 관심 사항을 기준으로 나눔으로써, 공통 기능을 여러 Module에 쉽게 적용한다.
 
 <br>
 
@@ -1589,16 +1590,16 @@ export function notIn(
    인증은 어떤 개체(**_사용자 또는 장치_**)의 **_신원을 확인_** 하는 과정이다. 개체는 보통 어떤 인증 요소(**_Authencation Factor_**)를 증거로 제시하여 자신을 **_증명_** 한다. <br>
    은행에 가서 돈을 인출하려면 내가 누군지 은행에게 확인시켜주기 위해 신분증을 제시하는데 이 과정이 개체의 신원을 확인하기 위한 과정에 해당한다. <br>
 
-    Online에서도 마찬가지다. 특정 서비스 이용 시 보통 아이디와 패스워드를 입력하거나 휴대폰에 전달된 인증번호를 입력한다. <br>
-    인증 요소(Authencation Factor)는 **_하나_** 일 수도 있고 두개 또는 그 이상(**_Multi Factor_**)일 수 있다. <br>
+   Online에서도 마찬가지다. 특정 서비스 이용 시 보통 아이디와 패스워드를 입력하거나 휴대폰에 전달된 인증번호를 입력한다. <br>
+   인증 요소(Authencation Factor)는 **_하나_** 일 수도 있고 두개 또는 그 이상(**_Multi Factor_**)일 수 있다. <br>
 
 2. **_인가_**(Authorization) <br>
    인증과 달리 인가는 개체(**_사용자 또는 장치_**)가 **_특정 리소스_** 에 접근할 수 있는지 또는 어떤 동작을 수행할 수 있는지 검증하는 과정 즉 **_접근 권한_** 을 의미한다. <br>
    공연장에 입장하기 위해 표를 제시하는 과정과 동일하다. 공연장은 나의 신원을 확인하고자 하는 게 아니라 입장할 권한이 있는지 없는지만 관심 있다. <br>
    신원 정보를 포함하고 있지 않더라도 입장이 실패하지 않는다. <br>
 
-    보통 Application은 Token을 사용해 인가 과정을 진행한다. 사용자가 로그인을 하면 Application은 사용자가 뭘 할 수 있는가에 관심을 가지며 사용자 신원을 바탕으로 인가 세부사항을 가진 Token을 생성한다. <br>
-    이렇게 발급된 인가 Token을 이용해 리소스에 대한 접근을 허용할지 말지 결정한다.
+   보통 Application은 Token을 사용해 인가 과정을 진행한다. 사용자가 로그인을 하면 Application은 사용자가 뭘 할 수 있는가에 관심을 가지며 사용자 신원을 바탕으로 인가 세부사항을 가진 Token을 생성한다. <br>
+   이렇게 발급된 인가 Token을 이용해 리소스에 대한 접근을 허용할지 말지 결정한다.
 
 <br>
 
@@ -2496,7 +2497,7 @@ Nest의 Request Lifecycle 순서는 다음과 같다.
 > 2. Guard (Global => Controller => Router) <br>
 > 3. Interceptor (Global => Controller => Router) <br>
 > 4. Pipe (Global => Controller => Router) <br>
->    Controller <=> Service <br>
+     >    Controller <=> Service <br>
 > 5. Interceptor (Global => Controller => Router) <br>
 > 6. ExceptionFilter (Global => Controller => Router)
 
@@ -2551,12 +2552,12 @@ npm i @nestjs/schedule @types/cron
    @Cron의 처음 인수는 Task의 반복 주기이며 Cron Pattern을 따른다. <br>
    공백으로 구분된 6개의 값을 가지는 문자열을 입력받고 각 자리별 의미는 다음과 같다. <br>
 
-    > Second: 초, 0~59의 값을 가지며 선택 사항 <br>
-    > Minute: 분, 0~59의 값을 가짐 <br>
-    > Hour: 시간, 0~23의 값을 가짐 <br>
-    > day of month: 날, 1~31의 값을 가짐 <br>
-    > month: 월, 0~12의 값을 가지며 0과 12는 12월 <br>
-    > day of week: 요일, 0~7의 값을 가지며 0과 7은 일요일 <br>
+   > Second: 초, 0~59의 값을 가지며 선택 사항 <br>
+   > Minute: 분, 0~59의 값을 가짐 <br>
+   > Hour: 시간, 0~23의 값을 가짐 <br>
+   > day of month: 날, 1~31의 값을 가짐 <br>
+   > month: 월, 0~12의 값을 가지며 0과 12는 12월 <br>
+   > day of week: 요일, 0~7의 값을 가지며 0과 7은 일요일 <br>
 
     ```typescript
     import { Injectable, Logger } from "@nestjs/common";
@@ -2958,11 +2959,11 @@ SOLID의 각 원칙은 서로 분리되어 있는 게 아니라 같이 **_조합
 <br>
 
 2. **관점 지향 프로그래밍** (Aspect Oriented Programming) <br>
-   공통 관심 사항은 객체 지향 프로그래밍에 상속, 위임을 통해 여러 Module에 적용할 수 있지만 중복 코드가 양산된다는 한계점이 존재한다. <br>
+   공통 관심 사항은 객체 지향 프로그래밍에 **_상속_**, **_위임_** 을 통해 여러 Module에 적용할 수 있지만 중복 코드가 양산된다는 한계점이 존재한다. <br>
    이러한 한계점을 효율적으로 극복하기 위해, AOP(Aspect Oriented Programming) 기법을 사용한다. <br>
 
-    문제를 바라보는 관점으로 프로그래밍하며, <br>
-    문제 해결을 위한 핵심 관심 사항과 서비스 전체에 적용되는 공통 관심 사항을 기준으로 나눔으로써, 공통 기능을 여러 Module에 쉽게 적용한다.
+   문제를 바라보는 관점으로 프로그래밍하며, <br>
+   문제 해결을 위한 핵심 관심 사항과 서비스 전체에 적용되는 공통 관심 사항을 기준으로 나눔으로써, 공통 기능을 여러 Module에 쉽게 적용한다.
 
 <br>
 
@@ -2975,12 +2976,12 @@ SOLID의 각 원칙은 서로 분리되어 있는 게 아니라 같이 **_조합
 
 ## **_Chapter18_** 테스트 자동화
 
-버그 없는 Software는 존재하지 않는다. <br>
-코드가 몇줄 되지 않는 간단한 프로그램이라 할지라도 그 프로그램이 수행되는 시스템이나 환경에 따라 제대로 동작하지 않을 가능성은 얼마든지 존재한다. <br>
+버그 없는 **_Software_**는 존재하지 않는다. <br>
+코드가 몇 줄 되지 않는 간단한 프로그램이라 할지라도 그 프로그램이 수행되는 시스템이나 환경에 따라 제대로 동작하지 않을 가능성은 얼마든지 존재한다. <br>
 실제 상용 서비스와 같이 복잡한 프로그램이 같이 맞물려 돌아가는 System은 실제 보이지 않는 버그들이 숨어 있으며, 개발자와 사용자 모두를 괴롭힌다. <br>
 
 모든 Software는 Release 전 Test를 통과해야 한다. 일반적으로 품질 보증(Quality Assurance), QA라 불리는 테스트를 진행한다. <br>
-이러한 테스팅 과정은, 프로그램의 버그가 없다고 확신하는게 아닌, Software의 품질이 사용자에게 전달될 정도의 수준이 되었다는 걸 보증하는 보증한다. <br>
+이러한 테스팅 과정은, 프로그램의 버그가 없다고 확신하는 게 아닌, Software의 품질이 사용자에게 전달될 정도의 수준이 되었다는 걸 보증하는 보증한다. <br>
 따라서, 테스트로 모든 버그를 발견할 수도 없고 그 과정 중 발견한 모든 버그를 수정할 필요는 없다. <br>
 가능한 일정 내에 사용자에게 가치를 전달할 수 있는 수준으로 만든다는 마인드가 좋다. <br>
 
@@ -2999,12 +3000,13 @@ SOLID의 각 원칙은 서로 분리되어 있는 게 아니라 같이 **_조합
 
 <br>
 
-### 정적 테스트 동적 테스트
+### **정적 테스트 동적 테스트**
 
 프로그램의 실행 여부에 따라 정적 또는 동적 테스트로 나눌 수 있다. <br>
 
 1. 정적 테스트 <br>
-   코드를 수행하지 않고 검증하는 테스트다. 정적 분석기(Static Analyzer)를 이용해 코드에 내재된 이슈를 미리 파악해볼 수 있고, 동료의 코드 리뷰 도한 정적 테스트에 해당한다.
+   코드를 수행하지 않고 검증하는 테스트다. <br>
+   **_정적 분석기_**(Static Analyzer)를 이용해 코드에 내재된 이슈를 미리 파악해 볼 수 있고, 동료의 **_코드 리뷰_** 도한 정적 테스트에 해당한다.
 
 <br>
 
@@ -3016,19 +3018,19 @@ SOLID의 각 원칙은 서로 분리되어 있는 게 아니라 같이 **_조합
 조직 규모에 따라, 개발 프로세스에 테스트 과정이 모두 포함되지 않는 경우도 있고 QA가 존재하지 않아 개발자가 모든 테스트를 직접 수행하기도 한다. <br>
 Debugging은 개발 과정에서 당연히 수행하는 과정이지만 단위(Unit) 테스트는 같이 작성하는 게 좋다. <br>
 
-V-Model의 테스트 단계에서 뒤쪽 단계의 테스트로 갈수록 테스트 과정에서 발견되는 이슈를 수정하기 위해 드는 비용이 크게 증가한다. <br>
-초기 테스트 코드 작성이 개발 속도를 딜레이시킨다고 느낄 수 있지만 오히려 그 반대다. <br>
-안정된 테스트 코드가 존재한다면 리팩토링을 보다 손 쉽게 수행할 수 있다. 기존 코드 수정 시 수정된 코드가 시스템 동작의 영향이 가는지 가지 않는지 알 수 있다. <br>
+**_V-Model_** 의 테스트 단계에서 뒤쪽 단계의 테스트로 갈수록 테스트 과정에서 발견되는 이슈를 수정하기 위해 드는 비용이 크게 증가한다. <br>
+초기 테스트 코드 작성이 개발 속도를 딜레이 시킨다고 느낄 수 있지만 오히려 그 반대다. <br>
+안정된 테스트 코드가 존재한다면 리팩토링을 보다 손쉽게 수행할 수 있다. 기존 코드 수정 시 수정된 코드가 시스템 동작의 영향이 가는지 가지 않는지 알 수 있다. <br>
 테스트 코드 작성은 궁극적으로 소프트웨어의 품질 개선에 도움이 된다.
 
 <br>
 
 ### **TDD**(Test Driven Development)
 
-모자 바꿔 쓰기라고도 불리우며, 테스트 코드를 먼저 작성 후 이를 기반으로 실제 소프트웨어의 기능을 개발해나가는 방법론이다. <br>
+모자 바꿔 쓰기라고도 불리며, 테스트 코드를 먼저 작성 후 이를 기반으로 실제 소프트웨어의 기능을 개발해나가는 방법론이다. <br>
 테스트 엔지니어와 개발 엔지니어의 역할을 바꿔가며 테스트 케이스를 풍부하게 작성할 수 있다. <br>
 
-테스트 코드는 단위(Unit) 테스트만을 의미하진 않는다. <br>
+테스트 코드는 **_단위(Unit)_** 테스트만을 의미하진 않는다. <br>
 사용자의 행동을 코드로 작성하여 어떤 동작이 일어나는지부터 모든 시슽메을 동적으로 수행 후 응답을 확인하는 E2E(End To End) 테스트도 포함된다. <br>
 
 지속적 통합(CI, Continuous Intergation), 지속적 배포(CD, Continuous Deployment) 과정에 포함된 자동화 테스트는 배포 과정 중 발생하는 에러를 방지한다.
@@ -3039,10 +3041,10 @@ V-Model의 테스트 단계에서 뒤쪽 단계의 테스트로 갈수록 테스
 
 테스트 Framework 구성 요소는 다음과 같다. <br>
 
-1. 테스트가 실행되는 환경을 제공하는 테스트 러너(Test Runner) <br>
-2. 테스트의 상황을 가정하는 어서션(Assertion) <br>
-3. 테스트의 기대 결과를 비교하는 매처(Machers) <br>
-4. 테스트 과정에서 현재 테스트 대상 Module이 의존하는 다른 Module을 임의로 대체하는 테스트 더블(Test Double)
+1. 테스트가 실행되는 환경을 제공하는 테스트 러너(**`Test Runner`**) <br>
+2. 테스트의 상황을 가정하는 어서션(**`Assertion`**) <br>
+3. 테스트의 기대 결과를 비교하는 매처(**`Machers`**) <br>
+4. 테스트 과정에서 현재 테스트 대상 Module이 의존하는 다른 Module을 임의로 대체하는 테스트 더블(**`Test Double`**)
 
 <br>
 
@@ -3053,7 +3055,7 @@ Jest는 Meta가 주도해서 만든 테스트 Framework다.
 #### **Unit Test**
 
 Nest CLI를 통해 프로젝트 생성 시 Component와 같이 테스트 파일(.spec.ts)이 생성된다. <br>
-이 규칙은 package.json에 정의한다. <br>
+이 규칙은 **_package.json_** 에 정의한다. <br>
 
 ```json
 {
@@ -3061,7 +3063,7 @@ Nest CLI를 통해 프로젝트 생성 시 Component와 같이 테스트 파일(
         "moduleFileExtensions": ["js", "json", "ts"]
     },
     "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$", // 테스트 코드 파일의 확장자 형식을 정규 표현식으로 선언
+    "testRegex": ".*\\.spec\\.ts$",                   // 테스트 코드 파일의 확장자 형식을 정규 표현식으로 선언
     "transform": {
         "^.+\\.(t|j)s$": "ts-jest"
     },
@@ -3073,7 +3075,7 @@ Nest CLI를 통해 프로젝트 생성 시 Component와 같이 테스트 파일(
 
 <br>
 
-테스트 코드는 describe()와 it() 구문으로 구성된다. describe()는 테스트 스위트(Test suite)를 작성하는 Block이다.
+테스트 코드는 `describe()`와 **`it()`** 구문으로 구성된다. describe()는 테스트 스위트(Test suite)를 작성하는 **_Block_** 이다.
 
 <br>
 
@@ -3082,4 +3084,112 @@ Nest CLI를 통해 프로젝트 생성 시 Component와 같이 테스트 파일(
 
 <br>
 
-it() 구문은 특정 테스트 시나리오를 작성하는 부분이다.
+it() 구문은 특정 테스트 시나리오를 작성하는 부분이다. <br>
+각 it() 구문은 별개의 테스트 케이스로 다뤄져야 하며 서로 의존관계가 존재하지 않도록 작성하는 게 중요하다. <br>
+대표적인 테스트 케이스 작성법으로 `TDD`, `BDD`(Behavior Driven Development)가 있으며, 둘 다 필요한 작성 방식이다.
+
+<br>
+
+작성할 BDD 테스트 케이스 작성 스타일은 다음과 같다. <br>
+
+    Given: 해당 테스트 케이스가 동작하기 위해 갖춰져야 하는 선행 조건(Pre Condition)이다. (어떠한 상황이 주어졌을 경우)
+    When: 테스트하고자 하는 대상 코드를 실행한다. (대상 코드가 동작한다면을 의미)
+    Then: 대상 코드의 수행 결과를 판단한다. (기대한 값과 실행 결과가 맞는지 비교)
+
+<br>
+
+describe()와 : 구문은 처음 인수로 문자열을 받는다. 이는 테스트 스위트와 케이스의 이름을 의미한다. <br>
+다음 인수로는 수행될 코드가 포함된 콜백 함수다.
+
+<br>
+
+describe(), it() 구문 외에 `SetUp`, `TearDown` 이라 부르는 개념이 있다. <br>
+테스트 스위트 내에서 모든 테스트 케이스를 수행하기 전 수행해야 하는 **_선행조건_** 이 있다면 SetUp 구문으로 반복 작업을 줄일 수 있다. <br>
+마찬가지로 테스트 후 처리가 필요한다면 TearDown에서 공통 처리한다. <br>
+
+```typescript
+import {UserService} from "./users.service";
+
+describe("UserService", () => {
+    const userService: UserService = new UserService()
+    
+    describe("create", () => {
+        it("Should create user", () => {
+            // Given
+            ...
+            // Where
+            ...
+            // Then
+        });
+        
+        it("Should throw error wher user already exists", () => {
+            // Given
+            ...
+            // Where
+            ...
+            // Then
+        });
+    })
+})
+```
+
+<br>
+
+#### **Jest 구문**
+
+1. **beforeAll()** <br>
+   테스트 스위트 내의 모든 테스트 케이스 수행 전 한 번만 실행된다.
+
+<br>
+
+2. **beforeEach()** <br>
+   각 테스트 케이스가 수행되기 전마다 수행된다.
+
+<br>
+
+3. **afterAll()** <br>
+   모든 테스트 케이스가 수행된 후 한번 실행된다.
+
+<br>
+
+4. **afterEach()** <br>
+   모든 테스트 케이스가 수행된 후 수행된다. <br>
+
+<br>
+
+테스트는 테스트를 하고자 하는 대상의 **_동작에만 집중_** 해야 한다. 대상 코드가 수행되면서 주입받거나 생성해서 사용한 외부 모듈이나 객체는 테스트의 대상이 아니다. <br>
+외부 모듈은 외부 모듈만을 위한 테스트 코드를 작성해야 하며, 이를 위해서 외부 모듈의 동작을 우리가 원하는 대로 다룰 수 있어야 한다. <br>
+그래야 외부 상태에 상관없이 대상 코드의 동작을 살필 수 있다. <br>
+
+외부 모듈을 임의의 객체로 다루는 개념을 `Test Double` 이라고 하며, 테스트 더블은 세부적으로 `Dummy`, `Fake`, `Stub`, `Spy`, `Mock` 으로  구분할 수 있다.
+
+<br>
+
+1. **Dummy** <br>
+   테스틀 위해 가짜로 생성된 데이터를 의미한다. 일반적으로 매개 변수 목록을 채우는 데만 사용한다. <br>
+
+<br>
+
+2. **Fake** <br>
+   Database로 관리되는 다량의 데이터를 테스트한다고 가졍 할 경우 실제 Database를 사용할 경우 I/O에 엄청난 비용과 시간이 투자된다. <br>
+   이럴 경우 In Memory Database와 같이 메모리에 데이터를 적재해 속도를 개선할 수 있다. <br>
+   Production 환경에서 테스트 수행 도중 시스템이 비정상 죵료되는 경우 논리적 오류가 있는 데이터가 남게 되므로 세션 등과 같은 대상을 테스트할 경우 사용한다. <br>
+
+<br>
+
+3. **Spy** <br>
+   테스트 수행 정보를 기록한다. 테스트 도중 함수 호출에 대해 해당 함수로 전달된 Parameter, Return Value,Exception 뿐만아니라 함수를 몇 번 호출했는지와 같은 정보들도 기록한다. <br>
+
+<br>
+
+4. **Stub** <br>
+   함수 호출 결과를 미리 준비된 응답으로 제공한다. <br>
+
+<br>
+
+5. **Mock** <br>
+   Stub과 동일한 역할을 하며, 테스트 중 만들어진 호출에 미리 준비된 답변을 제공하며 일반적으로 테스트를 위해 프로그래밍 된 거 외에는 응답하지 않는다.
+
+<br>
+
+    마틴 파울러에 따르면 테스트 대상이 의존하는 대상의 행위에 대해 검증이 필요하다면 모의 객체를 사용하고 상태를 검증하고자 한다면 Stub을 사용하라고 한다.
