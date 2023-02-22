@@ -73,8 +73,6 @@
 Nest는 Dto와 Decorator를 통해 Controller를 참조하여 Swagger 문서를 어느정도 자동화해준다. <br>
 (Express는 Type이 없으므로 불가능 Typescript를 적용해도 불가능 Swagger 문서 자동화는 내부적으로 매우 복잡함)
 
-> > > > > > > f360e7dc0ff3112449a08360829502a4394847e9
-
 <br>
 
 **설치** <br>
@@ -194,14 +192,8 @@ forRoot는 Dynamic Module을 Return 하는 Static Method다.
 
 <br>
 
-<<<<<<< HEAD
 Dynamic Module 생성 시 forRoot 외 다른 이름을 사용해도 상관없지만 **_forRoot, register Convention_** <br>
-비동기일 경우 forRootAsync, registerAsync
-=======
-Dynamic Module 생성 시 forRoot 외 다른 이름을 써도 상관없지만 **_forRoot, register는 Convention_** <br>
-비동기일 경우 forRootAsync, registerAsync
-
-> > > > > > > f360e7dc0ff3112449a08360829502a4394847e9
+비동기일 경우 forRootAsync, registerAsync <br>
 
 ```typescript
 import { ConfigService } from "@nestjs/config";
@@ -215,13 +207,7 @@ export class AppModule {}
 <br>
 
 **forRoot** <br>
-<<<<<<< HEAD
-인수로 ConfigModuleOptions를 받는다. <br>
-즉 ConfigModule은 소비 Module이 원하는 옵션 값을 전달하여 **_동적_** 으로 ConfigModule을 생성한다. <br>
-=======
 인수로 ConfigModuleOptions를 받는다. 즉 ConfigModule은 소비 Module이 원하는 옵션 값을 전달하여 **_동적_** 으로 ConfigModule을 생성한다. <br>
-
-> > > > > > > f360e7dc0ff3112449a08360829502a4394847e9
 
 ```typescript
 static forRoot(options?: ConfigModuleOptions): DynamicModule
@@ -253,9 +239,6 @@ export class AppModule {}
 <br>
 
 **ConfigService**
-<<<<<<< HEAD
-ConfigModule의 Provider를 원하는 Component에서 DI 하여 사용한다.
-=======
 ConfigModule의 Provider를 원하는 Component에서 DI 하여 사용
 
 > > > > > > > f360e7dc0ff3112449a08360829502a4394847e9
