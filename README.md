@@ -186,7 +186,6 @@ npm i @nestjs/config
 
 <br>
 
-**app.module.ts** <br>
 Static Module을 가져올 경우와 달리 **_forRoot Method_** 를 호출한다. <br>
 forRoot는 Dynamic Module을 Return 하는 Static Method다.
 
@@ -241,7 +240,6 @@ export class AppModule {}
 **ConfigService**
 ConfigModule의 Provider를 원하는 Component에서 DI 하여 사용
 
-> > > > > > > f360e7dc0ff3112449a08360829502a4394847e9
 
 ```typescript
 import { ConfigService } from "@nestjs/config";
