@@ -6,6 +6,6 @@ export const streamToString = async (stream: Readable) => {
 
         stream.on("data", (chunk) => chunks.push(chunk));
         stream.on("error", (e) => reject(e));
-        stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf-8")));
+        stream.on("end", () => resolve(Buffer.concat(chunks)));
     })
 }
