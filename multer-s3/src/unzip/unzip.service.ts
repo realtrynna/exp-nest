@@ -11,6 +11,7 @@ export class UnzipService {
         try {
             return unzip.Open.buffer(buffer);
         } catch (e) {
+            console.log("unzip error occurred!");
             console.log(e);
         }
     }

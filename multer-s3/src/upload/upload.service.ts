@@ -17,11 +17,29 @@ export class UploadService {
          * object가 없을 경우, clientService에서 예외 처리가 되므로,
          * 해당 메서드에서 결과값을 검증할 필요가 없지 않을까.
          */
-        const resultObject = await this.s3ClientService.getObject(key);
-        const result = await streamToString(resultObject.Body);
+        const { Body } = await this.s3ClientService.getObject(key);
 
-        const task = await this.unzipService.unzip(result);
+        const buffer = await new Promise((resolve, reject) => {
+            const chunks = [];
+            Body.on("data", (chunk) => {
+                chunks.push(chunk);
+            });
+            Body.on("error", reject);
+            Body.on("end", () => {
+                console.log("buffer ended");
+                resolve(Buffer.concat(chunks));
+            });
+        });
 
-        console.log(task);
+        const result = await this.unzipService.unzip(buffer);
+
+        result.files.map(async file => {
+            /**
+             * put object command
+             *
+             */
+        })
+
+        // console.log(task);
     }
 }
