@@ -1,8 +1,10 @@
-import { Injectable } from "@nestjs/common";
+import {Injectable} from "@nestjs/common";
 
-import { S3ClientService } from "src/s3-client/s3-client.service";
-import { UnzipService } from "src/unzip/unzip.service";
+import {S3ClientService} from "src/s3-client/s3-client.service";
+import {UnzipService} from "src/unzip/unzip.service";
 import {streamToString} from "../utils/stream-to-string";
+import { extractFileExt } from "../utils/extract-file-extension";
+import {mapToExcludeRoute} from "@nestjs/core/middleware/utils";
 
 @Injectable()
 export class UploadService {
@@ -14,10 +16,10 @@ export class UploadService {
 
     async unzip(key: string) {
         /**
-         * object가 없을 경우, clientService에서 예외 처리가 되므로,
-         * 해당 메서드에서 결과값을 검증할 필요가 없지 않을까.
+         * object가 없을 경우 clientService에서 예외 처리가 되므로 결과값을 검증할 필요가 없지 않나
          */
         const { Body } = await this.s3ClientService.getObject(key);
+<<<<<<< HEAD
 
         const buffer = await new Promise((resolve, reject) => {
             const chunks = [];
@@ -41,5 +43,19 @@ export class UploadService {
         })
 
         // console.log(task);
+=======
+        const buffer = await streamToString(Body);
+        const unzip = await this.unzipService.unzip(buffer);
+
+        await Promise.allSettled(unzip.files.map(async (file, i) => {
+            const content = await file.buffer();
+
+            /**
+             * put object
+             */
+            // await this.s3ClientService.putObject();
+        }));
+
+>>>>>>> a00fe465bb59b21bee96979acca1e709c22c94da
     }
 }

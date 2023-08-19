@@ -1,9 +1,7 @@
-import { Injectable } from "@nestjs/common";
-
-import {streamToString } from "src/utils/stream-to-string";
-
 import dotenv from "dotenv";
-import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+import { Injectable } from "@nestjs/common";
+import { S3Client, GetObjectCommand, PutObjectCommand, S3ServiceException } from "@aws-sdk/client-s3";
+
 
 @Injectable()
 export class S3ClientService {
@@ -32,8 +30,28 @@ export class S3ClientService {
             Key: key,
         });
 
-        const objectResult = await this.#s3.send(command);
+        const getObjectResult = await this.#s3.send(command);
 
-        return objectResult
+        console.log(await getObjectResult.Body.transformToString());
+
+        return getObjectResult
+    }
+
+    /**
+     * @param key 저장 경로
+     * @param buffer unzip 후 반환된 버퍼 형식의 데이터
+     * @param contentType 기본은 application/octet-stream
+     */
+    async putObject(key, buffer: Buffer, contentType?) {
+        const command = new PutObjectCommand({
+            Bucket: this.#bucket,
+            Key: key,
+            Body: buffer,
+            ContentType: contentType,
+        });
+
+        const putObjectResult = await this.#s3.send(command);
+
+        return putObjectResult;
     }
 }

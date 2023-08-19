@@ -15,6 +15,6 @@ export const fileMimeFilter = (type: string) => (req, file ,done) => {
 export const uploadZipFileOption = () => {
     return {
         fileFilter: fileMimeFilter("application/zip"),
-        storage: new MulterBuilder().setFileMimeType("application/zip").setResource("extracted").setPath("zip").build(),
+        storage: new MulterBuilder().setFileMimeType("application/zip").setResource("before").setPath("zip").build(),
     }
 }

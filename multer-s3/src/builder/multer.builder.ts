@@ -12,8 +12,8 @@ export class MulterBuilder {
     #path;
 
     /**
-     * Provider가 아닌 경우, ConfigService를 주입받을 수 있을까.
-     * Builder를 Module화 할 경우 Controller(Interceptor)에서 사용할 수 있을까.
+     * Provider가 아닌 경우, ConfigService를 주입받을 수 있을까
+     * Builder를 Module화 할 경우 Controller(Interceptor)에서 사용할 수 있을까
      */
     constructor(
     ) {
@@ -56,7 +56,7 @@ export class MulterBuilder {
                 const finallySaveFileName = saveFolder + new Date().getTime()  + "." + fileExtension;
 
                 /**
-                 * encodeURIComponent로 매핑하자.
+                 * encodeURIComponent
                  */
                 return done(null, `${process.env.NODE_ENV}/${finallySaveFileName}`);
             }
