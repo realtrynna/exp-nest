@@ -1,15 +1,20 @@
-import { Injectable } from "@nestjs/common";
-import { Processor, Process } from "@nestjs/bull";
-import { Job } from "bull";
+import {Injectable} from "@nestjs/common";
+import {Processor, Process} from "@nestjs/bull";
+import {Job} from "bull";
+import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 
-@Injectable()
-@Processor("resize")
+
 export class OptimizeProcessor {
-    constructor() {
-    }
+    #s3;
+    #bucket;
 
-    @Process("optimize")
-    async handleOptimization(job: Job) {
-        return "작업 결과를 반환합니다.";
+    constructor() {
+        this.#s3 = new S3Client({
+            region: "ap-northeast-2",
+            credentials: {
+                accessKeyId: "AKIA5WFEYKTR5XEBY6MZ",
+                secretAccessKey: "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",
+            }
+        });
     }
 }

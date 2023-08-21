@@ -1,21 +1,22 @@
-import { Module } from '@nestjs/common';
+import {Module} from '@nestjs/common';
 import {BullModule} from "@nestjs/bull";
 
-import { OptimizeModule } from "src/optimize/optimize.module";
+import {OptimizeModule} from "src/optimize/optimize.module";
 
 @Module({
-  imports: [
-    OptimizeModule,
-      BullModule.forRootAsync({
-        useFactory: () => ({
-          redis: {
-            host: "127.0.0.1",
-            port: 6379,
-          }
+    imports: [
+        OptimizeModule,
+        BullModule.forRootAsync({
+            useFactory: () => ({
+                redis: {
+                    host: "127.0.0.1",
+                    port: 6379,
+                }
+            })
         })
-      })
-  ],
-  controllers: [],
-  providers: [],
+    ],
+    controllers: [],
+    providers: [],
 })
-export class AppModule {}
+export class AppModule {
+}

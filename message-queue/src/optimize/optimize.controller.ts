@@ -13,12 +13,12 @@ export class OptimizeController {
     }
 
     @Post("file")
-    async optimize() {
+    async optimize(@Body() data: any) {
         /*
-         * Queue에 작업 add
+         * Queue add
          */
-        const job = await this.optimizeQueue.add("optimize", {
-            task: "작업을 전달합니다.",
+        const job = await this.optimizeQueue.add({
+            task: data,
         });
 
         return job;
@@ -30,10 +30,12 @@ export class OptimizeController {
          * 작업 결과를 조회 후,
          */
         const getJobResult = await this.optimizeQueue.getJob(data.id);
-        const isCompletedJob = await getJobResult.isCompleted();
 
-            console.log("작업 결과", getJobResult.returnvalue);
-        if (isCompletedJob) {
-        }
+        console.log("job result", getJobResult);
+
+        // const isCompletedJob = await getJobResult.isCompleted();
+        //
+        // if (isCompletedJob) {
+        // }
     }
 }
