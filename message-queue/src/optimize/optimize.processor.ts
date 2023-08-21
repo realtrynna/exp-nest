@@ -9,12 +9,6 @@ export class OptimizeProcessor {
     #bucket;
 
     constructor() {
-        this.#s3 = new S3Client({
-            region: "ap-northeast-2",
-            credentials: {
-                accessKeyId: "AKIA5WFEYKTR5XEBY6MZ",
-                secretAccessKey: "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",
-            }
-        });
+
     }
 }
