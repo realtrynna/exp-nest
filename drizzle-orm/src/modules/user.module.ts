@@ -2,10 +2,10 @@ import { Module } from "@nestjs/common";
 
 import { UserController } from "src/controllers/user.controller";
 import { UserService } from "src/providers/user.service"
-import { DbModule } from "src/modules/db.module";
+import { DrizzleModule } from "src/modules/drizzle.module";
 
 @Module({
-    imports: [DbModule],
+    imports: [DrizzleModule],
     controllers: [UserController],
     providers: [UserService],
 })
