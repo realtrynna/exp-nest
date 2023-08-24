@@ -2,6 +2,8 @@ import { Module } from "@nestjs/common";
 import { Client } from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
 
+import * as schema from "src/db/schemas/loader";
+
 @Module({
     providers: [
         {
@@ -25,6 +27,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
                     client,
                     {
                         logger: true,
+                        schema,
                     }
                 )
 
@@ -34,4 +37,4 @@ import { drizzle } from "drizzle-orm/node-postgres";
     ],
     exports: ["DATABASE_CONNECTION"],
 })
-export class DbModule {}
+export class DrizzleModule {}

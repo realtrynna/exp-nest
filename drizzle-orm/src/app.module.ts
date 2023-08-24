@@ -1,11 +1,11 @@
 import { Module } from "@nestjs/common";
 
-import { DbModule } from "src/modules/db.module";
+import { DrizzleModule } from "src/modules/drizzle.module";
 import { UserModule } from "src/modules/user.module";
 
 @Module({
     imports: [
-        DbModule,
+        DrizzleModule,
         UserModule,
     ],
     controllers: [],

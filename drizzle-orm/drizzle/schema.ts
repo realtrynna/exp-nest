@@ -1,31 +1,43 @@
-import { pgTable, uuid, text, varchar, bigint, primaryKey, integer } from "drizzle-orm/pg-core"
+import { pgTable, foreignKey, serial, varchar, integer, boolean, jsonb, primaryKey } from "drizzle-orm/pg-core"
 
 import { sql } from "drizzle-orm"
 
 
-export const soft = pgTable("soft", {
-	uploadTextbookMetaId: uuid("uploadTextbookMetaId"),
-	activityName: text("activityName"),
-	age: text("age"),
-	type: text("type"),
-	isUsed: text("isUsed"),
-	month: text("month"),
-	week: text("week"),
-	videoCallCount: varchar("videoCallCount"),
-	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	total: bigint("total", { mode: "number" }),
+export const posts = pgTable("posts", {
+	id: serial("id").primaryKey().notNull(),
+	title: varchar("title", { length: 255 }),
+	authorId: integer("author_id").references(() => users.id),
 });
 
-export const tblUploadTextbookFileDefault = pgTable("tbl_upload_textbook_file_default", {
-	uploadDefaultId: integer("upload_default_id").notNull(),
-	fileType: text("file_type"),
-	fileName: text("file_name").notNull(),
-	ext: text("ext"),
-	path: text("path"),
-	size: integer("size"),
+export const users = pgTable("users", {
+	id: serial("id").primaryKey().notNull(),
+	email: varchar("email", { length: 255 }).notNull(),
+});
+
+export const comments = pgTable("comments", {
+	id: serial("id").primaryKey().notNull(),
+	comment: varchar("comment").notNull(),
+	authorId: integer("author_id").references(() => users.id),
+	postId: integer("post_id").references(() => posts.id),
+});
+
+export const profile = pgTable("profile", {
+	gender: boolean("gender").notNull(),
+	userId: integer("user_id").references(() => users.id),
+	metadata: jsonb("metadata"),
+});
+
+export const groups = pgTable("groups", {
+	id: serial("id").primaryKey().notNull(),
+	title: varchar("title", { length: 32 }).notNull(),
+});
+
+export const usersToGroups = pgTable("users_to_groups", {
+	userId: integer("user_id").notNull().references(() => users.id),
+	groupId: integer("group_id").notNull().references(() => groups.id),
 },
 (table) => {
 	return {
-		tblUploadTextbookFileDefaultPkey: primaryKey(table.uploadDefaultId, table.fileName)
+		usersToGroupsUserIdGroupId: primaryKey(table.userId, table.groupId)
 	}
 });
