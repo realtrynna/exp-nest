@@ -36,4 +36,14 @@ export class OptimizeController {
         if (isCompletedJob) {
         }
     }
+
+    @Get(":id/groups")
+    async getId(@Param("id") id) {
+        console.log(id);
+    }
 }
+
+/**
+ * users/32/groups
+ * users/groups/32
+ */
