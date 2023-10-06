@@ -23,7 +23,7 @@ export class AuthController {
     @Get("naver/callback")
     @UseGuards(NaverGuard)
     async naverLoginCallback(@Req() req, @Res() res) {
-        console.log("user", req.user);
+        // console.log("user", req.user);
 
         res.send(`
             <div>

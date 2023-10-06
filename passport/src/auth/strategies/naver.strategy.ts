@@ -13,6 +13,8 @@ export class NaverStrategy extends PassportStrategy(Strategy, "naver") {
     }
 
     async validate(accessToken: string, refreshToken: string, profile: Profile, done: any) {
+        console.log("strategy execution");
+
         done(null, profile);
     }
 }

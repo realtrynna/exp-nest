@@ -33,6 +33,7 @@
     "passport-kakao": "^1.0.1",
     "passport-local": "^1.0.0",
     "passport-naver-v2": "^2.0.8",
+    "picktogram-server-apis": "^0.0.12",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0"
   },
