@@ -33,7 +33,7 @@ drizzle-kit check:pg
 1.One-to-one(사용자와 프로필)
 
 ```typescript
-// schemas/users.ts
+// schemas/cache.ts
 import { pgTable, serial, text, integer, boolean, jsonb } from "drizzle-orm/pg-core";
 import { relations } from 'drizzle-orm';
 
@@ -53,7 +53,7 @@ export const usersToProfileOneToOne = relations(users, ({ one }) => ({
 }));
 
 // schemas/profile.ts
-import { users } from "schemas/users.ts"
+import { users } from "schemas/cache.ts"
 
 export const profile = pgTable("profile", {
     id: serial("id").primaryKey(),
@@ -67,7 +67,7 @@ export const profile = pgTable("profile", {
 2.One-to-many(채팅방과 채팅)
 
 ```typescript
-// schemas/users.ts
+// schemas/cache.ts
 import { relations } from "drizzle-orm";
 
 import { chats } from "schemas/chats.ts"
@@ -103,7 +103,7 @@ export const chatsToRoomsManyToOne = relations(chats, ({ one }) => ({
 3.Many-to-many(사용자와 그룹)
 - users.ts
 ```typescript
-import { usersToGroups } from "schemas/users-to-groups.ts";
+import { usersToGroups } from "schemas/cache-to-groups.ts";
 
 export const users = pgTable("users", {
     id: serial("id").primaryKey(),
@@ -118,7 +118,7 @@ const usersRelations = relations(users, ({ many }) => ({
 
 - groups.ts
 ```typescript
-import { usersToGroups } from "schemas/users-to-groups.ts";
+import { usersToGroups } from "schemas/cache-to-groups.ts";
 
 export const groups = pgTable("groups", {
     id: serial("id").primaryKey(),
@@ -162,7 +162,7 @@ export const usersToGroupsRelations = relations(usersToGroups, ({ one }) => ({
 
 - 식별 관계
 ```typescript
-import { users } from "schemas/users.ts";
+import { users } from "schemas/cache.ts";
 
 export const posts = pgTable("posts", {
     id: serial("id").primaryKey(),
@@ -173,7 +173,7 @@ export const posts = pgTable("posts", {
 
 - 비 식별
 ```typescript
-import { users } from "schemas/users.ts";
+import { users } from "schemas/cache.ts";
 
 export const posts = pgTable("posts", {
 id: serial("id").primaryKey(),

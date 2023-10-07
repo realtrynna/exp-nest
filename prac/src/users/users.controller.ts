@@ -50,7 +50,7 @@ interface IUser {
 /**
  * @TODO
  */
-@Controller("users")
+@Controller("cache")
 @ApiTags("사용자")
 export class UsersController {
     // readonly #logger = new Logger(UsersController.name);

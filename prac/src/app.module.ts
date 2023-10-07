@@ -71,6 +71,6 @@ import { HealthCheckController } from "./health/health.controller";
 })
 export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
-        consumer.apply(LoggerMiddleware, Logger2Middleware).forRoutes("/users");
+        consumer.apply(LoggerMiddleware, Logger2Middleware).forRoutes("/cache");
     }
 }

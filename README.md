@@ -807,7 +807,7 @@ Nest에서 제공하는 Provider의 핵심은 의존성을 주입할 수 있다�
     Controller에 **_Constructor_**(생성자)에서 주입받아 UserService라는 **_멤버 변수_** 에 할당되어 userService를 호출해 로직을 처리한다. <br>
 
 ```typescript
-@controller("users")
+@controller("cache")
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
@@ -963,7 +963,7 @@ UserController는 UserService에 의존적이므로 REQUEST로 Scope가 변경�
 일반적인 Provider 등록 방법
 
 ```typescript
-// users.module.ts
+// cache.module.ts
 @Module({
     providers: [UserService],
 })
@@ -1752,7 +1752,7 @@ import { LoggerMiddleware } from "./";
 
 export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer): any {
-        consumer.apply(LoggerMiddleware).forRoutes("/users"); // Path 설정 가능
+        consumer.apply(LoggerMiddleware).forRoutes("/cache"); // Path 설정 가능
     }
 }
 ```
@@ -1772,7 +1772,7 @@ apply(...middleware: (Type<any> | Function)[]): MiddlewareConfigProxy
 -   여러 개의 Middleware 사용 시 **_apply_** Method에 순서대로 나열
 
 ```typescript
-consumer.apply(FirstMiddleware, SecondMiddleware).forRoutes("/users");
+consumer.apply(FirstMiddleware, SecondMiddleware).forRoutes("/cache");
 ```
 
 <br>
@@ -1790,7 +1790,7 @@ consumer.apply(LoggerMiddleware).forRoutes(UserController);
 ```typescript
 consumer
     .apply(LoggerMiddleware)
-    .exclude({ path: "/users", method: RequestMethod.GET })
+    .exclude({ path: "/cache", method: RequestMethod.GET })
     .forRoutes(UserController);
 ```
 
@@ -2426,7 +2426,7 @@ Nest의 Request Lifecycle 순서는 다음과 같다.
 
     ```typescript
     @UseGuards(Guard1, Guard2)
-    @Controller("users")
+    @Controller("cache")
     export class UserController {
         constructor(private userService: UserService) {}
 
@@ -2451,7 +2451,7 @@ Nest의 Request Lifecycle 순서는 다음과 같다.
 
     ```typescript
     @UsePipes(GeneralValidationPipe)
-    @Controller("users")
+    @Controller("cache")
     export class UserController {
         constructor(private readonly userService: UserService) {}
 
@@ -3089,7 +3089,7 @@ describe(), it() 구문 외에 `SetUp`, `TearDown` 이라 부르는 개념이 �
 마찬가지로 테스트 후 처리가 필요한다면 TearDown에서 공통 처리한다. <br>
 
 ```typescript
-import {UserService} from "./users.service";
+import {UserService} from "./cache.service";
 
 describe("UserService", () => {
     const userService: UserService = new UserService()

@@ -1,7 +1,7 @@
 import { Controller, Post, Get, Body, UsePipes, UseGuards } from "@nestjs/common";
 import { UseZodGuard } from "nestjs-zod";
 
-import { CreateArticleDto } from "src/articles/dtos/create-article-dto";
+import { CreateArticleDto } from "src/articles/dtos/create-articles-dto";
 import { ZodValidationPipe } from "src/zod/zod-validation-pipe";
 import { ZodGuard } from "src/zod/zod-guard";
 
