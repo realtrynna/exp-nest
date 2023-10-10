@@ -1,4 +1,4 @@
-import { Controller, Post, Get } from "@nestjs/common";
+import { Controller, Post, Get, Delete } from "@nestjs/common";
 
 import { ArticleService } from "src/articles/article.service";
 
@@ -11,6 +11,13 @@ export class ArticleController {
 
     @Get("article-list")
     async getArticleList() {
+        const articleList = await this.articleService.getArticleList();
 
+        return articleList;
+    }
+
+    @Delete("article-list")
+    async deleteArticleList() {
+        await this.articleService.deleteArticleList();
     }
 }

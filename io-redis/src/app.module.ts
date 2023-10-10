@@ -1,10 +1,19 @@
 import { Module } from "@nestjs/common";
+import { RedisModule } from "@liaoliaots/nestjs-redis";
 
-import { IoRedisModule } from "src/modules/io-redis.module";
 import { ArticleModule } from "src/articles/article.module";
 
 @Module({
-    imports: [IoRedisModule, ArticleModule],
+    imports: [
+        RedisModule.forRoot({
+            readyLog: true,
+            config: {
+                host: "127.0.0.1",
+                port: 6379,
+            }
+        }),
+        ArticleModule,
+    ],
     controllers: [],
     providers: [],
 })
