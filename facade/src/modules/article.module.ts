@@ -1,7 +1,15 @@
 import { Module } from "@nestjs/common";
 
-import { ArticleController } from "src/articles/article.controller";
-import { ArticleService } from "src/articles/article.service";
+import { ArticleController } from "src/controllers/article.controller";
+import { ArticleService } from "src/providers/article.service";
+import {
+    UsersRepository,
+    CommentsRepository,
+    ImagesRepository,
+    GradeRepository,
+    ArticleRepository
+} from "src/models/repositories";
+import { FacadeClient } from "src/clients/facade.client";
 
 @Module({
     imports: [],
@@ -9,7 +17,13 @@ import { ArticleService } from "src/articles/article.service";
         ArticleController,
     ],
     providers: [
-        ArticleService
+        ArticleService,
+        FacadeClient,
+        UsersRepository,
+        CommentsRepository,
+        ImagesRepository,
+        GradeRepository,
+        ArticleRepository
     ],
 })
 export class ArticleModule {}

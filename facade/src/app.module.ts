@@ -1,7 +1,11 @@
 import { Module } from "@nestjs/common";
 
+import { ArticleModule } from "src/modules/article.module";
+
 @Module({
-    imports: [],
+    imports: [
+        ArticleModule,
+    ],
     controllers: [],
     providers: [],
 })
