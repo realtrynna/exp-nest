@@ -25,6 +25,8 @@
     "@nestjs/event-emitter": "2.0",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/schedule": "4.0",
+    "busboy": "^1.6.0",
+    "formidable": "^2.1.2",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0"
   },
