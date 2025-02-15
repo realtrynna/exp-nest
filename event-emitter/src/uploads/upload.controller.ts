@@ -1,44 +1,28 @@
-import { Controller, Post, Req, Res } from "@nestjs/common";
+import { Controller, Post, Req, Res, StreamableFile } from "@nestjs/common";
 import * as Busboy from "busboy";
 import { S3Client } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
-import {
-    ProgressBar,
-    logger,
-} from "@aws-doc-sdk-examples/lib/utils/util-log.js";
 
 @Controller()
 export class UploadController {
     @Post("upload")
     async upload(@Req() req: any, @Res() res: any) {
         const bb = Busboy({ headers: req.headers });
+        const chunkList = [];
+        let filename
 
-        bb.on("file", (name, file, info) => {
-            file.on("data", async (data) => {
-                try {
-                    const upload = new Upload({
-                        client: this.s3(),
-                        params: {
-                            Bucket: "",
-                            Key: "big",
-                            Body: data,
-                        }
-                    });
+        bb.on("file", async (name, file, info) => {
+            file.on("data", (data) => chunkList.push(data));
+            file.on("end", async () => {
+                const result = await this.s3Upload(info.filename, Buffer.concat(chunkList));
 
-                    upload.on("httpUploadProgress", ({ loaded, total }) => {
-                        console.log(loaded, total)
-                    });
+                console.log("upload end", result);
+            });
+         });
 
-                    const result = await upload.done();
-                    console.log(result);
-                } catch (err) {
-                    console.log(err);
-                }
-            })
-        });
-
-        bb.on("close", () => {
-            res.end();
+        bb.on("close", async () => {
+            // await this.s3Upload(filename, Buffer.concat(chunkList));
+            res.json("Upload success");
         });
 
         req.pipe(bb);
@@ -46,11 +30,26 @@ export class UploadController {
 
     s3() {
         return new S3Client({
-            region: "",
+            region: "ap-northeast-2",
             credentials: {
                 accessKeyId: "",
                 secretAccessKey: ""
             }
         })
+    }
+
+    async s3Upload(filename, data: Buffer) {
+        const uploadCommand = new Upload({
+            client: this.s3(),
+            params: {
+                Bucket: "",
+                Key: `temp/${filename}`,
+                Body: data,
+            }
+        });
+
+        const { Key } = await uploadCommand.done();
+
+        return Key;
     }
 }
