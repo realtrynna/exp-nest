@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { Injectable } from "@nestjs/common";
-import { S3Client, GetObjectCommand, PutObjectCommand, S3ServiceException } from "@aws-sdk/client-s3";
+import { S3Client, GetObjectCommand, PutObjectCommand, S3ServiceException } from "@aws-sdk/client-external";
 
 
 @Injectable()

@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 
-import MulterS3 from "multer-s3";
-import { S3Client } from "@aws-sdk/client-s3";
+import MulterS3 from "multer-external";
+import { S3Client } from "@aws-sdk/client-external";
 
 export class MulterBuilder {
     readonly #s3;

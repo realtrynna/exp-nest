@@ -2,14 +2,20 @@ import { Controller, Post, Req, Res, StreamableFile } from "@nestjs/common";
 import * as Busboy from "busboy";
 import { S3Client } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
+import { UploadService } from "./upload.service";
 
 @Controller()
 export class UploadController {
+    private uploadService: UploadService
+
+    constructor(uploadService: UploadService) {
+        this.uploadService = uploadService;
+    }
+
     @Post("upload")
     async upload(@Req() req: any, @Res() res: any) {
         const bb = Busboy({ headers: req.headers });
         const chunkList = [];
-        let filename
 
         bb.on("file", async (name, file, info) => {
             file.on("data", (data) => chunkList.push(data));
